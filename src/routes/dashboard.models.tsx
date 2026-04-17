@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search, Plus, Loader2, X, Github, Link as LinkIcon, Upload } from "lucide-react";
+import { Search, Loader2, Link as LinkIcon, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/models")({
   head: () => ({

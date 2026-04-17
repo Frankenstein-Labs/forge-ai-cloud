@@ -13,7 +13,7 @@ export const Route = createFileRoute("/dashboard/settings")({
 });
 
 function SettingsPage() {
-  const { profile, refreshProfile, signOut } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const [fullName, setFullName] = useState("");
   const [company, setCompany] = useState("");
   const [saving, setSaving] = useState(false);

@@ -27,14 +27,21 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
 });
 
-const NAV = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+};
+
+const NAV: NavItem[] = [
   { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/api-keys", label: "Clés API", icon: KeyRound },
   { to: "/dashboard/models", label: "Modèles", icon: Boxes },
   { to: "/dashboard/workspace", label: "Workspace", icon: Terminal },
   { to: "/dashboard/billing", label: "Facturation", icon: CreditCard },
   { to: "/dashboard/settings", label: "Paramètres", icon: Settings },
-] as const;
+];
 
 function DashboardLayout() {
   const { profile, signOut } = useAuth();
