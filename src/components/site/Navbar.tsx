@@ -59,18 +59,20 @@ export function Navbar() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
-            <a
-              href="#login"
+            <Link
+              to="/auth"
+              search={{ mode: "signin", redirect: "/dashboard" }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2"
             >
               Connexion
-            </a>
-            <a
-              href="#signup"
+            </Link>
+            <Link
+              to="/auth"
+              search={{ mode: "signup", redirect: "/dashboard" }}
               className="relative group rounded-xl px-5 py-2.5 text-sm font-medium text-primary-foreground bg-gradient-primary shadow-glow-cyan hover:shadow-glow-plasma transition-all"
             >
               Démarrer gratuitement
-            </a>
+            </Link>
           </div>
 
           <button
@@ -95,18 +97,20 @@ export function Navbar() {
               </a>
             ))}
             <div className="pt-2 mt-2 border-t border-border space-y-2">
-              <a
-                href="#login"
+              <Link
+                to="/auth"
+                search={{ mode: "signin", redirect: "/dashboard" }}
                 className="block px-4 py-3 text-sm text-center text-foreground rounded-xl hover:bg-surface-elevated/50"
               >
                 Connexion
-              </a>
-              <a
-                href="#signup"
+              </Link>
+              <Link
+                to="/auth"
+                search={{ mode: "signup", redirect: "/dashboard" }}
                 className="block px-4 py-3 text-sm text-center text-primary-foreground bg-gradient-primary rounded-xl font-medium"
               >
                 Démarrer gratuitement
-              </a>
+              </Link>
             </div>
           </div>
         )}
