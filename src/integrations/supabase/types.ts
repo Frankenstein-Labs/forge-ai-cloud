@@ -14,16 +14,309 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      api_keys: {
+        Row: {
+          budget_limit_tokens: number | null
+          created_at: string
+          expires_at: string | null
+          hashed_key: string
+          id: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          permissions: Database["public"]["Enums"]["api_key_permission"]
+          status: Database["public"]["Enums"]["api_key_status"]
+          user_id: string
+        }
+        Insert: {
+          budget_limit_tokens?: number | null
+          created_at?: string
+          expires_at?: string | null
+          hashed_key: string
+          id?: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          permissions?: Database["public"]["Enums"]["api_key_permission"]
+          status?: Database["public"]["Enums"]["api_key_status"]
+          user_id: string
+        }
+        Update: {
+          budget_limit_tokens?: number | null
+          created_at?: string
+          expires_at?: string | null
+          hashed_key?: string
+          id?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          permissions?: Database["public"]["Enums"]["api_key_permission"]
+          status?: Database["public"]["Enums"]["api_key_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_transactions: {
+        Row: {
+          amount_eur: number
+          created_at: string
+          description: string | null
+          id: string
+          stripe_event_id: string | null
+          tokens_added: number
+          user_id: string
+        }
+        Insert: {
+          amount_eur: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          stripe_event_id?: string | null
+          tokens_added?: number
+          user_id: string
+        }
+        Update: {
+          amount_eur?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          stripe_event_id?: string | null
+          tokens_added?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      deployments: {
+        Row: {
+          catalog_model_id: string | null
+          created_at: string
+          deployed_at: string | null
+          deployment_name: string
+          endpoint_url: string | null
+          id: string
+          last_used_at: string | null
+          region: string
+          replicas: number
+          status: Database["public"]["Enums"]["deployment_status"]
+          tokens_consumed: number
+          updated_at: string
+          user_id: string
+          user_model_id: string | null
+        }
+        Insert: {
+          catalog_model_id?: string | null
+          created_at?: string
+          deployed_at?: string | null
+          deployment_name: string
+          endpoint_url?: string | null
+          id?: string
+          last_used_at?: string | null
+          region?: string
+          replicas?: number
+          status?: Database["public"]["Enums"]["deployment_status"]
+          tokens_consumed?: number
+          updated_at?: string
+          user_id: string
+          user_model_id?: string | null
+        }
+        Update: {
+          catalog_model_id?: string | null
+          created_at?: string
+          deployed_at?: string | null
+          deployment_name?: string
+          endpoint_url?: string | null
+          id?: string
+          last_used_at?: string | null
+          region?: string
+          replicas?: number
+          status?: Database["public"]["Enums"]["deployment_status"]
+          tokens_consumed?: number
+          updated_at?: string
+          user_id?: string
+          user_model_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deployments_user_model_id_fkey"
+            columns: ["user_model_id"]
+            isOneToOne: false
+            referencedRelation: "user_models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          credits_balance: number
+          email: string
+          full_name: string | null
+          id: string
+          stripe_customer_id: string | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          credits_balance?: number
+          email: string
+          full_name?: string | null
+          id: string
+          stripe_customer_id?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          credits_balance?: number
+          email?: string
+          full_name?: string | null
+          id?: string
+          stripe_customer_id?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_events: {
+        Row: {
+          api_key_id: string | null
+          cost_eur: number
+          created_at: string
+          deployment_id: string | null
+          id: string
+          model_name: string
+          tokens_input: number
+          tokens_output: number
+          user_id: string
+        }
+        Insert: {
+          api_key_id?: string | null
+          cost_eur?: number
+          created_at?: string
+          deployment_id?: string | null
+          id?: string
+          model_name: string
+          tokens_input?: number
+          tokens_output?: number
+          user_id: string
+        }
+        Update: {
+          api_key_id?: string | null
+          cost_eur?: number
+          created_at?: string
+          deployment_id?: string | null
+          id?: string
+          model_name?: string
+          tokens_input?: number
+          tokens_output?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usage_events_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usage_events_deployment_id_fkey"
+            columns: ["deployment_id"]
+            isOneToOne: false
+            referencedRelation: "deployments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_models: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          size_bytes: number | null
+          source: Database["public"]["Enums"]["model_source"]
+          source_url: string | null
+          storage_path: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          size_bytes?: number | null
+          source: Database["public"]["Enums"]["model_source"]
+          source_url?: string | null
+          storage_path?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          size_bytes?: number | null
+          source?: Database["public"]["Enums"]["model_source"]
+          source_url?: string | null
+          storage_path?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      api_key_permission: "read_only" | "read_write" | "admin"
+      api_key_status: "active" | "revoked" | "expired"
+      app_role: "admin" | "developer" | "member"
+      deployment_status:
+        | "pending"
+        | "deploying"
+        | "active"
+        | "stopped"
+        | "failed"
+      model_source: "huggingface" | "upload" | "url" | "finetuned" | "catalog"
+      subscription_tier: "free" | "pro" | "business"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +443,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      api_key_permission: ["read_only", "read_write", "admin"],
+      api_key_status: ["active", "revoked", "expired"],
+      app_role: ["admin", "developer", "member"],
+      deployment_status: [
+        "pending",
+        "deploying",
+        "active",
+        "stopped",
+        "failed",
+      ],
+      model_source: ["huggingface", "upload", "url", "finetuned", "catalog"],
+      subscription_tier: ["free", "pro", "business"],
+    },
   },
 } as const
