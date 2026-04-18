@@ -304,6 +304,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_api_key: {
+        Args: { _hashed_key: string }
+        Returns: {
+          api_key_id: string
+          budget_limit_tokens: number
+          permissions: Database["public"]["Enums"]["api_key_permission"]
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       api_key_permission: "read_only" | "read_write" | "admin"
