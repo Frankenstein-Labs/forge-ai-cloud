@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/site/Navbar";
 import { Hero } from "@/components/site/Hero";
 import { LogoCloud } from "@/components/site/LogoCloud";
@@ -11,6 +12,14 @@ import { Footer } from "@/components/site/Footer";
 import heroImage from "@/assets/hero-cloud.jpg";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Aetheris Cloud — Le cloud unifié de l'IA open source" },
