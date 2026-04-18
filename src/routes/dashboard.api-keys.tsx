@@ -198,6 +198,9 @@ function ApiKeysPage() {
         )}
       </div>
 
+      {/* Test endpoint card */}
+      <TestEndpointCard />
+
       {/* Info card */}
       <div className="glass rounded-3xl p-6 flex items-start gap-4 border border-primary/10">
         <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -210,9 +213,8 @@ function ApiKeysPage() {
             SDK Python/JS.
           </p>
           <pre className="mt-3 bg-black/40 border border-white/10 rounded-xl px-4 py-3 font-mono text-xs text-primary overflow-x-auto">
-            export AETHERIS_API_KEY=ae_live_xxx
-            <br />
-            aetheris models list
+{`curl ${typeof window !== "undefined" ? window.location.origin : "https://app.aetheris.ai"}/api/ai/validate \\
+  -H "X-API-Key: ae_live_xxx"`}
           </pre>
         </div>
       </div>
