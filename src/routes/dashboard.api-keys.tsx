@@ -276,6 +276,92 @@ function ApiKeysPage() {
   );
 }
 
+function TestEndpointCard() {
+  const [key, setKey] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [result, setResult] = useState<
+    | { ok: true; user_id: string; permissions: string; budget_limit_tokens: number | null }
+    | { ok: false; error: string }
+    | null
+  >(null);
+
+  const test = async () => {
+    if (!key.trim()) {
+      toast.error("Colle ta clé API d'abord");
+      return;
+    }
+    setTesting(true);
+    setResult(null);
+    try {
+      const res = await fetch("/api/ai/validate", {
+        headers: { "X-API-Key": key.trim() },
+      });
+      const json = await res.json();
+      if (res.ok) setResult({ ok: true, ...json });
+      else setResult({ ok: false, error: json.error ?? "Erreur inconnue" });
+    } catch (e) {
+      setResult({ ok: false, error: e instanceof Error ? e.message : "Erreur réseau" });
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  return (
+    <div className="glass rounded-3xl p-6 border border-white/5">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
+          <ShieldCheck className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h3 className="font-display text-lg font-medium">Tester ma clé</h3>
+          <p className="text-xs text-muted-foreground">
+            Vérifie que ta clé est acceptée par le middleware <code className="font-mono">/api/ai/*</code>
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <input
+          type="password"
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
+          placeholder="ae_live_..."
+          className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 font-mono text-xs text-primary placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50"
+        />
+        <button
+          onClick={test}
+          disabled={testing}
+          className="px-5 py-3 rounded-xl bg-foreground text-background font-medium text-sm hover:opacity-90 transition disabled:opacity-50 flex items-center gap-2"
+        >
+          {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          Tester
+        </button>
+      </div>
+      {result && (
+        <div
+          className={`mt-4 rounded-xl p-4 text-sm border ${
+            result.ok
+              ? "bg-primary/5 border-primary/30 text-primary"
+              : "bg-destructive/5 border-destructive/30 text-destructive"
+          }`}
+        >
+          {result.ok ? (
+            <div className="space-y-1 font-mono text-xs">
+              <div>✓ Clé valide</div>
+              <div>user_id: {result.user_id}</div>
+              <div>permissions: {result.permissions}</div>
+              <div>
+                budget: {result.budget_limit_tokens ? `${result.budget_limit_tokens} tk` : "illimité"}
+              </div>
+            </div>
+          ) : (
+            <div>✗ {result.error}</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StatusBadge({ status }: { status: ApiKey["status"] }) {
   const cfg = {
     active: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary", label: "Actif" },
