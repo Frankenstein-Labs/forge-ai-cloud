@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.validate_api_key(text) TO anon, authenticated;
