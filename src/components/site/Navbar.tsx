@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { label: "Plateforme", href: "#platform" },
@@ -13,6 +14,8 @@ const links = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const logoTo = user ? "/dashboard" : "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -33,7 +36,7 @@ export function Navbar() {
             scrolled ? "glass px-5 py-3" : "px-2 py-2"
           }`}
         >
-          <Link to="/" className="flex items-center gap-2.5 group">
+          <Link to={logoTo} className="flex items-center gap-2.5 group">
             <div className="relative h-9 w-9">
               <div className="absolute inset-0 rounded-xl bg-gradient-primary opacity-90 group-hover:opacity-100 transition-opacity" />
               <div className="absolute inset-0 rounded-xl shadow-glow-cyan opacity-50 group-hover:opacity-100 transition-opacity" />
