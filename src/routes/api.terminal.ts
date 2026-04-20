@@ -1,66 +1,17 @@
 // Endpoint serveur pour le terminal Aetheris.
-// Reçoit { command: string } + Authorization: Bearer <api-key>
-// Retourne { output: string }.
+// Reçoit { command: string } + Authorization: Bearer <api-key> ou X-API-Key
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
-};
-
-function getServerClient() {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error("Supabase env vars missing");
-  return createClient<Database>(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
-
-async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function extractApiKey(request: Request): string | null {
-  const xKey = request.headers.get("x-api-key");
-  if (xKey) return xKey.trim();
-  const auth = request.headers.get("authorization");
-  if (auth?.startsWith("Bearer ")) return auth.slice(7).trim();
-  return null;
-}
-
-async function authenticate(request: Request) {
-  const key = extractApiKey(request);
-  if (!key) return null;
-  const hashed = await sha256Hex(key);
-  const supabase = getServerClient();
-  const { data, error } = await supabase.rpc("validate_api_key", {
-    _hashed_key: hashed,
-  });
-  if (error || !data || data.length === 0) return null;
-  return data[0];
-}
-
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+import {
+  authenticateApiKey,
+  corsHeaders,
+  getServerSupabase,
+  jsonResponse,
+  type AuthedKey,
+} from "@/lib/api-auth";
 
 async function handleCommand(
   command: string,
-  authed: Awaited<ReturnType<typeof authenticate>>,
+  authed: AuthedKey | null,
 ): Promise<string> {
   const trimmed = command.trim();
   if (!trimmed) return "";
@@ -74,9 +25,11 @@ async function handleCommand(
         "  help                — affiche cette aide",
         "  whoami              — infos sur la clé API courante",
         "  models              — liste les modèles déployés",
-        "  run <model> <prompt>— exécute un modèle (simulation)",
+        "  run <model> <prompt>— exécute un modèle via /api/v1/chat/completions",
         "  upload <name>       — enregistre un modèle (simulation)",
-        "  clear               — efface l'écran",
+        "  export-key          — génère un snippet Python pour Colab (local)",
+        "  clear               — efface l'écran (local)",
+        "  logout              — oublie la clé en mémoire (local)",
       ].join("\n");
 
     case "whoami":
@@ -86,18 +39,28 @@ async function handleCommand(
         `  user_id     : ${authed.user_id}`,
         `  permissions : ${authed.permissions}`,
         `  budget      : ${authed.budget_limit_tokens ?? "illimité"} tokens`,
+        `  endpoint    : POST /api/v1/chat/completions (compatible OpenAI)`,
       ].join("\n");
 
     case "models": {
       if (!authed) return "❌ Non authentifié.";
-      const supabase = getServerClient();
+      const supabase = getServerSupabase();
       const { data, error } = await supabase
         .from("deployments")
         .select("deployment_name, status, region")
         .eq("user_id", authed.user_id)
         .limit(20);
       if (error) return `Erreur DB : ${error.message}`;
-      if (!data || data.length === 0) return "Aucun déploiement trouvé.";
+      if (!data || data.length === 0)
+        return [
+          "Aucun déploiement personnel.",
+          "",
+          "Modèles Lovable AI disponibles immédiatement via /api/v1/chat/completions :",
+          "  • google/gemini-2.5-flash      (rapide, équilibré)",
+          "  • google/gemini-2.5-pro        (raisonnement)",
+          "  • google/gemini-2.5-flash-lite (économique)",
+          "  • openai/gpt-5-mini            (multimodal)",
+        ].join("\n");
       return data
         .map((d) => `  • ${d.deployment_name}  [${d.status}]  (${d.region})`)
         .join("\n");
@@ -105,10 +68,45 @@ async function handleCommand(
 
     case "run": {
       if (!authed) return "❌ Non authentifié.";
-      const model = args[0];
+      const model = args[0] || "google/gemini-2.5-flash";
       const prompt = args.slice(1).join(" ");
-      if (!model) return "Usage : run <model> <prompt>";
-      return `🚀 [${model}] → simulation\n   prompt: ${prompt || "(vide)"}\n   ↳ output: réponse simulée. Branche /api/ai/generate pour l'IA réelle.`;
+      if (!prompt) return "Usage : run <model> <prompt>";
+
+      // Appel direct du gateway depuis le terminal (côté serveur)
+      const apiKey = process.env.LOVABLE_API_KEY;
+      if (!apiKey) return "❌ LOVABLE_API_KEY non configurée côté serveur.";
+
+      try {
+        const r = await fetch(
+          "https://ai.gateway.lovable.dev/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: prompt }],
+            }),
+          },
+        );
+        if (r.status === 429) return "⏱️ Rate limit dépassé. Réessaie plus tard.";
+        if (r.status === 402)
+          return "💳 Crédits Lovable AI épuisés. Recharge le workspace.";
+        if (!r.ok) return `❌ Gateway error ${r.status}: ${await r.text()}`;
+        const j = (await r.json()) as {
+          choices?: Array<{ message?: { content?: string } }>;
+          usage?: { prompt_tokens?: number; completion_tokens?: number };
+        };
+        const content = j.choices?.[0]?.message?.content ?? "(réponse vide)";
+        const usage = j.usage
+          ? `\n\n\x1b[38;5;245m[tokens: in=${j.usage.prompt_tokens ?? 0} · out=${j.usage.completion_tokens ?? 0}]\x1b[0m`
+          : "";
+        return `🤖 [${model}]\n${content}${usage}`;
+      } catch (e) {
+        return `❌ Erreur d'appel : ${(e as Error).message}`;
+      }
     }
 
     case "upload": {
@@ -126,27 +124,31 @@ async function handleCommand(
 export const Route = createFileRoute("/api/terminal")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () =>
+        new Response(null, { status: 204, headers: corsHeaders }),
 
       POST: async ({ request }) => {
         let body: { command?: string };
         try {
           body = await request.json();
         } catch {
-          return json({ output: "❌ Requête invalide (JSON attendu)" }, 400);
+          return jsonResponse({ output: "❌ Requête invalide (JSON attendu)" }, 400);
         }
         const command = (body.command ?? "").toString();
         if (command.length > 2000) {
-          return json({ output: "❌ Commande trop longue" }, 400);
+          return jsonResponse({ output: "❌ Commande trop longue" }, 400);
         }
 
-        const authed = await authenticate(request);
+        const authed = await authenticateApiKey(request);
 
         try {
           const output = await handleCommand(command, authed);
-          return json({ output, authenticated: !!authed });
+          return jsonResponse({ output, authenticated: !!authed });
         } catch (e) {
-          return json({ output: `Erreur serveur : ${(e as Error).message}` }, 500);
+          return jsonResponse(
+            { output: `Erreur serveur : ${(e as Error).message}` },
+            500,
+          );
         }
       },
     },

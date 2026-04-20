@@ -21,6 +21,7 @@ import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
+import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -82,6 +83,11 @@ const ApiAiValidateRoute = ApiAiValidateRouteImport.update({
   path: '/api/ai/validate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1ChatCompletionsRoute = ApiV1ChatCompletionsRouteImport.update({
+  id: '/api/v1/chat/completions',
+  path: '/api/v1/chat/completions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
+  '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
+  '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
+  '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
+    | '/api/v1/chat/completions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
+    | '/api/v1/chat/completions'
   id:
     | '__root__'
     | '/'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
+    | '/api/v1/chat/completions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiTerminalRoute: typeof ApiTerminalRoute
   ApiAiValidateRoute: typeof ApiAiValidateRoute
+  ApiV1ChatCompletionsRoute: typeof ApiV1ChatCompletionsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiValidateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/chat/completions': {
+      id: '/api/v1/chat/completions'
+      path: '/api/v1/chat/completions'
+      fullPath: '/api/v1/chat/completions'
+      preLoaderRoute: typeof ApiV1ChatCompletionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -296,6 +316,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ApiTerminalRoute: ApiTerminalRoute,
   ApiAiValidateRoute: ApiAiValidateRoute,
+  ApiV1ChatCompletionsRoute: ApiV1ChatCompletionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
