@@ -123,7 +123,11 @@ function ResetPasswordPage() {
           )}
 
           <p className="mt-6 text-center text-sm">
-            <Link to="/auth" className="text-primary hover:text-primary/80">
+            <Link
+              to="/auth"
+              search={{ mode: "signin", redirect: "/dashboard" }}
+              className="text-primary hover:text-primary/80"
+            >
               Retour à la connexion
             </Link>
           </p>

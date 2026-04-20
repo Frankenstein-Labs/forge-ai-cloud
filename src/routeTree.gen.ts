@@ -19,6 +19,7 @@ import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settin
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
+import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -71,6 +72,11 @@ const DashboardApiKeysRoute = DashboardApiKeysRouteImport.update({
   path: '/api-keys',
   getParentRoute: () => DashboardRoute,
 } as any)
+const ApiTerminalRoute = ApiTerminalRouteImport.update({
+  id: '/api/terminal',
+  path: '/api/terminal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiValidateRoute = ApiAiValidateRouteImport.update({
   id: '/api/ai/validate',
   path: '/api/ai/validate',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/reset-password'
+    | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/models'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/models'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/reset-password'
+    | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/models'
@@ -162,6 +174,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiTerminalRoute: typeof ApiTerminalRoute
   ApiAiValidateRoute: typeof ApiAiValidateRoute
 }
 
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardApiKeysRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/api/terminal': {
+      id: '/api/terminal'
+      path: '/api/terminal'
+      fullPath: '/api/terminal'
+      preLoaderRoute: typeof ApiTerminalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/validate': {
       id: '/api/ai/validate'
       path: '/api/ai/validate'
@@ -274,6 +294,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiTerminalRoute: ApiTerminalRoute,
   ApiAiValidateRoute: ApiAiValidateRoute,
 }
 export const routeTree = rootRouteImport
