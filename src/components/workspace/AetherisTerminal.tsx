@@ -5,8 +5,8 @@ import "@xterm/xterm/css/xterm.css";
 
 /**
  * Terminal interactif Aetheris (xterm.js).
- * - login <api-key>  : stocke la clé en mémoire (envoyée à chaque requête)
- * - help / whoami / models / run / upload / clear : géré côté /api/terminal
+ * - login <api-key>     : stocke la clé en mémoire + valide via /api/terminal
+ * - help / whoami / models / run / upload / clear / logout / export-key
  */
 export function AetherisTerminal() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -42,41 +42,115 @@ export function AetherisTerminal() {
     termRef.current = term;
 
     let apiKey: string | null = null;
+    let authedBadge = false;
     let buffer = "";
     let busy = false;
 
-    const PROMPT = "\x1b[38;5;51maetheris\x1b[0m:\x1b[38;5;213m~\x1b[0m$ ";
+    // Origin absolu pour éviter les soucis de proxy preview (lovable.js)
+    const ORIGIN =
+      typeof window !== "undefined" ? window.location.origin : "";
+    const ENDPOINT = `${ORIGIN}/api/terminal`;
+    const CHAT_ENDPOINT = `${ORIGIN}/api/v1/chat/completions`;
+
+    const PROMPT = () =>
+      authedBadge
+        ? "\x1b[38;5;82m●\x1b[0m \x1b[38;5;51maetheris\x1b[0m:\x1b[38;5;213m~\x1b[0m$ "
+        : "\x1b[38;5;240m○\x1b[0m \x1b[38;5;51maetheris\x1b[0m:\x1b[38;5;213m~\x1b[0m$ ";
 
     const writeln = (s: string) => term.writeln(s);
-    const prompt = () => term.write(PROMPT);
+    const prompt = () => term.write(PROMPT());
 
-    writeln("\x1b[38;5;51m⚡ Aetheris Terminal\x1b[0m  v0.1");
+    writeln("\x1b[38;5;51m⚡ Aetheris Terminal\x1b[0m  v0.2");
     writeln(
       "Tape \x1b[38;5;213mhelp\x1b[0m pour la liste des commandes. Commence par \x1b[38;5;213mlogin <ta-clé-api>\x1b[0m.\n",
     );
     prompt();
 
-    async function runRemote(command: string) {
-      busy = true;
+    async function callTerminal(command: string): Promise<{
+      output?: string;
+      authenticated?: boolean;
+    } | null> {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (apiKey) headers["X-API-Key"] = apiKey;
+
       try {
-        const res = await fetch("/api/terminal", {
+        const res = await fetch(ENDPOINT, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-          },
+          headers,
           body: JSON.stringify({ command }),
         });
-        const data = (await res.json()) as { output?: string };
+        const text = await res.text();
+        try {
+          return JSON.parse(text) as { output?: string; authenticated?: boolean };
+        } catch {
+          return { output: text || `(HTTP ${res.status})` };
+        }
+      } catch (e) {
+        writeln(
+          `\x1b[38;5;203m✖ Erreur réseau : ${(e as Error).message}\x1b[0m`,
+        );
+        return null;
+      }
+    }
+
+    async function runRemote(command: string) {
+      busy = true;
+      const data = await callTerminal(command);
+      if (data) {
+        // Met à jour l'indicateur d'auth
+        if (typeof data.authenticated === "boolean") {
+          authedBadge = data.authenticated;
+        }
         if (data.output) {
           data.output.split("\n").forEach((line) => writeln(line));
         }
-      } catch (e) {
-        writeln(`\x1b[38;5;203mErreur réseau : ${(e as Error).message}\x1b[0m`);
-      } finally {
-        busy = false;
-        prompt();
       }
+      busy = false;
+      prompt();
+    }
+
+    function exportKeySnippet() {
+      if (!apiKey) {
+        writeln(
+          "\x1b[38;5;203m✖ Aucune clé chargée. Fais d'abord : login sk-aeth-...\x1b[0m",
+        );
+        return;
+      }
+      const py = [
+        "# 🔑 Snippet Aetheris pour Google Colab / Python",
+        "import requests",
+        "",
+        `AETHERIS_API_KEY = "${apiKey}"`,
+        `AETHERIS_BASE_URL = "${ORIGIN}"`,
+        "",
+        "def chat(prompt, model='google/gemini-2.5-flash'):",
+        `    r = requests.post(`,
+        `        f"{AETHERIS_BASE_URL}/api/v1/chat/completions",`,
+        `        headers={`,
+        `            "Authorization": f"Bearer {AETHERIS_API_KEY}",`,
+        `            "Content-Type": "application/json",`,
+        `        },`,
+        `        json={`,
+        `            "model": model,`,
+        `            "messages": [{"role": "user", "content": prompt}],`,
+        `        },`,
+        `        timeout=60,`,
+        `    )`,
+        `    r.raise_for_status()`,
+        `    return r.json()["choices"][0]["message"]["content"]`,
+        "",
+        "print(chat('Bonjour Aetheris !'))",
+      ];
+      writeln(
+        "\x1b[38;5;82m📋 Copie le snippet ci-dessous dans Google Colab :\x1b[0m\n",
+      );
+      py.forEach((l) => writeln(`\x1b[38;5;250m${l}\x1b[0m`));
+      writeln("");
+      writeln(
+        `\x1b[38;5;245mEndpoint OpenAI-compatible : ${CHAT_ENDPOINT}\x1b[0m`,
+      );
     }
 
     async function execute(cmdLine: string) {
@@ -92,17 +166,37 @@ export function AetherisTerminal() {
         prompt();
         return;
       }
+      if (trimmed === "export-key" || trimmed === "export") {
+        exportKeySnippet();
+        prompt();
+        return;
+      }
       if (trimmed.startsWith("login ")) {
         apiKey = trimmed.slice(6).trim();
         writeln(
-          `\x1b[38;5;82m✅ Clé API enregistrée localement (${apiKey.slice(0, 8)}…)\x1b[0m`,
+          `\x1b[38;5;245m→ Vérification de la clé (${apiKey.slice(0, 12)}…)…\x1b[0m`,
         );
-        await runRemote("whoami");
+        const data = await callTerminal("whoami");
+        if (data?.authenticated) {
+          authedBadge = true;
+          writeln(
+            `\x1b[38;5;82m✅ Clé valide — session authentifiée.\x1b[0m`,
+          );
+          if (data.output) data.output.split("\n").forEach(writeln);
+        } else {
+          authedBadge = false;
+          apiKey = null;
+          writeln(
+            `\x1b[38;5;203m✖ Clé refusée. Vérifie sur /dashboard/api-keys.\x1b[0m`,
+          );
+        }
+        prompt();
         return;
       }
       if (trimmed === "logout") {
         apiKey = null;
-        writeln("👋 Clé oubliée.");
+        authedBadge = false;
+        writeln("\x1b[38;5;245m👋 Clé oubliée.\x1b[0m");
         prompt();
         return;
       }
