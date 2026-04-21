@@ -120,12 +120,15 @@ export function AetherisTerminal() {
       }
       const py = [
         "# 🔑 Snippet Aetheris pour Google Colab / Python",
+        "# Documentation complète : " + ORIGIN + "/docs",
         "import requests",
         "",
         `AETHERIS_API_KEY = "${apiKey}"`,
         `AETHERIS_BASE_URL = "${ORIGIN}"`,
         "",
         "def chat(prompt, model='google/gemini-2.5-flash'):",
+        '    """model peut être : google/gemini-2.5-flash, openai/gpt-5-mini,',
+        "       ou hf/<owner>/<repo> pour n'importe quel modèle HuggingFace.\"\"\"",
         `    r = requests.post(`,
         `        f"{AETHERIS_BASE_URL}/api/v1/chat/completions",`,
         `        headers={`,
@@ -136,12 +139,14 @@ export function AetherisTerminal() {
         `            "model": model,`,
         `            "messages": [{"role": "user", "content": prompt}],`,
         `        },`,
-        `        timeout=60,`,
+        `        timeout=120,`,
         `    )`,
         `    r.raise_for_status()`,
         `    return r.json()["choices"][0]["message"]["content"]`,
         "",
+        "# Exemples :",
         "print(chat('Bonjour Aetheris !'))",
+        "print(chat('Salut', model='hf/mistralai/Mistral-7B-Instruct-v0.3'))",
       ];
       writeln(
         "\x1b[38;5;82m📋 Copie le snippet ci-dessous dans Google Colab :\x1b[0m\n",
@@ -151,6 +156,7 @@ export function AetherisTerminal() {
       writeln(
         `\x1b[38;5;245mEndpoint OpenAI-compatible : ${CHAT_ENDPOINT}\x1b[0m`,
       );
+      writeln(`\x1b[38;5;245mDocumentation : ${ORIGIN}/docs\x1b[0m`);
     }
 
     async function execute(cmdLine: string) {

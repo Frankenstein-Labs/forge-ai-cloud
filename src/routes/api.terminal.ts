@@ -8,6 +8,7 @@ import {
   jsonResponse,
   type AuthedKey,
 } from "@/lib/api-auth";
+import { callHuggingFace, checkHuggingFaceRepo } from "@/lib/hf-gateway";
 
 async function handleCommand(
   command: string,
@@ -22,18 +23,20 @@ async function handleCommand(
     case "help":
       return [
         "Commandes disponibles :",
-        "  help                — affiche cette aide",
-        "  whoami              — infos sur la clé API courante",
-        "  models              — liste les modèles déployés",
-        "  run <model> <prompt>— exécute un modèle via /api/v1/chat/completions",
-        "  upload <name>       — enregistre un modèle (simulation)",
-        "  export-key          — génère un snippet Python pour Colab (local)",
-        "  clear               — efface l'écran (local)",
-        "  logout              — oublie la clé en mémoire (local)",
+        "  help                       — affiche cette aide",
+        "  whoami                     — infos sur la clé API courante",
+        "  models                     — liste tes modèles importés",
+        "  catalog                    — modèles dispo immédiatement",
+        "  run <model> <prompt>       — exécute un modèle (Lovable ou hf/<repo>)",
+        "  import hf <owner/repo>     — importe un modèle HuggingFace",
+        "  upload <name>              — génère une URL d'upload (bucket configs-agents)",
+        "  export-key                 — snippet Python pour Colab (local)",
+        "  clear                      — efface l'écran (local)",
+        "  logout                     — oublie la clé en mémoire (local)",
       ].join("\n");
 
     case "whoami":
-      if (!authed) return "❌ Non authentifié. Utilise: login <ta-clé-api>";
+      if (!authed) return "❌ Non authentifié. Utilise : login <ta-clé-api>";
       return [
         `✅ Authentifié`,
         `  user_id     : ${authed.user_id}`,
@@ -42,40 +45,155 @@ async function handleCommand(
         `  endpoint    : POST /api/v1/chat/completions (compatible OpenAI)`,
       ].join("\n");
 
+    case "catalog":
+      return [
+        "🌐 Modèles Lovable AI (instantanés, pas d'import nécessaire) :",
+        "  • google/gemini-2.5-flash       (rapide, équilibré)",
+        "  • google/gemini-2.5-pro         (raisonnement)",
+        "  • google/gemini-2.5-flash-lite  (économique)",
+        "  • google/gemini-3-flash-preview (next-gen rapide)",
+        "  • openai/gpt-5                  (haut de gamme)",
+        "  • openai/gpt-5-mini             (multimodal)",
+        "",
+        "🤗 Modèles HuggingFace (préfixe hf/) — exécute n'importe quel repo chat :",
+        "  • hf/mistralai/Mistral-7B-Instruct-v0.3",
+        "  • hf/meta-llama/Llama-3.1-8B-Instruct",
+        "  • hf/Qwen/Qwen2.5-7B-Instruct",
+        "  • hf/<ton-fine-tune>",
+        "",
+        "Exemples :",
+        '  run google/gemini-2.5-flash "Explique la relativité"',
+        '  run hf/mistralai/Mistral-7B-Instruct-v0.3 "Bonjour"',
+      ].join("\n");
+
     case "models": {
       if (!authed) return "❌ Non authentifié.";
       const supabase = getServerSupabase();
       const { data, error } = await supabase
-        .from("deployments")
-        .select("deployment_name, status, region")
+        .from("user_models")
+        .select("name, source, source_url, size_bytes, created_at")
         .eq("user_id", authed.user_id)
-        .limit(20);
+        .order("created_at", { ascending: false })
+        .limit(50);
       if (error) return `Erreur DB : ${error.message}`;
       if (!data || data.length === 0)
         return [
-          "Aucun déploiement personnel.",
+          "Aucun modèle personnel importé.",
           "",
-          "Modèles Lovable AI disponibles immédiatement via /api/v1/chat/completions :",
-          "  • google/gemini-2.5-flash      (rapide, équilibré)",
-          "  • google/gemini-2.5-pro        (raisonnement)",
-          "  • google/gemini-2.5-flash-lite (économique)",
-          "  • openai/gpt-5-mini            (multimodal)",
+          "Pour importer : import hf mistralai/Mistral-7B-Instruct-v0.3",
+          "Pour les modèles dispo immédiatement : catalog",
         ].join("\n");
-      return data
-        .map((d) => `  • ${d.deployment_name}  [${d.status}]  (${d.region})`)
-        .join("\n");
+      return [
+        `📦 ${data.length} modèle(s) importé(s) :`,
+        ...data.map((m) => {
+          const size = m.size_bytes
+            ? ` · ${(m.size_bytes / 1e9).toFixed(2)} GB`
+            : "";
+          const src = m.source === "huggingface" ? `hf/${m.name}` : m.name;
+          return `  • ${src}  [${m.source}]${size}`;
+        }),
+      ].join("\n");
+    }
+
+    case "import": {
+      if (!authed) return "❌ Non authentifié.";
+      const sub = args[0];
+      const repo = args[1];
+      if (sub !== "hf" || !repo) {
+        return "Usage : import hf <owner>/<repo>   (ex: import hf mistralai/Mistral-7B-Instruct-v0.3)";
+      }
+      if (!repo.includes("/")) {
+        return "❌ Format invalide. Attendu : <owner>/<repo>";
+      }
+      const check = await checkHuggingFaceRepo(repo);
+      if (!check.exists) {
+        return `❌ Repo introuvable sur HuggingFace : ${check.error ?? "inconnu"}`;
+      }
+      const supabase = getServerSupabase();
+      const { error } = await supabase.from("user_models").insert({
+        user_id: authed.user_id,
+        name: repo,
+        source: "huggingface",
+        source_url: `https://huggingface.co/${repo}`,
+      });
+      if (error) return `❌ Erreur DB : ${error.message}`;
+      return [
+        `✅ Modèle importé : ${repo}`,
+        `   pipeline_tag : ${check.pipeline_tag ?? "n/a"}`,
+        `   utilisable via : run hf/${repo} "<prompt>"`,
+      ].join("\n");
+    }
+
+    case "upload": {
+      if (!authed) return "❌ Non authentifié.";
+      const name = args[0];
+      if (!name) return "Usage : upload <nom-du-fichier.gguf>";
+      const supabase = getServerSupabase();
+      const path = `${authed.user_id}/${Date.now()}-${name}`;
+      const { data, error } = await supabase.storage
+        .from("configs-agents")
+        .createSignedUploadUrl(path);
+      if (error || !data) {
+        return `❌ Erreur upload : ${error?.message ?? "inconnue"}`;
+      }
+      // Enregistre le placeholder dans user_models
+      await supabase.from("user_models").insert({
+        user_id: authed.user_id,
+        name,
+        source: "upload",
+        storage_path: path,
+      });
+      return [
+        `📤 URL d'upload générée (valide ~2h) :`,
+        ``,
+        `  ${data.signedUrl}`,
+        ``,
+        `Dans un terminal local :`,
+        `  curl -X PUT "${data.signedUrl}" \\`,
+        `       -H "Content-Type: application/octet-stream" \\`,
+        `       --data-binary @${name}`,
+        ``,
+        `Le fichier sera stocké dans : configs-agents/${path}`,
+      ].join("\n");
     }
 
     case "run": {
       if (!authed) return "❌ Non authentifié.";
       const model = args[0] || "google/gemini-2.5-flash";
-      const prompt = args.slice(1).join(" ");
-      if (!prompt) return "Usage : run <model> <prompt>";
+      // Reconstruit le prompt en gérant les guillemets simples
+      const promptRaw = args.slice(1).join(" ").trim();
+      const prompt = promptRaw.replace(/^["']|["']$/g, "");
+      if (!prompt) return 'Usage : run <model> "<prompt>"';
 
-      // Appel direct du gateway depuis le terminal (côté serveur)
+      // Routing HuggingFace
+      if (model.startsWith("hf/")) {
+        const repo = model.slice(3);
+        if (!repo.includes("/")) {
+          return "❌ Format attendu : hf/<owner>/<repo>";
+        }
+        const hf = await callHuggingFace(repo, {
+          model: repo,
+          messages: [{ role: "user", content: prompt }],
+        });
+        if (!hf.ok) {
+          if (hf.status === 401) return "❌ HF_TOKEN invalide côté serveur.";
+          if (hf.status === 402) return "💳 Quota HuggingFace dépassé.";
+          if (hf.status === 429) return "⏱️ Rate limit HuggingFace.";
+          if (hf.status === 503)
+            return "⏳ Modèle en cours de chargement sur HF (cold start). Réessaie dans 30s.";
+          return `❌ HF error ${hf.status} : ${hf.message}`;
+        }
+        const content =
+          hf.data.choices?.[0]?.message?.content ?? "(réponse vide)";
+        const usage = hf.data.usage
+          ? `\n\n\x1b[38;5;245m[hf · tokens: in=${hf.data.usage.prompt_tokens ?? 0} · out=${hf.data.usage.completion_tokens ?? 0}]\x1b[0m`
+          : "";
+        return `🤗 [${model}]\n${content}${usage}`;
+      }
+
+      // Routing Lovable AI Gateway
       const apiKey = process.env.LOVABLE_API_KEY;
       if (!apiKey) return "❌ LOVABLE_API_KEY non configurée côté serveur.";
-
       try {
         const r = await fetch(
           "https://ai.gateway.lovable.dev/v1/chat/completions",
@@ -109,15 +227,8 @@ async function handleCommand(
       }
     }
 
-    case "upload": {
-      if (!authed) return "❌ Non authentifié.";
-      const name = args[0];
-      if (!name) return "Usage : upload <nom-du-modèle>";
-      return `📦 Upload simulé pour "${name}". Implémentation réelle via bucket configs-agents.`;
-    }
-
     default:
-      return `❓ Commande inconnue: "${cmd}". Tape "help".`;
+      return `❓ Commande inconnue : "${cmd}". Tape "help".`;
   }
 }
 
