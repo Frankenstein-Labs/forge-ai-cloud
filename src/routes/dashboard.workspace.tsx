@@ -65,27 +65,36 @@ function WorkspacePage() {
       {tab === "terminal" ? (
         <div className="space-y-4">
           <AetherisTerminal />
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             <div className="glass rounded-2xl p-5 flex items-start gap-4 border border-primary/10">
               <Sparkles className="h-5 w-5 text-primary mt-0.5 shrink-0" />
               <div className="text-sm">
                 <p className="font-medium">Premiers pas</p>
                 <p className="text-muted-foreground mt-1">
-                  1) Crée une clé sur <code className="text-primary">Clés API</code>.{" "}
-                  2) <code className="text-primary">login sk-aeth-…</code> →{" "}
-                  <code className="text-primary">whoami</code> →{" "}
-                  <code className="text-primary">run google/gemini-2.5-flash "Bonjour"</code>.
+                  1) <code className="text-primary">login sk-aeth-…</code><br />
+                  2) <code className="text-primary">catalog</code><br />
+                  3) <code className="text-primary">run google/gemini-2.5-flash "Bonjour"</code>
                 </p>
               </div>
             </div>
             <div className="glass rounded-2xl p-5 flex items-start gap-4 border border-secondary/20">
-              <TerminalSquare className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
+              <Sparkles className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
               <div className="text-sm">
-                <p className="font-medium">API publique (OpenAI-compatible)</p>
+                <p className="font-medium">Modèles HuggingFace</p>
                 <p className="text-muted-foreground mt-1">
-                  Endpoint : <code className="text-secondary">POST /api/v1/chat/completions</code>.{" "}
-                  Tape <code className="text-secondary">export-key</code> pour générer un snippet
-                  Python prêt pour Google Colab / Postman.
+                  <code className="text-secondary">import hf mistralai/Mistral-7B-Instruct-v0.3</code><br />
+                  puis <code className="text-secondary">run hf/mistralai/Mistral-7B-Instruct-v0.3 "..."</code>
+                </p>
+              </div>
+            </div>
+            <div className="glass rounded-2xl p-5 flex items-start gap-4 border border-primary/10">
+              <TerminalSquare className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <p className="font-medium">API publique</p>
+                <p className="text-muted-foreground mt-1">
+                  <code className="text-primary">POST /api/v1/chat/completions</code> — compatible OpenAI.{" "}
+                  Tape <code className="text-primary">export-key</code> pour le snippet Python, ou
+                  va sur <a href="/docs" className="text-primary underline">/docs</a>.
                 </p>
               </div>
             </div>
