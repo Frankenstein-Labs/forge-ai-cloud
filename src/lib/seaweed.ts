@@ -64,7 +64,8 @@ function toHex(buf: ArrayBuffer | Uint8Array): string {
 }
 
 async function sha256Hex(input: string | Uint8Array): Promise<string> {
-  const data = typeof input === "string" ? enc.encode(input) : input;
+  const data: BufferSource =
+    typeof input === "string" ? enc.encode(input) : new Uint8Array(input);
   const h = await crypto.subtle.digest("SHA-256", data);
   return toHex(h);
 }
@@ -73,9 +74,11 @@ async function hmac(
   key: ArrayBuffer | Uint8Array,
   data: string,
 ): Promise<ArrayBuffer> {
+  const keyBuf: BufferSource =
+    key instanceof Uint8Array ? new Uint8Array(key) : key;
   const k = await crypto.subtle.importKey(
     "raw",
-    key,
+    keyBuf,
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign"],
