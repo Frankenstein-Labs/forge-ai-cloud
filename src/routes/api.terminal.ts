@@ -9,6 +9,16 @@ import {
   type AuthedKey,
 } from "@/lib/api-auth";
 import { callHuggingFace, checkHuggingFaceRepo } from "@/lib/hf-gateway";
+import {
+  getSeaweedConfig,
+  presignGet,
+  presignPut,
+  s3Delete,
+  s3Head,
+  s3List,
+  userObjectKey,
+  userPrefix,
+} from "@/lib/seaweed";
 
 async function handleCommand(
   command: string,
@@ -29,7 +39,15 @@ async function handleCommand(
         "  catalog                    — modèles dispo immédiatement",
         "  run <model> <prompt>       — exécute un modèle (Lovable ou hf/<repo>)",
         "  import hf <owner/repo>     — importe un modèle HuggingFace",
-        "  upload <name>              — génère une URL d'upload (bucket configs-agents)",
+        "  upload <name>              — URL upload (bucket Supabase configs-agents)",
+        "",
+        "  ── Stockage Seaweed (VPS) ──",
+        "  storage                    — état du stockage Seaweed (endpoint, quota)",
+        "  ls [prefix]                — liste tes objets sur Seaweed",
+        "  push <name>                — URL pré-signée PUT (curl/wget en local)",
+        "  pull <name>                — URL pré-signée GET (1h)",
+        "  rm <name>                  — supprime un objet Seaweed",
+        "",
         "  export-key                 — snippet Python pour Colab (local)",
         "  clear                      — efface l'écran (local)",
         "  logout                     — oublie la clé en mémoire (local)",
@@ -224,6 +242,136 @@ async function handleCommand(
         return `🤖 [${model}]\n${content}${usage}`;
       } catch (e) {
         return `❌ Erreur d'appel : ${(e as Error).message}`;
+      }
+    }
+
+    case "storage": {
+      if (!authed) return "❌ Non authentifié.";
+      const cfg = getSeaweedConfig();
+      if (!cfg)
+        return [
+          "🟠 Seaweed non configuré côté serveur.",
+          "Ajoute SEAWEED_S3_ENDPOINT, SEAWEED_S3_ACCESS_KEY, SEAWEED_S3_SECRET_KEY",
+          "(voir /docs#storage).",
+        ].join("\n");
+      try {
+        const objs = await s3List(cfg, userPrefix(authed.user_id), 1000);
+        const total = objs.reduce((s, o) => s + o.size, 0);
+        return [
+          "🟢 Seaweed connecté",
+          `  endpoint : ${cfg.endpoint}`,
+          `  bucket   : ${cfg.bucket}`,
+          `  prefix   : ${userPrefix(authed.user_id)}`,
+          `  objets   : ${objs.length}`,
+          `  taille   : ${(total / 1e9).toFixed(2)} GB`,
+        ].join("\n");
+      } catch (e) {
+        return `❌ Erreur Seaweed : ${(e as Error).message}`;
+      }
+    }
+
+    case "ls": {
+      if (!authed) return "❌ Non authentifié.";
+      const cfg = getSeaweedConfig();
+      if (!cfg) return "🟠 Seaweed non configuré (tape: storage).";
+      const sub = args[0] ? `${userPrefix(authed.user_id)}${args[0]}` : userPrefix(authed.user_id);
+      try {
+        const objs = await s3List(cfg, sub, 200);
+        if (!objs.length) return "(vide)";
+        return objs
+          .map((o) => {
+            const name = o.key.replace(userPrefix(authed.user_id), "");
+            const size = o.size > 1e9
+              ? `${(o.size / 1e9).toFixed(2)} GB`
+              : o.size > 1e6
+                ? `${(o.size / 1e6).toFixed(1)} MB`
+                : `${o.size} B`;
+            return `  ${name.padEnd(50)} ${size.padStart(10)}  ${o.lastModified}`;
+          })
+          .join("\n");
+      } catch (e) {
+        return `❌ ${(e as Error).message}`;
+      }
+    }
+
+    case "push": {
+      if (!authed) return "❌ Non authentifié.";
+      const name = args[0];
+      if (!name) return 'Usage : push <nom-fichier>   (ex: push mistral-119b.gguf)';
+      const cfg = getSeaweedConfig();
+      if (!cfg) return "🟠 Seaweed non configuré (tape: storage).";
+      try {
+        const key = userObjectKey(authed.user_id, name);
+        const { url, expiresAt } = await presignPut(cfg, key, 7200);
+        const supabase = getServerSupabase();
+        await supabase.from("user_models").insert({
+          user_id: authed.user_id,
+          name,
+          source: "upload",
+          storage_path: key,
+          // Colonnes ajoutées par la migration Seaweed (cast en attendant types regen)
+          ...({ storage_provider: "seaweed", storage_bucket: cfg.bucket } as Record<string, string>),
+        } as never);
+        const expIso = new Date(expiresAt).toISOString();
+        return [
+          `📤 URL d'upload Seaweed (valide jusqu'à ${expIso}) :`,
+          ``,
+          `  ${url}`,
+          ``,
+          `Depuis ta machine locale :`,
+          `  curl -X PUT "${url}" \\`,
+          `       -H "Content-Type: application/octet-stream" \\`,
+          `       --data-binary @${name}`,
+          ``,
+          `Vérifie ensuite avec : ls`,
+        ].join("\n");
+      } catch (e) {
+        return `❌ ${(e as Error).message}`;
+      }
+    }
+
+    case "pull": {
+      if (!authed) return "❌ Non authentifié.";
+      const name = args[0];
+      if (!name) return "Usage : pull <nom-fichier>";
+      const cfg = getSeaweedConfig();
+      if (!cfg) return "🟠 Seaweed non configuré.";
+      try {
+        const key = userObjectKey(authed.user_id, name);
+        const head = await s3Head(cfg, key);
+        if (!head) return `❌ Introuvable : ${name}`;
+        const { url, expiresAt } = await presignGet(cfg, key, 3600);
+        return [
+          `📥 URL de download (valide 1h) :`,
+          ``,
+          `  ${url}`,
+          ``,
+          `Taille : ${(head.size / 1e6).toFixed(2)} MB · ETag : ${head.etag}`,
+          `Expire : ${new Date(expiresAt).toISOString()}`,
+        ].join("\n");
+      } catch (e) {
+        return `❌ ${(e as Error).message}`;
+      }
+    }
+
+    case "rm": {
+      if (!authed) return "❌ Non authentifié.";
+      const name = args[0];
+      if (!name) return "Usage : rm <nom-fichier>";
+      const cfg = getSeaweedConfig();
+      if (!cfg) return "🟠 Seaweed non configuré.";
+      try {
+        const key = userObjectKey(authed.user_id, name);
+        await s3Delete(cfg, key);
+        const supabase = getServerSupabase();
+        await supabase
+          .from("user_models")
+          .delete()
+          .eq("user_id", authed.user_id)
+          .eq("storage_path", key);
+        return `🗑️  Supprimé : ${name}`;
+      } catch (e) {
+        return `❌ ${(e as Error).message}`;
       }
     }
 
