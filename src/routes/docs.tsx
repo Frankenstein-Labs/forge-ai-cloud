@@ -344,10 +344,45 @@ export-key`}
           </div>
         </section>
 
-        <section className="text-center py-12 border-t border-border">
-          <p className="text-muted-foreground text-sm">
-            Une question ? Un modèle qui manque ?
+        <section id="storage" className="space-y-4">
+          <h2 className="text-2xl font-semibold flex items-center gap-2">
+            <Cloud className="h-5 w-5 text-primary" /> Stockage de modèles (SeaweedFS)
+          </h2>
+          <p className="text-muted-foreground">
+            Aetheris stocke tes modèles lourds (GGUF, safetensors, datasets) sur un cluster
+            SeaweedFS exposé en S3. Depuis le terminal :
           </p>
+          <CodeBlock
+            lang="bash"
+            code={`# 1. Récupère une URL d'upload pré-signée (1 commande dans le terminal Aetheris)
+push mistral-119b.gguf
+
+# 2. Upload depuis ta machine locale
+curl -X PUT "<URL_PRESIGNEE>" \\
+     -H "Content-Type: application/octet-stream" \\
+     --data-binary @mistral-119b.gguf
+
+# 3. Vérifie
+ls
+
+# 4. Re-télécharge plus tard (URL valide 1h)
+pull mistral-119b.gguf`}
+          />
+          <p className="text-muted-foreground text-sm">
+            Tu peux aussi télécharger directement via l'API publique :
+          </p>
+          <CodeBlock
+            lang="bash"
+            code={`curl -L -H "Authorization: Bearer sk-aeth-..." \\
+     https://aetheris.lovable.app/api/v1/models/mistral-119b.gguf/download \\
+     -o mistral-119b.gguf`}
+          />
+          <p className="text-xs text-muted-foreground">
+            Les fichiers sont scopés à ton user_id : impossible d'accéder à ceux d'un autre utilisateur.
+          </p>
+        </section>
+
+
           <Link
             to="/dashboard/workspace"
             className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
