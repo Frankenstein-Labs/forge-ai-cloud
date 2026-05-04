@@ -23,6 +23,7 @@ import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-key
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
+import { Route as ApiV1ModelsNameDownloadRouteImport } from './routes/api.v1.models.$name.download'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -94,6 +95,11 @@ const ApiV1ChatCompletionsRoute = ApiV1ChatCompletionsRouteImport.update({
   path: '/api/v1/chat/completions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1ModelsNameDownloadRoute = ApiV1ModelsNameDownloadRouteImport.update({
+  id: '/api/v1/models/$name/download',
+  path: '/api/v1/models/$name/download',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
+  '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
+  '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
+  '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/ai/validate'
     | '/api/v1/chat/completions'
+    | '/api/v1/models/$name/download'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/ai/validate'
     | '/api/v1/chat/completions'
+    | '/api/v1/models/$name/download'
   id:
     | '__root__'
     | '/'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/ai/validate'
     | '/api/v1/chat/completions'
+    | '/api/v1/models/$name/download'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   ApiTerminalRoute: typeof ApiTerminalRoute
   ApiAiValidateRoute: typeof ApiAiValidateRoute
   ApiV1ChatCompletionsRoute: typeof ApiV1ChatCompletionsRoute
+  ApiV1ModelsNameDownloadRoute: typeof ApiV1ModelsNameDownloadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -304,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1ChatCompletionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/models/$name/download': {
+      id: '/api/v1/models/$name/download'
+      path: '/api/v1/models/$name/download'
+      fullPath: '/api/v1/models/$name/download'
+      preLoaderRoute: typeof ApiV1ModelsNameDownloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -338,7 +358,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTerminalRoute: ApiTerminalRoute,
   ApiAiValidateRoute: ApiAiValidateRoute,
   ApiV1ChatCompletionsRoute: ApiV1ChatCompletionsRoute,
+  ApiV1ModelsNameDownloadRoute: ApiV1ModelsNameDownloadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
