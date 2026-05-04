@@ -382,7 +382,10 @@ pull mistral-119b.gguf`}
           </p>
         </section>
 
-
+        <section className="text-center py-12 border-t border-border">
+          <p className="text-muted-foreground text-sm">
+            Une question ? Un modèle qui manque ?
+          </p>
           <Link
             to="/dashboard/workspace"
             className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"
