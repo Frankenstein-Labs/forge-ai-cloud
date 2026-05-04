@@ -9,6 +9,16 @@ import {
   type AuthedKey,
 } from "@/lib/api-auth";
 import { callHuggingFace, checkHuggingFaceRepo } from "@/lib/hf-gateway";
+import {
+  getSeaweedConfig,
+  presignGet,
+  presignPut,
+  s3Delete,
+  s3Head,
+  s3List,
+  userObjectKey,
+  userPrefix,
+} from "@/lib/seaweed";
 
 async function handleCommand(
   command: string,
