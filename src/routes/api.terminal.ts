@@ -308,10 +308,10 @@ async function handleCommand(
           user_id: authed.user_id,
           name,
           source: "upload",
-          storage_provider: "seaweed",
-          storage_bucket: cfg.bucket,
           storage_path: key,
-        });
+          // Colonnes ajoutées par la migration Seaweed (cast en attendant types regen)
+          ...({ storage_provider: "seaweed", storage_bucket: cfg.bucket } as Record<string, string>),
+        } as never);
         const expIso = new Date(expiresAt).toISOString();
         return [
           `📤 URL d'upload Seaweed (valide jusqu'à ${expIso}) :`,
