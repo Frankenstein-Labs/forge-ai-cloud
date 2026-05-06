@@ -99,15 +99,32 @@ async function handleCommand(
 
     case "models": {
       if (!authed) return "❌ Non authentifié.";
-      const supabase = getServerSupabase();
-      const { data, error } = await supabase
-        .from("user_models")
-        .select("name, source, source_url, size_bytes, created_at")
-        .eq("user_id", authed.user_id)
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) return `Erreur DB : ${error.message}`;
-      if (!data || data.length === 0)
+      const mcfg = getMongoConfig();
+      let data: Array<Pick<ModelDoc, "name" | "source" | "size_bytes">> = [];
+      if (mcfg) {
+        try {
+          const docs = await mongo.find<ModelDoc>(
+            mcfg,
+            "models",
+            { user_id: authed.user_id },
+            { limit: 50, sort: { created_at: -1 } },
+          );
+          data = docs;
+        } catch (e) {
+          return `❌ Mongo : ${(e as Error).message}`;
+        }
+      } else {
+        const supabase = getServerSupabase();
+        const r = await supabase
+          .from("user_models")
+          .select("name, source, source_url, size_bytes, created_at")
+          .eq("user_id", authed.user_id)
+          .order("created_at", { ascending: false })
+          .limit(50);
+        if (r.error) return `Erreur DB : ${r.error.message}`;
+        data = (r.data ?? []) as typeof data;
+      }
+      if (!data.length)
         return [
           "Aucun modèle personnel importé.",
           "",
@@ -115,7 +132,7 @@ async function handleCommand(
           "Pour les modèles dispo immédiatement : catalog",
         ].join("\n");
       return [
-        `📦 ${data.length} modèle(s) importé(s) :`,
+        `📦 ${data.length} modèle(s) importé(s)${mcfg ? " [mongo]" : " [supabase]"} :`,
         ...data.map((m) => {
           const size = m.size_bytes
             ? ` · ${(m.size_bytes / 1e9).toFixed(2)} GB`
@@ -140,14 +157,29 @@ async function handleCommand(
       if (!check.exists) {
         return `❌ Repo introuvable sur HuggingFace : ${check.error ?? "inconnu"}`;
       }
-      const supabase = getServerSupabase();
-      const { error } = await supabase.from("user_models").insert({
-        user_id: authed.user_id,
-        name: repo,
-        source: "huggingface",
-        source_url: `https://huggingface.co/${repo}`,
-      });
-      if (error) return `❌ Erreur DB : ${error.message}`;
+      const mcfg = getMongoConfig();
+      if (mcfg) {
+        try {
+          await mongo.insert(mcfg, "models", {
+            user_id: authed.user_id,
+            name: repo,
+            source: "huggingface",
+            source_url: `https://huggingface.co/${repo}`,
+            created_at: new Date().toISOString(),
+          });
+        } catch (e) {
+          return `❌ Mongo : ${(e as Error).message}`;
+        }
+      } else {
+        const supabase = getServerSupabase();
+        const { error } = await supabase.from("user_models").insert({
+          user_id: authed.user_id,
+          name: repo,
+          source: "huggingface",
+          source_url: `https://huggingface.co/${repo}`,
+        });
+        if (error) return `❌ Erreur DB : ${error.message}`;
+      }
       return [
         `✅ Modèle importé : ${repo}`,
         `   pipeline_tag : ${check.pipeline_tag ?? "n/a"}`,
