@@ -19,6 +19,19 @@ import {
   userObjectKey,
   userPrefix,
 } from "@/lib/seaweed";
+import { getMongoConfig, mongo } from "@/lib/mongo-proxy";
+
+type ModelDoc = {
+  user_id: string;
+  name: string;
+  source: "huggingface" | "upload" | "lovable";
+  source_url?: string;
+  storage_path?: string;
+  storage_provider?: string;
+  storage_bucket?: string;
+  size_bytes?: number;
+  created_at: string;
+};
 
 async function handleCommand(
   command: string,
