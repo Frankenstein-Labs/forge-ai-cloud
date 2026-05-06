@@ -420,12 +420,20 @@ async function handleCommand(
       try {
         const key = userObjectKey(authed.user_id, name);
         await s3Delete(cfg, key);
-        const supabase = getServerSupabase();
-        await supabase
-          .from("user_models")
-          .delete()
-          .eq("user_id", authed.user_id)
-          .eq("storage_path", key);
+        const mcfg = getMongoConfig();
+        if (mcfg) {
+          await mongo.delete(mcfg, "models", {
+            user_id: authed.user_id,
+            storage_path: key,
+          });
+        } else {
+          const supabase = getServerSupabase();
+          await supabase
+            .from("user_models")
+            .delete()
+            .eq("user_id", authed.user_id)
+            .eq("storage_path", key);
+        }
         return `🗑️  Supprimé : ${name}`;
       } catch (e) {
         return `❌ ${(e as Error).message}`;
