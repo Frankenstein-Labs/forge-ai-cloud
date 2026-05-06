@@ -39,6 +39,7 @@ const NAV: NavItem[] = [
   { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/api-keys", label: "Clés API", icon: KeyRound },
   { to: "/dashboard/models", label: "Modèles", icon: Boxes },
+  { to: "/dashboard/storage", label: "Stockage", icon: HardDrive },
   { to: "/dashboard/workspace", label: "Workspace", icon: Terminal },
   { to: "/dashboard/billing", label: "Facturation", icon: CreditCard },
   { to: "/dashboard/settings", label: "Paramètres", icon: Settings },
