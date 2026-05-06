@@ -348,15 +348,27 @@ async function handleCommand(
       try {
         const key = userObjectKey(authed.user_id, name);
         const { url, expiresAt } = await presignPut(cfg, key, 7200);
-        const supabase = getServerSupabase();
-        await supabase.from("user_models").insert({
-          user_id: authed.user_id,
-          name,
-          source: "upload",
-          storage_path: key,
-          // Colonnes ajoutées par la migration Seaweed (cast en attendant types regen)
-          ...({ storage_provider: "seaweed", storage_bucket: cfg.bucket } as Record<string, string>),
-        } as never);
+        const mcfg = getMongoConfig();
+        if (mcfg) {
+          await mongo.insert(mcfg, "models", {
+            user_id: authed.user_id,
+            name,
+            source: "upload",
+            storage_path: key,
+            storage_provider: "seaweed",
+            storage_bucket: cfg.bucket,
+            created_at: new Date().toISOString(),
+          });
+        } else {
+          const supabase = getServerSupabase();
+          await supabase.from("user_models").insert({
+            user_id: authed.user_id,
+            name,
+            source: "upload",
+            storage_path: key,
+            ...({ storage_provider: "seaweed", storage_bucket: cfg.bucket } as Record<string, string>),
+          } as never);
+        }
         const expIso = new Date(expiresAt).toISOString();
         return [
           `📤 URL d'upload Seaweed (valide jusqu'à ${expIso}) :`,
