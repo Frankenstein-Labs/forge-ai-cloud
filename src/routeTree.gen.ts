@@ -21,6 +21,7 @@ import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
+import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-status'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
 import { Route as ApiV1ModelsNameDownloadRouteImport } from './routes/api.v1.models.$name.download'
@@ -85,6 +86,11 @@ const ApiTerminalRoute = ApiTerminalRouteImport.update({
   path: '/api/terminal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStorageStatusRoute = ApiStorageStatusRouteImport.update({
+  id: '/api/storage-status',
+  path: '/api/storage-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiValidateRoute = ApiAiValidateRouteImport.update({
   id: '/api/ai/validate',
   path: '/api/ai/validate',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/storage-status'
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/reset-password'
+    | '/api/storage-status'
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/storage-status'
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   DocsRoute: typeof DocsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiStorageStatusRoute: typeof ApiStorageStatusRoute
   ApiTerminalRoute: typeof ApiTerminalRoute
   ApiAiValidateRoute: typeof ApiAiValidateRoute
   ApiV1ChatCompletionsRoute: typeof ApiV1ChatCompletionsRoute
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTerminalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/storage-status': {
+      id: '/api/storage-status'
+      path: '/api/storage-status'
+      fullPath: '/api/storage-status'
+      preLoaderRoute: typeof ApiStorageStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/validate': {
       id: '/api/ai/validate'
       path: '/api/ai/validate'
@@ -355,6 +375,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   DocsRoute: DocsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiStorageStatusRoute: ApiStorageStatusRoute,
   ApiTerminalRoute: ApiTerminalRoute,
   ApiAiValidateRoute: ApiAiValidateRoute,
   ApiV1ChatCompletionsRoute: ApiV1ChatCompletionsRoute,
@@ -363,3 +384,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
