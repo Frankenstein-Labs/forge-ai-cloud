@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardWorkspaceRouteImport } from './routes/dashboard.workspace'
+import { Route as DashboardStorageRouteImport } from './routes/dashboard.storage'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
@@ -59,6 +60,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const DashboardWorkspaceRoute = DashboardWorkspaceRouteImport.update({
   id: '/workspace',
   path: '/workspace',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardStorageRoute = DashboardStorageRouteImport.update({
+  id: '/storage',
+  path: '/storage',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/models'
     | '/dashboard/settings'
+    | '/dashboard/storage'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/models'
     | '/dashboard/settings'
+    | '/dashboard/storage'
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/models'
     | '/dashboard/settings'
+    | '/dashboard/storage'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -279,6 +291,13 @@ declare module '@tanstack/react-router' {
       path: '/workspace'
       fullPath: '/dashboard/workspace'
       preLoaderRoute: typeof DashboardWorkspaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/storage': {
+      id: '/dashboard/storage'
+      path: '/storage'
+      fullPath: '/dashboard/storage'
+      preLoaderRoute: typeof DashboardStorageRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/settings': {
@@ -352,6 +371,7 @@ interface DashboardRouteChildren {
   DashboardBillingRoute: typeof DashboardBillingRoute
   DashboardModelsRoute: typeof DashboardModelsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardStorageRoute: typeof DashboardStorageRoute
   DashboardWorkspaceRoute: typeof DashboardWorkspaceRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -361,6 +381,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBillingRoute: DashboardBillingRoute,
   DashboardModelsRoute: DashboardModelsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardStorageRoute: DashboardStorageRoute,
   DashboardWorkspaceRoute: DashboardWorkspaceRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
