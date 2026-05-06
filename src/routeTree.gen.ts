@@ -16,11 +16,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardWorkspaceRouteImport } from './routes/dashboard.workspace'
+import { Route as DashboardStorageRouteImport } from './routes/dashboard.storage'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
+import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-status'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
 import { Route as ApiV1ModelsNameDownloadRouteImport } from './routes/api.v1.models.$name.download'
@@ -60,6 +62,11 @@ const DashboardWorkspaceRoute = DashboardWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardStorageRoute = DashboardStorageRouteImport.update({
+  id: '/storage',
+  path: '/storage',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -85,6 +92,11 @@ const ApiTerminalRoute = ApiTerminalRouteImport.update({
   path: '/api/terminal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStorageStatusRoute = ApiStorageStatusRouteImport.update({
+  id: '/api/storage-status',
+  path: '/api/storage-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiValidateRoute = ApiAiValidateRouteImport.update({
   id: '/api/ai/validate',
   path: '/api/ai/validate',
@@ -107,11 +119,13 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -123,11 +137,13 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -141,11 +157,13 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -160,11 +178,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/storage-status'
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/models'
     | '/dashboard/settings'
+    | '/dashboard/storage'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -176,11 +196,13 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/reset-password'
+    | '/api/storage-status'
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/models'
     | '/dashboard/settings'
+    | '/dashboard/storage'
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
@@ -193,11 +215,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/storage-status'
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
     | '/dashboard/models'
     | '/dashboard/settings'
+    | '/dashboard/storage'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -211,6 +235,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   DocsRoute: typeof DocsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiStorageStatusRoute: typeof ApiStorageStatusRoute
   ApiTerminalRoute: typeof ApiTerminalRoute
   ApiAiValidateRoute: typeof ApiAiValidateRoute
   ApiV1ChatCompletionsRoute: typeof ApiV1ChatCompletionsRoute
@@ -268,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardWorkspaceRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/storage': {
+      id: '/dashboard/storage'
+      path: '/storage'
+      fullPath: '/dashboard/storage'
+      preLoaderRoute: typeof DashboardStorageRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/settings': {
       id: '/dashboard/settings'
       path: '/settings'
@@ -303,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTerminalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/storage-status': {
+      id: '/api/storage-status'
+      path: '/api/storage-status'
+      fullPath: '/api/storage-status'
+      preLoaderRoute: typeof ApiStorageStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/validate': {
       id: '/api/ai/validate'
       path: '/api/ai/validate'
@@ -332,6 +371,7 @@ interface DashboardRouteChildren {
   DashboardBillingRoute: typeof DashboardBillingRoute
   DashboardModelsRoute: typeof DashboardModelsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardStorageRoute: typeof DashboardStorageRoute
   DashboardWorkspaceRoute: typeof DashboardWorkspaceRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -341,6 +381,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBillingRoute: DashboardBillingRoute,
   DashboardModelsRoute: DashboardModelsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardStorageRoute: DashboardStorageRoute,
   DashboardWorkspaceRoute: DashboardWorkspaceRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -355,6 +396,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   DocsRoute: DocsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiStorageStatusRoute: ApiStorageStatusRoute,
   ApiTerminalRoute: ApiTerminalRoute,
   ApiAiValidateRoute: ApiAiValidateRoute,
   ApiV1ChatCompletionsRoute: ApiV1ChatCompletionsRoute,
