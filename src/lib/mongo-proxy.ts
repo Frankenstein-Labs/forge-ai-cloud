@@ -2,13 +2,44 @@
 // Endpoints attendus : POST /find, /insert, /update, /delete
 // Auth : header x-proxy-token
 
+import { getServerSupabase } from "@/lib/api-auth";
+
 export type MongoConfig = { url: string; token: string };
 
-export function getMongoConfig(): MongoConfig | null {
+export function getMongoConfigFromEnv(): MongoConfig | null {
   const url = process.env.MONGO_PROXY_URL;
   const token = process.env.MONGO_PROXY_TOKEN;
   if (!url || !token) return null;
   return { url: url.replace(/\/$/, ""), token };
+}
+
+/**
+ * Charge la config Mongo de l'utilisateur (table user_mongo_config),
+ * puis fallback sur les variables d'environnement.
+ */
+export async function getMongoConfigForUser(
+  userId: string,
+): Promise<MongoConfig | null> {
+  try {
+    const supabase = getServerSupabase();
+    const { data } = await supabase
+      .from("user_mongo_config" as never)
+      .select("url, token")
+      .eq("user_id", userId)
+      .maybeSingle();
+    const row = data as { url?: string; token?: string } | null;
+    if (row?.url && row?.token) {
+      return { url: row.url.replace(/\/$/, ""), token: row.token };
+    }
+  } catch {
+    // ignore — fallback env
+  }
+  return getMongoConfigFromEnv();
+}
+
+// Compat : version synchrone basée env (utilisée hors contexte user)
+export function getMongoConfig(): MongoConfig | null {
+  return getMongoConfigFromEnv();
 }
 
 async function call<T>(

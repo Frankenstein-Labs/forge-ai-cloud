@@ -24,6 +24,7 @@ import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-key
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
 import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-status'
 import { Route as ApiMongoTestRouteImport } from './routes/api.mongo-test'
+import { Route as ApiMongoConfigRouteImport } from './routes/api.mongo-config'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
 import { Route as ApiV1ModelsNameDownloadRouteImport } from './routes/api.v1.models.$name.download'
@@ -103,6 +104,11 @@ const ApiMongoTestRoute = ApiMongoTestRouteImport.update({
   path: '/api/mongo-test',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMongoConfigRoute = ApiMongoConfigRouteImport.update({
+  id: '/api/mongo-config',
+  path: '/api/mongo-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiValidateRoute = ApiAiValidateRouteImport.update({
   id: '/api/ai/validate',
   path: '/api/ai/validate',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
   '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
   '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
   '/api/storage-status': typeof ApiStorageStatusRoute
   '/api/terminal': typeof ApiTerminalRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/mongo-config'
     | '/api/mongo-test'
     | '/api/storage-status'
     | '/api/terminal'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/reset-password'
+    | '/api/mongo-config'
     | '/api/mongo-test'
     | '/api/storage-status'
     | '/api/terminal'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/mongo-config'
     | '/api/mongo-test'
     | '/api/storage-status'
     | '/api/terminal'
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   DocsRoute: typeof DocsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiMongoConfigRoute: typeof ApiMongoConfigRoute
   ApiMongoTestRoute: typeof ApiMongoTestRoute
   ApiStorageStatusRoute: typeof ApiStorageStatusRoute
   ApiTerminalRoute: typeof ApiTerminalRoute
@@ -362,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMongoTestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mongo-config': {
+      id: '/api/mongo-config'
+      path: '/api/mongo-config'
+      fullPath: '/api/mongo-config'
+      preLoaderRoute: typeof ApiMongoConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/validate': {
       id: '/api/ai/validate'
       path: '/api/ai/validate'
@@ -416,6 +436,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   DocsRoute: DocsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiMongoConfigRoute: ApiMongoConfigRoute,
   ApiMongoTestRoute: ApiMongoTestRoute,
   ApiStorageStatusRoute: ApiStorageStatusRoute,
   ApiTerminalRoute: ApiTerminalRoute,
@@ -426,3 +447,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
