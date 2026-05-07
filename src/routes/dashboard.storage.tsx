@@ -12,6 +12,9 @@ import {
   Gauge,
   KeyRound,
   RefreshCw,
+  PlugZap,
+  Loader2,
+  AlertTriangle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
