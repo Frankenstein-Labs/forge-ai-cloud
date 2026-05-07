@@ -19,7 +19,7 @@ import {
   userObjectKey,
   userPrefix,
 } from "@/lib/seaweed";
-import { getMongoConfig, mongo } from "@/lib/mongo-proxy";
+import { getMongoConfigForUser, mongo } from "@/lib/mongo-proxy";
 
 type ModelDoc = {
   user_id: string;
@@ -99,7 +99,7 @@ async function handleCommand(
 
     case "models": {
       if (!authed) return "❌ Non authentifié.";
-      const mcfg = getMongoConfig();
+      const mcfg = await getMongoConfigForUser(authed.user_id);
       let data: Array<Pick<ModelDoc, "name" | "source" | "size_bytes">> = [];
       if (mcfg) {
         try {
@@ -157,7 +157,7 @@ async function handleCommand(
       if (!check.exists) {
         return `❌ Repo introuvable sur HuggingFace : ${check.error ?? "inconnu"}`;
       }
-      const mcfg = getMongoConfig();
+      const mcfg = await getMongoConfigForUser(authed.user_id);
       if (mcfg) {
         try {
           await mongo.insert(mcfg, "models", {
@@ -348,7 +348,7 @@ async function handleCommand(
       try {
         const key = userObjectKey(authed.user_id, name);
         const { url, expiresAt } = await presignPut(cfg, key, 7200);
-        const mcfg = getMongoConfig();
+        const mcfg = await getMongoConfigForUser(authed.user_id);
         if (mcfg) {
           await mongo.insert(mcfg, "models", {
             user_id: authed.user_id,
@@ -420,7 +420,7 @@ async function handleCommand(
       try {
         const key = userObjectKey(authed.user_id, name);
         await s3Delete(cfg, key);
-        const mcfg = getMongoConfig();
+        const mcfg = await getMongoConfigForUser(authed.user_id);
         if (mcfg) {
           await mongo.delete(mcfg, "models", {
             user_id: authed.user_id,
