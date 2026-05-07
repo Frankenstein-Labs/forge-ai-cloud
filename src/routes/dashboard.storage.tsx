@@ -81,6 +81,8 @@ function StoragePage() {
   const [mongoUrl, setMongoUrl] = useState<string>("");
   const [mongoToken, setMongoToken] = useState<string>("");
   const [mongoTesting, setMongoTesting] = useState(false);
+  const [mongoSaving, setMongoSaving] = useState(false);
+  const [mongoSaved, setMongoSaved] = useState<string | null>(null);
   const [mongoResult, setMongoResult] = useState<MongoTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,6 +99,38 @@ function StoragePage() {
     setMongoUrl(localStorage.getItem("aetheris.mongo.url") ?? "");
     setMongoToken(localStorage.getItem("aetheris.mongo.token") ?? "");
   }, []);
+
+  const saveMongo = async () => {
+    if (!apiKey) {
+      setMongoResult({ ok: false, stage: "client", error: "Clé API requise au-dessus." });
+      return;
+    }
+    setMongoSaving(true);
+    setMongoSaved(null);
+    try {
+      const r = await fetch("/api/mongo-config", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ url: mongoUrl, token: mongoToken }),
+      });
+      const j = (await r.json()) as { ok?: boolean; error?: string; message?: string };
+      if (!r.ok || !j.ok) {
+        setMongoResult({ ok: false, stage: "save", error: j.error ?? `HTTP ${r.status}` });
+      } else {
+        setMongoSaved(j.message ?? "Config enregistrée ✅");
+        localStorage.setItem("aetheris.mongo.url", mongoUrl);
+        localStorage.setItem("aetheris.mongo.token", mongoToken);
+        fetchStatus(apiKey);
+      }
+    } catch (e) {
+      setMongoResult({ ok: false, stage: "save", error: (e as Error).message });
+    } finally {
+      setMongoSaving(false);
+    }
+  };
 
   const testMongo = async () => {
     if (!apiKey) {
