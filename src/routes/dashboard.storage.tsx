@@ -94,7 +94,38 @@ function StoragePage() {
       const cached = localStorage.getItem("aetheris.apikey");
       if (cached) setApiKey(cached);
     })();
+    setMongoUrl(localStorage.getItem("aetheris.mongo.url") ?? "");
+    setMongoToken(localStorage.getItem("aetheris.mongo.token") ?? "");
   }, []);
+
+  const testMongo = async () => {
+    if (!apiKey) {
+      setMongoResult({ ok: false, stage: "client", error: "Clé API requise au-dessus." });
+      return;
+    }
+    setMongoTesting(true);
+    setMongoResult(null);
+    try {
+      const r = await fetch("/api/mongo-test", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ url: mongoUrl, token: mongoToken }),
+      });
+      const j = (await r.json()) as MongoTestResult;
+      setMongoResult(j);
+      if (j.ok) {
+        localStorage.setItem("aetheris.mongo.url", mongoUrl);
+        localStorage.setItem("aetheris.mongo.token", mongoToken);
+      }
+    } catch (e) {
+      setMongoResult({ ok: false, stage: "client", error: (e as Error).message });
+    } finally {
+      setMongoTesting(false);
+    }
+  };
 
   const fetchStatus = async (key: string) => {
     if (!key) return;
