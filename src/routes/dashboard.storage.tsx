@@ -554,3 +554,48 @@ function IntegrationCard({
     </div>
   );
 }
+
+function MongoResultPanel({ r }: { r: MongoTestResult }) {
+  const tone = r.ok
+    ? "border-primary/40 bg-primary/5"
+    : "border-destructive/40 bg-destructive/5";
+  return (
+    <div className={`rounded-2xl border p-4 flex flex-col gap-2 ${tone}`}>
+      <div className="flex items-center gap-2 text-sm font-medium">
+        {r.ok ? (
+          <CheckCircle2 className="h-4 w-4 text-primary" />
+        ) : (
+          <AlertTriangle className="h-4 w-4 text-destructive" />
+        )}
+        {r.ok ? "Connexion réussie" : "Échec de la connexion"}
+        <span className="ml-auto text-[10px] font-mono text-muted-foreground">
+          stage: {r.stage}
+          {r.elapsed_ms !== undefined && ` · ${r.elapsed_ms}ms`}
+          {r.status !== undefined && ` · HTTP ${r.status}`}
+        </span>
+      </div>
+      {r.message && <p className="text-sm">{r.message}</p>}
+      {r.error && (
+        <p className="text-sm text-destructive font-mono break-all">{r.error}</p>
+      )}
+      {r.hint && (
+        <p className="text-xs text-muted-foreground italic">💡 {r.hint}</p>
+      )}
+      {r.target && (
+        <p className="text-[11px] font-mono text-muted-foreground break-all">
+          → {r.target}
+        </p>
+      )}
+      {r.body && (
+        <pre className="text-[11px] font-mono bg-background/50 border border-white/5 rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
+{r.body}
+        </pre>
+      )}
+      {r.ok && r.response !== undefined && (
+        <pre className="text-[11px] font-mono bg-background/50 border border-white/5 rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
+{JSON.stringify(r.response, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+}
