@@ -10,7 +10,7 @@ import {
   s3List,
   userPrefix,
 } from "@/lib/seaweed";
-import { getMongoConfig, mongo } from "@/lib/mongo-proxy";
+import { getMongoConfigForUser, mongo } from "@/lib/mongo-proxy";
 
 const ONE_GB = 1_000_000_000;
 
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/api/storage-status")({
         if (!authed) return jsonResponse({ error: "Unauthorized" }, 401);
 
         const seaweed = getSeaweedConfig();
-        const mongoCfg = getMongoConfig();
+        const mongoCfg = await getMongoConfigForUser(authed.user_id);
         const hasHF = !!process.env.HF_TOKEN;
         const hasLovable = !!process.env.LOVABLE_API_KEY;
 

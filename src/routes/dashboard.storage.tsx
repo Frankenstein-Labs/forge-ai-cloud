@@ -81,6 +81,8 @@ function StoragePage() {
   const [mongoUrl, setMongoUrl] = useState<string>("");
   const [mongoToken, setMongoToken] = useState<string>("");
   const [mongoTesting, setMongoTesting] = useState(false);
+  const [mongoSaving, setMongoSaving] = useState(false);
+  const [mongoSaved, setMongoSaved] = useState<string | null>(null);
   const [mongoResult, setMongoResult] = useState<MongoTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,6 +99,38 @@ function StoragePage() {
     setMongoUrl(localStorage.getItem("aetheris.mongo.url") ?? "");
     setMongoToken(localStorage.getItem("aetheris.mongo.token") ?? "");
   }, []);
+
+  const saveMongo = async () => {
+    if (!apiKey) {
+      setMongoResult({ ok: false, stage: "client", error: "Clé API requise au-dessus." });
+      return;
+    }
+    setMongoSaving(true);
+    setMongoSaved(null);
+    try {
+      const r = await fetch("/api/mongo-config", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ url: mongoUrl, token: mongoToken }),
+      });
+      const j = (await r.json()) as { ok?: boolean; error?: string; message?: string };
+      if (!r.ok || !j.ok) {
+        setMongoResult({ ok: false, stage: "save", error: j.error ?? `HTTP ${r.status}` });
+      } else {
+        setMongoSaved(j.message ?? "Config enregistrée ✅");
+        localStorage.setItem("aetheris.mongo.url", mongoUrl);
+        localStorage.setItem("aetheris.mongo.token", mongoToken);
+        fetchStatus(apiKey);
+      }
+    } catch (e) {
+      setMongoResult({ ok: false, stage: "save", error: (e as Error).message });
+    } finally {
+      setMongoSaving(false);
+    }
+  };
 
   const testMongo = async () => {
     if (!apiKey) {
@@ -271,18 +305,32 @@ function StoragePage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={testMongo}
-            disabled={mongoTesting || !mongoUrl || !mongoToken}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
-          >
-            {mongoTesting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <PlugZap className="h-4 w-4" />
-            )}
-            Tester l'accès
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={testMongo}
+              disabled={mongoTesting || !mongoUrl || !mongoToken}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-medium transition disabled:opacity-50"
+            >
+              {mongoTesting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <PlugZap className="h-4 w-4" />
+              )}
+              Tester
+            </button>
+            <button
+              onClick={saveMongo}
+              disabled={mongoSaving || !mongoUrl || !mongoToken || !apiKey}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+            >
+              {mongoSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" />
+              )}
+              Enregistrer
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -313,10 +361,17 @@ function StoragePage() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          ℹ Ce test envoie un <code className="font-mono">POST /find</code> avec ton token. Si le test passe,
-          ajoute ces deux valeurs comme <span className="text-primary">secrets backend</span> pour les
-          activer côté serveur en permanence.
+          ℹ <strong>Tester</strong> ping le proxy. <strong>Enregistrer</strong> stocke l'URL et le token
+          pour ton compte : ils seront utilisés automatiquement dans <code className="font-mono">models</code>,
+          <code className="font-mono"> import</code>, <code className="font-mono">push</code>, <code className="font-mono">rm</code>
+          (au lieu du fallback Supabase).
         </p>
+
+        {mongoSaved && (
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm px-4 py-2.5 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4" /> {mongoSaved}
+          </div>
+        )}
 
         {mongoResult && <MongoResultPanel r={mongoResult} />}
       </section>
