@@ -60,10 +60,28 @@ function fmtBytes(n: number) {
   return `${n} B`;
 }
 
+type MongoTestResult = {
+  ok: boolean;
+  stage: string;
+  target?: string;
+  status?: number;
+  statusText?: string;
+  body?: string;
+  elapsed_ms?: number;
+  error?: string;
+  hint?: string;
+  message?: string;
+  response?: unknown;
+};
+
 function StoragePage() {
   const [apiKey, setApiKey] = useState<string>("");
   const [status, setStatus] = useState<Status | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mongoUrl, setMongoUrl] = useState<string>("");
+  const [mongoToken, setMongoToken] = useState<string>("");
+  const [mongoTesting, setMongoTesting] = useState(false);
+  const [mongoResult, setMongoResult] = useState<MongoTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Récupère la dernière clé API non révoquée
