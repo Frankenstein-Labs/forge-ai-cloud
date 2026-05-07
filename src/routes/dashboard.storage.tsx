@@ -255,7 +255,73 @@ function StoragePage() {
         />
       </section>
 
-      {/* Intégrations / clés API */}
+      {/* Configuration MongoDB Proxy */}
+      <section className="glass rounded-3xl p-6 lg:p-8 flex flex-col gap-5">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+              <PlugZap className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-display text-xl font-semibold">
+                Connecter ton proxy MongoDB
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Renseigne l'URL publique et le token <code className="font-mono">PROXY_TOKEN</code> du VPS.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={testMongo}
+            disabled={mongoTesting || !mongoUrl || !mongoToken}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+          >
+            {mongoTesting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <PlugZap className="h-4 w-4" />
+            )}
+            Tester l'accès
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+              MONGO_PROXY_URL
+            </span>
+            <input
+              type="url"
+              value={mongoUrl}
+              onChange={(e) => setMongoUrl(e.target.value)}
+              placeholder="https://mongo.tondomaine.com"
+              className="bg-background/50 border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm focus:outline-none focus:border-primary/50"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+              MONGO_PROXY_TOKEN
+            </span>
+            <input
+              type="password"
+              value={mongoToken}
+              onChange={(e) => setMongoToken(e.target.value)}
+              placeholder="64 caractères hex"
+              className="bg-background/50 border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm focus:outline-none focus:border-primary/50"
+            />
+          </label>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          ℹ Ce test envoie un <code className="font-mono">POST /find</code> avec ton token. Si le test passe,
+          ajoute ces deux valeurs comme <span className="text-primary">secrets backend</span> pour les
+          activer côté serveur en permanence.
+        </p>
+
+        {mongoResult && <MongoResultPanel r={mongoResult} />}
+      </section>
+
+
       <section>
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="font-display text-2xl font-semibold tracking-tight">
