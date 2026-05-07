@@ -305,18 +305,32 @@ function StoragePage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={testMongo}
-            disabled={mongoTesting || !mongoUrl || !mongoToken}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
-          >
-            {mongoTesting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <PlugZap className="h-4 w-4" />
-            )}
-            Tester l'accès
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={testMongo}
+              disabled={mongoTesting || !mongoUrl || !mongoToken}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-medium transition disabled:opacity-50"
+            >
+              {mongoTesting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <PlugZap className="h-4 w-4" />
+              )}
+              Tester
+            </button>
+            <button
+              onClick={saveMongo}
+              disabled={mongoSaving || !mongoUrl || !mongoToken || !apiKey}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+            >
+              {mongoSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" />
+              )}
+              Enregistrer
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -347,10 +361,17 @@ function StoragePage() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          ℹ Ce test envoie un <code className="font-mono">POST /find</code> avec ton token. Si le test passe,
-          ajoute ces deux valeurs comme <span className="text-primary">secrets backend</span> pour les
-          activer côté serveur en permanence.
+          ℹ <strong>Tester</strong> ping le proxy. <strong>Enregistrer</strong> stocke l'URL et le token
+          pour ton compte : ils seront utilisés automatiquement dans <code className="font-mono">models</code>,
+          <code className="font-mono"> import</code>, <code className="font-mono">push</code>, <code className="font-mono">rm</code>
+          (au lieu du fallback Supabase).
         </p>
+
+        {mongoSaved && (
+          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm px-4 py-2.5 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4" /> {mongoSaved}
+          </div>
+        )}
 
         {mongoResult && <MongoResultPanel r={mongoResult} />}
       </section>
