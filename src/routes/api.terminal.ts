@@ -33,10 +33,7 @@ type ModelDoc = {
   created_at: string;
 };
 
-async function handleCommand(
-  command: string,
-  authed: AuthedKey | null,
-): Promise<string> {
+async function handleCommand(command: string, authed: AuthedKey | null): Promise<string> {
   const trimmed = command.trim();
   if (!trimmed) return "";
 
@@ -134,9 +131,7 @@ async function handleCommand(
       return [
         `📦 ${data.length} modèle(s) importé(s)${mcfg ? " [mongo]" : " [supabase]"} :`,
         ...data.map((m) => {
-          const size = m.size_bytes
-            ? ` · ${(m.size_bytes / 1e9).toFixed(2)} GB`
-            : "";
+          const size = m.size_bytes ? ` · ${(m.size_bytes / 1e9).toFixed(2)} GB` : "";
           const src = m.source === "huggingface" ? `hf/${m.name}` : m.name;
           return `  • ${src}  [${m.source}]${size}`;
         }),
@@ -246,8 +241,7 @@ async function handleCommand(
             return "⏳ Modèle en cours de chargement sur HF (cold start). Réessaie dans 30s.";
           return `❌ HF error ${hf.status} : ${hf.message}`;
         }
-        const content =
-          hf.data.choices?.[0]?.message?.content ?? "(réponse vide)";
+        const content = hf.data.choices?.[0]?.message?.content ?? "(réponse vide)";
         const usage = hf.data.usage
           ? `\n\n\x1b[38;5;245m[hf · tokens: in=${hf.data.usage.prompt_tokens ?? 0} · out=${hf.data.usage.completion_tokens ?? 0}]\x1b[0m`
           : "";
@@ -258,23 +252,19 @@ async function handleCommand(
       const apiKey = process.env.LOVABLE_API_KEY;
       if (!apiKey) return "❌ LOVABLE_API_KEY non configurée côté serveur.";
       try {
-        const r = await fetch(
-          "https://ai.gateway.lovable.dev/v1/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model,
-              messages: [{ role: "user", content: prompt }],
-            }),
+        const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            model,
+            messages: [{ role: "user", content: prompt }],
+          }),
+        });
         if (r.status === 429) return "⏱️ Rate limit dépassé. Réessaie plus tard.";
-        if (r.status === 402)
-          return "💳 Crédits Lovable AI épuisés. Recharge le workspace.";
+        if (r.status === 402) return "💳 Crédits Lovable AI épuisés. Recharge le workspace.";
         if (!r.ok) return `❌ Gateway error ${r.status}: ${await r.text()}`;
         const j = (await r.json()) as {
           choices?: Array<{ message?: { content?: string } }>;
@@ -326,11 +316,12 @@ async function handleCommand(
         return objs
           .map((o) => {
             const name = o.key.replace(userPrefix(authed.user_id), "");
-            const size = o.size > 1e9
-              ? `${(o.size / 1e9).toFixed(2)} GB`
-              : o.size > 1e6
-                ? `${(o.size / 1e6).toFixed(1)} MB`
-                : `${o.size} B`;
+            const size =
+              o.size > 1e9
+                ? `${(o.size / 1e9).toFixed(2)} GB`
+                : o.size > 1e6
+                  ? `${(o.size / 1e6).toFixed(1)} MB`
+                  : `${o.size} B`;
             return `  ${name.padEnd(50)} ${size.padStart(10)}  ${o.lastModified}`;
           })
           .join("\n");
@@ -342,7 +333,7 @@ async function handleCommand(
     case "push": {
       if (!authed) return "❌ Non authentifié.";
       const name = args[0];
-      if (!name) return 'Usage : push <nom-fichier>   (ex: push mistral-119b.gguf)';
+      if (!name) return "Usage : push <nom-fichier>   (ex: push mistral-119b.gguf)";
       const cfg = getSeaweedConfig();
       if (!cfg) return "🟠 Seaweed non configuré (tape: storage).";
       try {
@@ -366,7 +357,10 @@ async function handleCommand(
             name,
             source: "upload",
             storage_path: key,
-            ...({ storage_provider: "seaweed", storage_bucket: cfg.bucket } as Record<string, string>),
+            ...({ storage_provider: "seaweed", storage_bucket: cfg.bucket } as Record<
+              string,
+              string
+            >),
           } as never);
         }
         const expIso = new Date(expiresAt).toISOString();
@@ -448,8 +442,7 @@ async function handleCommand(
 export const Route = createFileRoute("/api/terminal")({
   server: {
     handlers: {
-      OPTIONS: async () =>
-        new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       POST: async ({ request }) => {
         let body: { command?: string };
@@ -469,10 +462,7 @@ export const Route = createFileRoute("/api/terminal")({
           const output = await handleCommand(command, authed);
           return jsonResponse({ output, authenticated: !!authed });
         } catch (e) {
-          return jsonResponse(
-            { output: `Erreur serveur : ${(e as Error).message}` },
-            500,
-          );
+          return jsonResponse({ output: `Erreur serveur : ${(e as Error).message}` }, 500);
         }
       },
     },

@@ -43,12 +43,12 @@ export function Features() {
             La plateforme
           </span>
           <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight">
-            Tout ce qu'il faut pour <span className="text-gradient">construire</span>,
-            rien de superflu.
+            Tout ce qu'il faut pour <span className="text-gradient">construire</span>, rien de
+            superflu.
           </h2>
           <p className="mt-5 text-lg text-muted-foreground">
-            Aetheris regroupe ton hub de modèles, ton IDE et ta facturation IA dans un
-            seul environnement cohérent — pensé par des devs, pour des devs.
+            Aetheris regroupe ton hub de modèles, ton IDE et ta facturation IA dans un seul
+            environnement cohérent — pensé par des devs, pour des devs.
           </p>
         </div>
 

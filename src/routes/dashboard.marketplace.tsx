@@ -47,12 +47,60 @@ type Item = {
 };
 
 const ITEMS: Item[] = [
-  { name: "Mistral-119B-Aetheris", author: "@patron", desc: "LLM massif fine-tuné, contexte 128k.", category: "LLM", size: "238 Go", price: "Gratuit", stars: 412 },
-  { name: "Llama-3.1-8B-Instruct", author: "@meta", desc: "Modèle instruct léger et rapide.", category: "LLM", size: "16 Go", price: "Gratuit", stars: 1280 },
-  { name: "Whisper-Large-v3", author: "@openai", desc: "Transcription audio multilingue.", category: "Audio", size: "3.1 Go", price: "Gratuit", stars: 890 },
-  { name: "SDXL-Turbo-Aeth", author: "@studio", desc: "Génération d'images temps réel.", category: "Vision", size: "6.9 Go", price: "19 €", stars: 305 },
-  { name: "Embed-Multilingual-v2", author: "@aetheris", desc: "Embeddings 1024d pour RAG.", category: "Outil", size: "1.2 Go", price: "Gratuit", stars: 233 },
-  { name: "CodeReviewer-7B", author: "@devlab", desc: "Revue de code automatisée.", category: "LLM", size: "14 Go", price: "9 €", stars: 176 },
+  {
+    name: "Mistral-119B-Aetheris",
+    author: "@patron",
+    desc: "LLM massif fine-tuné, contexte 128k.",
+    category: "LLM",
+    size: "238 Go",
+    price: "Gratuit",
+    stars: 412,
+  },
+  {
+    name: "Llama-3.1-8B-Instruct",
+    author: "@meta",
+    desc: "Modèle instruct léger et rapide.",
+    category: "LLM",
+    size: "16 Go",
+    price: "Gratuit",
+    stars: 1280,
+  },
+  {
+    name: "Whisper-Large-v3",
+    author: "@openai",
+    desc: "Transcription audio multilingue.",
+    category: "Audio",
+    size: "3.1 Go",
+    price: "Gratuit",
+    stars: 890,
+  },
+  {
+    name: "SDXL-Turbo-Aeth",
+    author: "@studio",
+    desc: "Génération d'images temps réel.",
+    category: "Vision",
+    size: "6.9 Go",
+    price: "19 €",
+    stars: 305,
+  },
+  {
+    name: "Embed-Multilingual-v2",
+    author: "@aetheris",
+    desc: "Embeddings 1024d pour RAG.",
+    category: "Outil",
+    size: "1.2 Go",
+    price: "Gratuit",
+    stars: 233,
+  },
+  {
+    name: "CodeReviewer-7B",
+    author: "@devlab",
+    desc: "Revue de code automatisée.",
+    category: "LLM",
+    size: "14 Go",
+    price: "9 €",
+    stars: 176,
+  },
 ];
 
 const CATEGORIES = ["Tous", "LLM", "Vision", "Audio", "Outil"] as const;
@@ -81,7 +129,11 @@ function MarketplacePage() {
             Parcourez, publiez et téléchargez des modèles et outils d'IA.
           </p>
         </div>
-        <Button onClick={() => toast.info("Publiez via « import hf <repo> » ou « push » dans le terminal.")}>
+        <Button
+          onClick={() =>
+            toast.info("Publiez via « import hf <repo> » ou « push » dans le terminal.")
+          }
+        >
           <Upload className="mr-2 size-4" /> Publier un modèle
         </Button>
       </div>
@@ -142,7 +194,9 @@ function MarketplacePage() {
           </Card>
         ))}
         {filtered.length === 0 && (
-          <p className="text-muted-foreground text-sm">Aucun modèle ne correspond à la recherche.</p>
+          <p className="text-muted-foreground text-sm">
+            Aucun modèle ne correspond à la recherche.
+          </p>
         )}
       </div>
     </div>

@@ -44,8 +44,8 @@ export function Hero() {
             className="mt-8 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
             Découvre, déploie et orchestre les meilleurs modèles —{" "}
-            <span className="text-foreground">Llama, Mistral, DeepSeek</span> — aux côtés
-            d'OpenAI, Anthropic & Google. Un seul environnement. Une seule facture.
+            <span className="text-foreground">Llama, Mistral, DeepSeek</span> — aux côtés d'OpenAI,
+            Anthropic & Google. Un seul environnement. Une seule facture.
           </motion.p>
 
           <motion.div
@@ -147,9 +147,7 @@ export function Hero() {
             { v: "4.2k", l: "devs en bêta" },
           ].map((s) => (
             <div key={s.l} className="bg-surface/60 p-6 text-center">
-              <div className="font-display text-3xl font-semibold text-gradient">
-                {s.v}
-              </div>
+              <div className="font-display text-3xl font-semibold text-gradient">{s.v}</div>
               <div className="mt-1 text-xs text-muted-foreground uppercase tracking-wider">
                 {s.l}
               </div>

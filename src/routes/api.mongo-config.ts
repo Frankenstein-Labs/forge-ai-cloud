@@ -1,19 +1,13 @@
 // GET/POST/DELETE /api/mongo-config — gère la config MongoDB proxy par utilisateur.
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  authenticateApiKey,
-  corsHeaders,
-  getServerSupabase,
-  jsonResponse,
-} from "@/lib/api-auth";
+import { authenticateApiKey, corsHeaders, getServerSupabase, jsonResponse } from "@/lib/api-auth";
 
 type Body = { url?: string; token?: string };
 
 export const Route = createFileRoute("/api/mongo-config")({
   server: {
     handlers: {
-      OPTIONS: async () =>
-        new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       GET: async ({ request }) => {
         const authed = await authenticateApiKey(request);
@@ -43,22 +37,19 @@ export const Route = createFileRoute("/api/mongo-config")({
         }
         const url = (body.url || "").trim().replace(/\/$/, "");
         const token = (body.token || "").trim();
-        if (!url || !/^https?:\/\//i.test(url))
-          return jsonResponse({ error: "URL invalide" }, 400);
+        if (!url || !/^https?:\/\//i.test(url)) return jsonResponse({ error: "URL invalide" }, 400);
         if (!token) return jsonResponse({ error: "Token manquant" }, 400);
 
         const supabase = getServerSupabase();
-        const { error } = await supabase
-          .from("user_mongo_config" as never)
-          .upsert(
-            {
-              user_id: authed.user_id,
-              url,
-              token,
-              updated_at: new Date().toISOString(),
-            } as never,
-            { onConflict: "user_id" },
-          );
+        const { error } = await supabase.from("user_mongo_config" as never).upsert(
+          {
+            user_id: authed.user_id,
+            url,
+            token,
+            updated_at: new Date().toISOString(),
+          } as never,
+          { onConflict: "user_id" },
+        );
         if (error) return jsonResponse({ error: error.message }, 500);
         return jsonResponse({ ok: true, message: "Config enregistrée ✅" });
       },

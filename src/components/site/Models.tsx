@@ -93,9 +93,7 @@ export function Models() {
                   </span>
                   <span className="text-xs text-muted-foreground">{m.org}</span>
                 </div>
-                <h3 className="font-mono text-lg font-medium text-foreground mb-1">
-                  {m.name}
-                </h3>
+                <h3 className="font-mono text-lg font-medium text-foreground mb-1">{m.name}</h3>
                 <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground font-mono">
                   <span className="flex items-center gap-1.5">
                     <Download className="h-3.5 w-3.5" />
@@ -107,8 +105,7 @@ export function Models() {
                   </span>
                 </div>
                 <div className="mt-5 pt-4 border-t border-border/50 font-mono text-xs text-muted-foreground">
-                  $ aetheris pull{" "}
-                  <span className="text-primary">{m.name}</span>
+                  $ aetheris pull <span className="text-primary">{m.name}</span>
                 </div>
               </div>
             </motion.div>

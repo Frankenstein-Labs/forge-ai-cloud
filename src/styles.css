@@ -101,18 +101,11 @@
   --ring: oklch(0.78 0.18 220);
 
   /* Gradients & effects */
-  --gradient-hero: radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      oklch(0.65 0.24 295 / 0.35),
-      transparent 60%
-    ),
+  --gradient-hero:
+    radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.65 0.24 295 / 0.35), transparent 60%),
     radial-gradient(ellipse 60% 50% at 80% 30%, oklch(0.78 0.18 220 / 0.25), transparent 60%),
     linear-gradient(180deg, oklch(0.14 0.03 265), oklch(0.12 0.025 265));
-  --gradient-primary: linear-gradient(
-    135deg,
-    oklch(0.78 0.18 220),
-    oklch(0.65 0.24 295)
-  );
+  --gradient-primary: linear-gradient(135deg, oklch(0.78 0.18 220), oklch(0.65 0.24 295));
   --gradient-text: linear-gradient(
     135deg,
     oklch(0.97 0.01 250) 0%,
@@ -124,11 +117,7 @@
     oklch(0.78 0.18 220 / 0.5),
     oklch(0.65 0.24 295 / 0.5)
   );
-  --gradient-card: linear-gradient(
-    180deg,
-    oklch(0.22 0.04 268 / 0.6),
-    oklch(0.16 0.03 265 / 0.4)
-  );
+  --gradient-card: linear-gradient(180deg, oklch(0.22 0.04 268 / 0.6), oklch(0.16 0.03 265 / 0.4));
 
   --shadow-glow-cyan: 0 0 60px -10px oklch(0.78 0.18 220 / 0.5);
   --shadow-glow-plasma: 0 0 80px -10px oklch(0.65 0.24 295 / 0.45);
@@ -272,7 +261,8 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.6;
       transform: scale(1);
     }
@@ -286,31 +276,39 @@
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
   }
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
 
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
   .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      oklch(0.78 0.18 220 / 0.2),
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, oklch(0.78 0.18 220 / 0.2), transparent);
     background-size: 200% 100%;
     animation: shimmer 3s linear infinite;
   }
 
   @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
   .animate-marquee {
     animation: marquee 30s linear infinite;

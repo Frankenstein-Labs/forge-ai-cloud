@@ -17,8 +17,7 @@ export function AetherisTerminal() {
 
     const term = new Terminal({
       cursorBlink: true,
-      fontFamily:
-        '"JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace',
+      fontFamily: '"JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace',
       fontSize: 13,
       theme: {
         background: "#0a0e1a",
@@ -47,8 +46,7 @@ export function AetherisTerminal() {
     let busy = false;
 
     // Origin absolu pour éviter les soucis de proxy preview (lovable.js)
-    const ORIGIN =
-      typeof window !== "undefined" ? window.location.origin : "";
+    const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
     const ENDPOINT = `${ORIGIN}/api/terminal`;
     const CHAT_ENDPOINT = `${ORIGIN}/api/v1/chat/completions`;
 
@@ -88,9 +86,7 @@ export function AetherisTerminal() {
           return { output: text || `(HTTP ${res.status})` };
         }
       } catch (e) {
-        writeln(
-          `\x1b[38;5;203m✖ Erreur réseau : ${(e as Error).message}\x1b[0m`,
-        );
+        writeln(`\x1b[38;5;203m✖ Erreur réseau : ${(e as Error).message}\x1b[0m`);
         return null;
       }
     }
@@ -113,9 +109,7 @@ export function AetherisTerminal() {
 
     function exportKeySnippet() {
       if (!apiKey) {
-        writeln(
-          "\x1b[38;5;203m✖ Aucune clé chargée. Fais d'abord : login sk-aeth-...\x1b[0m",
-        );
+        writeln("\x1b[38;5;203m✖ Aucune clé chargée. Fais d'abord : login sk-aeth-...\x1b[0m");
         return;
       }
       const py = [
@@ -128,7 +122,7 @@ export function AetherisTerminal() {
         "",
         "def chat(prompt, model='google/gemini-2.5-flash'):",
         '    """model peut être : google/gemini-2.5-flash, openai/gpt-5-mini,',
-        "       ou hf/<owner>/<repo> pour n'importe quel modèle HuggingFace.\"\"\"",
+        '       ou hf/<owner>/<repo> pour n\'importe quel modèle HuggingFace."""',
         `    r = requests.post(`,
         `        f"{AETHERIS_BASE_URL}/api/v1/chat/completions",`,
         `        headers={`,
@@ -148,14 +142,10 @@ export function AetherisTerminal() {
         "print(chat('Bonjour Aetheris !'))",
         "print(chat('Salut', model='hf/mistralai/Mistral-7B-Instruct-v0.3'))",
       ];
-      writeln(
-        "\x1b[38;5;82m📋 Copie le snippet ci-dessous dans Google Colab :\x1b[0m\n",
-      );
+      writeln("\x1b[38;5;82m📋 Copie le snippet ci-dessous dans Google Colab :\x1b[0m\n");
       py.forEach((l) => writeln(`\x1b[38;5;250m${l}\x1b[0m`));
       writeln("");
-      writeln(
-        `\x1b[38;5;245mEndpoint OpenAI-compatible : ${CHAT_ENDPOINT}\x1b[0m`,
-      );
+      writeln(`\x1b[38;5;245mEndpoint OpenAI-compatible : ${CHAT_ENDPOINT}\x1b[0m`);
       writeln(`\x1b[38;5;245mDocumentation : ${ORIGIN}/docs\x1b[0m`);
     }
 
@@ -179,22 +169,16 @@ export function AetherisTerminal() {
       }
       if (trimmed.startsWith("login ")) {
         apiKey = trimmed.slice(6).trim();
-        writeln(
-          `\x1b[38;5;245m→ Vérification de la clé (${apiKey.slice(0, 12)}…)…\x1b[0m`,
-        );
+        writeln(`\x1b[38;5;245m→ Vérification de la clé (${apiKey.slice(0, 12)}…)…\x1b[0m`);
         const data = await callTerminal("whoami");
         if (data?.authenticated) {
           authedBadge = true;
-          writeln(
-            `\x1b[38;5;82m✅ Clé valide — session authentifiée.\x1b[0m`,
-          );
+          writeln(`\x1b[38;5;82m✅ Clé valide — session authentifiée.\x1b[0m`);
           if (data.output) data.output.split("\n").forEach(writeln);
         } else {
           authedBadge = false;
           apiKey = null;
-          writeln(
-            `\x1b[38;5;203m✖ Clé refusée. Vérifie sur /dashboard/api-keys.\x1b[0m`,
-          );
+          writeln(`\x1b[38;5;203m✖ Clé refusée. Vérifie sur /dashboard/api-keys.\x1b[0m`);
         }
         prompt();
         return;

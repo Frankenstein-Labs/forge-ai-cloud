@@ -59,7 +59,12 @@ const TIERS = [
     period: "/mois",
     icon: Zap,
     highlighted: true,
-    features: ["10M tokens/mois", "10 modèles déployés", "Moteur GPU à la demande", "Support prioritaire"],
+    features: [
+      "10M tokens/mois",
+      "10 modèles déployés",
+      "Moteur GPU à la demande",
+      "Support prioritaire",
+    ],
   },
   {
     id: "business",
@@ -122,9 +127,7 @@ function SubscriptionPage() {
               key={tier.id}
               className={tier.highlighted ? "border-primary/60 relative" : "relative"}
             >
-              {tier.highlighted && (
-                <Badge className="absolute -top-2 right-4">Populaire</Badge>
-              )}
+              {tier.highlighted && <Badge className="absolute -top-2 right-4">Populaire</Badge>}
               <CardHeader>
                 <Icon className="text-primary size-5" />
                 <CardTitle className="mt-2 text-base">{tier.name}</CardTitle>

@@ -2,18 +2,13 @@
 // Authentifié par clé API. Redirige (302) vers une URL S3 pré-signée Seaweed
 // pour le fichier {name} appartenant à l'utilisateur de la clé.
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  authenticateApiKey,
-  corsHeaders,
-  jsonResponse,
-} from "@/lib/api-auth";
+import { authenticateApiKey, corsHeaders, jsonResponse } from "@/lib/api-auth";
 import { getSeaweedConfig, presignGet, s3Head, userObjectKey } from "@/lib/seaweed";
 
 export const Route = createFileRoute("/api/v1/models/$name/download")({
   server: {
     handlers: {
-      OPTIONS: async () =>
-        new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       GET: async ({ request, params }) => {
         const authed = await authenticateApiKey(request);

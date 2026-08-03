@@ -16,13 +16,7 @@ import { AetherisTerminal } from "@/components/workspace/AetherisTerminal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Route = createFileRoute("/dashboard/workspace")({
   head: () => ({
@@ -68,7 +62,10 @@ function WorkspacePage() {
     return () => clearInterval(id);
   }, [engine]);
 
-  const statusMeta: Record<EngineState, { label: string; dot: string; variant: "default" | "secondary" | "destructive" }> = {
+  const statusMeta: Record<
+    EngineState,
+    { label: string; dot: string; variant: "default" | "secondary" | "destructive" }
+  > = {
     running: { label: "En cours", dot: "bg-primary", variant: "default" },
     stopped: { label: "Arrêté", dot: "bg-destructive", variant: "destructive" },
     restarting: { label: "Redémarrage…", dot: "bg-secondary", variant: "secondary" },
@@ -122,12 +119,7 @@ function WorkspacePage() {
               <RotateCw className="mr-2 size-4" /> Redémarrer le moteur
             </Button>
           )}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={stop}
-            disabled={engine === "stopped"}
-          >
+          <Button size="sm" variant="outline" onClick={stop} disabled={engine === "stopped"}>
             <Square className="mr-2 size-4" /> Stop
           </Button>
           <Button
@@ -144,7 +136,9 @@ function WorkspacePage() {
           <Button
             size="sm"
             onClick={() =>
-              toast.info("Utilisez « pull <modèle> » dans le terminal pour télécharger un modèle IA.")
+              toast.info(
+                "Utilisez « pull <modèle> » dans le terminal pour télécharger un modèle IA.",
+              )
             }
           >
             <Download className="mr-2 size-4" /> Télécharger le modèle IA
@@ -181,12 +175,7 @@ function WorkspacePage() {
               <CardDescription>Conteneur aetheris-dev-eu-1</CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <Metric
-                icon={Cpu}
-                label="CPU"
-                value={`${cpu.toFixed(0)} %`}
-                pct={cpu}
-              />
+              <Metric icon={Cpu} label="CPU" value={`${cpu.toFixed(0)} %`} pct={cpu} />
               <Metric
                 icon={MemoryStick}
                 label="RAM"

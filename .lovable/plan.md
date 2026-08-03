@@ -20,14 +20,17 @@ Brancher le terminal `/dashboard/workspace` et l'API publique sur **ton VPS Seaw
 ## Ce que je vais faire côté code
 
 ### 1. Lib serveur `src/lib/seaweed.ts`
+
 - Client S3 minimal en `fetch` + signature **AWS SigV4** (pas de SDK `@aws-sdk/*` lourd, on reste edge-compatible Cloudflare Workers).
 - Fonctions : `s3Put`, `s3Get`, `s3List`, `s3Delete`, `s3PresignGet`, `s3PresignPut` (URL pré-signée 1h).
 - Bucket par défaut `aetheris-models`, préfixe `users/<user_id>/`.
 
 ### 2. Migration DB
+
 - Ajouter colonnes à `user_models` : `storage_provider TEXT DEFAULT 'supabase'` (`supabase` | `seaweed`), `storage_bucket TEXT`, `etag TEXT`.
 
 ### 3. Nouvelles commandes terminal (`src/routes/api.terminal.ts`)
+
 - `ls` → liste les objets du préfixe utilisateur sur Seaweed.
 - `push <name>` → renvoie une **URL pré-signée PUT** (curl à coller en local) + insère la ligne dans `user_models` avec `storage_provider='seaweed'`.
 - `pull <name>` → renvoie une URL pré-signée GET (1h).
@@ -36,10 +39,12 @@ Brancher le terminal `/dashboard/workspace` et l'API publique sur **ton VPS Seaw
 - Mise à jour de `upload` existant pour proposer le choix `--seaweed` vs Supabase.
 
 ### 4. Nouvelle route `/api/v1/models/:name/download`
+
 - Auth par clé API (déjà en place via `authenticateApiKey`).
 - Redirige (302) vers une URL pré-signée Seaweed → permet à `wget`/`curl`/HuggingFace `from_pretrained` de télécharger directement depuis le VPS sans passer par Lovable.
 
 ### 5. UI workspace
+
 - Section "Storage" dans `dashboard.workspace.tsx` : endpoint Seaweed connecté ✓, espace utilisé, bouton "Copier exemple `push`".
 - Mise à jour de `docs.tsx` avec section **Stockage de modèles** (curl push/pull, exemple Python).
 - Snippet `export-key` enrichi avec la fonction `download_model()`.

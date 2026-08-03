@@ -70,9 +70,8 @@ function DocsPage() {
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-2xl">
             L'API Aetheris est <strong className="text-foreground">100% compatible OpenAI</strong>.
-            Tu peux utiliser le SDK <code className="text-primary">openai</code>, ou
-            n'importe quel client HTTP, pour appeler Gemini, GPT-5, Mistral, LLaMA et tous
-            les modèles HuggingFace.
+            Tu peux utiliser le SDK <code className="text-primary">openai</code>, ou n'importe quel
+            client HTTP, pour appeler Gemini, GPT-5, Mistral, LLaMA et tous les modèles HuggingFace.
           </p>
           <div className="mt-8 flex gap-3 flex-wrap">
             <Link
@@ -99,17 +98,18 @@ function DocsPage() {
             <Sparkles className="h-6 w-6 text-primary" />
             Quickstart
           </h2>
-          <p className="text-muted-foreground mb-6">
-            Trois étapes pour ton premier appel.
-          </p>
+          <p className="text-muted-foreground mb-6">Trois étapes pour ton premier appel.</p>
           <ol className="space-y-3 mb-8 text-sm">
             <li className="flex gap-3">
               <span className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
                 1
               </span>
               <span>
-                Va sur <Link to="/dashboard/api-keys" className="text-primary underline">/dashboard/api-keys</Link> et crée une clé{" "}
-                <code className="text-primary">sk-aeth-...</code>
+                Va sur{" "}
+                <Link to="/dashboard/api-keys" className="text-primary underline">
+                  /dashboard/api-keys
+                </Link>{" "}
+                et crée une clé <code className="text-primary">sk-aeth-...</code>
               </span>
             </li>
             <li className="flex gap-3">
@@ -122,7 +122,9 @@ function DocsPage() {
               <span className="size-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
                 3
               </span>
-              <span>Remplace <code className="text-primary">sk-aeth-...</code> par ta clé et lance</span>
+              <span>
+                Remplace <code className="text-primary">sk-aeth-...</code> par ta clé et lance
+              </span>
             </li>
           </ol>
           <CodeBlock
@@ -178,9 +180,7 @@ X-API-Key: sk-aeth-...`}
 
         {/* 3. Python / Colab */}
         <section>
-          <h2 className="font-display text-3xl font-light mb-2">
-            Exemple Python (Google Colab)
-          </h2>
+          <h2 className="font-display text-3xl font-light mb-2">Exemple Python (Google Colab)</h2>
           <p className="text-muted-foreground mb-6">
             Colle ce code dans une cellule Colab. Aucune dépendance exotique.
           </p>
@@ -217,9 +217,7 @@ print(chat("Bonjour", model="hf/mistralai/Mistral-7B-Instruct-v0.3"))`}
 
         {/* 4. SDK OpenAI */}
         <section>
-          <h2 className="font-display text-3xl font-light mb-2">
-            Avec le SDK OpenAI officiel
-          </h2>
+          <h2 className="font-display text-3xl font-light mb-2">Avec le SDK OpenAI officiel</h2>
           <p className="text-muted-foreground mb-6">
             Tu peux pointer le SDK <code className="text-primary">openai</code> vers Aetheris en
             changeant juste <code className="text-primary">base_url</code>.
@@ -278,8 +276,8 @@ print(response.choices[0].message.content)`}
                 <li className="text-muted-foreground">… ou n'importe quel repo chat HF</li>
               </ul>
               <p className="text-xs text-muted-foreground mt-4">
-                Note : le premier appel à un modèle HF peu utilisé peut renvoyer 503
-                (cold start ~30s). Réessaie.
+                Note : le premier appel à un modèle HF peu utilisé peut renvoyer 503 (cold start
+                ~30s). Réessaie.
               </p>
             </div>
           </div>
@@ -292,8 +290,11 @@ print(response.choices[0].message.content)`}
             Terminal Aetheris
           </h2>
           <p className="text-muted-foreground mb-6">
-            Le terminal web (<Link to="/dashboard/workspace" className="text-primary underline">/dashboard/workspace</Link>) permet de
-            tester sans écrire de code.
+            Le terminal web (
+            <Link to="/dashboard/workspace" className="text-primary underline">
+              /dashboard/workspace
+            </Link>
+            ) permet de tester sans écrire de code.
           </p>
           <CodeBlock
             lang="bash"
@@ -321,23 +322,33 @@ export-key`}
               <tbody className="divide-y divide-border">
                 <tr>
                   <td className="px-4 py-3 font-mono text-primary">401</td>
-                  <td className="px-4 py-3 text-muted-foreground">Clé API absente, invalide ou révoquée</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Clé API absente, invalide ou révoquée
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 font-mono text-primary">402</td>
-                  <td className="px-4 py-3 text-muted-foreground">Crédits épuisés (recharge sur /dashboard/billing)</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Crédits épuisés (recharge sur /dashboard/billing)
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 font-mono text-primary">429</td>
-                  <td className="px-4 py-3 text-muted-foreground">Rate limit — réessaie dans quelques secondes</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Rate limit — réessaie dans quelques secondes
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 font-mono text-primary">502</td>
-                  <td className="px-4 py-3 text-muted-foreground">Erreur en amont (HuggingFace ou Lovable AI)</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Erreur en amont (HuggingFace ou Lovable AI)
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-3 font-mono text-primary">503</td>
-                  <td className="px-4 py-3 text-muted-foreground">Modèle HF en cold start — réessaie dans 30s</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    Modèle HF en cold start — réessaie dans 30s
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -378,14 +389,13 @@ pull mistral-119b.gguf`}
      -o mistral-119b.gguf`}
           />
           <p className="text-xs text-muted-foreground">
-            Les fichiers sont scopés à ton user_id : impossible d'accéder à ceux d'un autre utilisateur.
+            Les fichiers sont scopés à ton user_id : impossible d'accéder à ceux d'un autre
+            utilisateur.
           </p>
         </section>
 
         <section className="text-center py-12 border-t border-border">
-          <p className="text-muted-foreground text-sm">
-            Une question ? Un modèle qui manque ?
-          </p>
+          <p className="text-muted-foreground text-sm">Une question ? Un modèle qui manque ?</p>
           <Link
             to="/dashboard/workspace"
             className="mt-4 inline-flex items-center gap-2 text-primary hover:underline"

@@ -51,9 +51,7 @@ export interface AuthedKey {
  * Valide la clé API contre Supabase (RPC validate_api_key).
  * Retourne null si absente/invalide/expirée/révoquée.
  */
-export async function authenticateApiKey(
-  request: Request,
-): Promise<AuthedKey | null> {
+export async function authenticateApiKey(request: Request): Promise<AuthedKey | null> {
   const key = extractApiKey(request);
   if (!key) return null;
   const hashed = await sha256Hex(key);

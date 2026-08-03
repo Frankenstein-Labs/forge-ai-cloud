@@ -149,8 +149,8 @@ function BillingPage() {
           <p className="font-medium text-foreground">Paiements Stripe — itération 2</p>
           <p className="text-muted-foreground mt-1">
             L'intégration Stripe (Checkout, abonnements, webhook crédits) sera activée à la
-            prochaine étape. Le solde, les forfaits et l'historique des transactions sont déjà
-            en place côté base de données.
+            prochaine étape. Le solde, les forfaits et l'historique des transactions sont déjà en
+            place côté base de données.
           </p>
         </div>
       </div>

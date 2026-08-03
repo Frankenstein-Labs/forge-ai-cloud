@@ -17,9 +17,7 @@ export function getMongoConfigFromEnv(): MongoConfig | null {
  * Charge la config Mongo de l'utilisateur (table user_mongo_config),
  * puis fallback sur les variables d'environnement.
  */
-export async function getMongoConfigForUser(
-  userId: string,
-): Promise<MongoConfig | null> {
+export async function getMongoConfigForUser(userId: string): Promise<MongoConfig | null> {
   try {
     const supabase = getServerSupabase();
     const { data } = await supabase
@@ -42,11 +40,7 @@ export function getMongoConfig(): MongoConfig | null {
   return getMongoConfigFromEnv();
 }
 
-async function call<T>(
-  cfg: MongoConfig,
-  path: string,
-  body: unknown,
-): Promise<T> {
+async function call<T>(cfg: MongoConfig, path: string, body: unknown): Promise<T> {
   const r = await fetch(`${cfg.url}${path}`, {
     method: "POST",
     headers: {
@@ -70,16 +64,10 @@ export const mongo = {
     collection: string,
     filter: Record<string, unknown> = {},
     opts: { limit?: number; sort?: Record<string, 1 | -1> } = {},
-  ) =>
-    call<{ docs: T[] }>(cfg, "/find", { collection, filter, ...opts }).then(
-      (r) => r.docs,
-    ),
+  ) => call<{ docs: T[] }>(cfg, "/find", { collection, filter, ...opts }).then((r) => r.docs),
 
-  insert: (
-    cfg: MongoConfig,
-    collection: string,
-    doc: MongoDoc,
-  ) => call<{ insertedId: string }>(cfg, "/insert", { collection, doc }),
+  insert: (cfg: MongoConfig, collection: string, doc: MongoDoc) =>
+    call<{ insertedId: string }>(cfg, "/insert", { collection, doc }),
 
   update: (
     cfg: MongoConfig,
@@ -93,9 +81,6 @@ export const mongo = {
       update,
     }),
 
-  delete: (
-    cfg: MongoConfig,
-    collection: string,
-    filter: Record<string, unknown>,
-  ) => call<{ deleted: number }>(cfg, "/delete", { collection, filter }),
+  delete: (cfg: MongoConfig, collection: string, filter: Record<string, unknown>) =>
+    call<{ deleted: number }>(cfg, "/delete", { collection, filter }),
 };

@@ -41,8 +41,7 @@ const DEFAULT_MODEL = "google/gemini-2.5-flash";
 export const Route = createFileRoute("/api/v1/chat/completions")({
   server: {
     handlers: {
-      OPTIONS: async () =>
-        new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       POST: async ({ request }) => {
         // 1) Auth par clé API
@@ -60,10 +59,7 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
         const requestedModel = (body.model ?? DEFAULT_MODEL).trim();
         const messages = Array.isArray(body.messages) ? body.messages : [];
         if (messages.length === 0) {
-          return jsonResponse(
-            { error: "'messages' requis (format OpenAI chat.completions)" },
-            400,
-          );
+          return jsonResponse({ error: "'messages' requis (format OpenAI chat.completions)" }, 400);
         }
 
         // 3) Vérifier les crédits utilisateur
@@ -103,7 +99,10 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           const repo = requestedModel.slice(3); // "hf/owner/name" -> "owner/name"
           if (!repo.includes("/")) {
             return jsonResponse(
-              { error: "Format attendu : 'hf/<owner>/<repo>' (ex: hf/mistralai/Mistral-7B-Instruct-v0.3)" },
+              {
+                error:
+                  "Format attendu : 'hf/<owner>/<repo>' (ex: hf/mistralai/Mistral-7B-Instruct-v0.3)",
+              },
               400,
             );
           }
@@ -133,38 +132,25 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
             );
           }
 
-          const upstream = await fetch(
-            "https://ai.gateway.lovable.dev/v1/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${lovableKey}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                model,
-                messages,
-                ...(typeof body.temperature === "number"
-                  ? { temperature: body.temperature }
-                  : {}),
-                ...(typeof body.max_tokens === "number"
-                  ? { max_tokens: body.max_tokens }
-                  : {}),
-              }),
+          const upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${lovableKey}`,
+              "Content-Type": "application/json",
             },
-          );
+            body: JSON.stringify({
+              model,
+              messages,
+              ...(typeof body.temperature === "number" ? { temperature: body.temperature } : {}),
+              ...(typeof body.max_tokens === "number" ? { max_tokens: body.max_tokens } : {}),
+            }),
+          });
 
           if (upstream.status === 429) {
-            return jsonResponse(
-              { error: "Rate limit dépassé sur le gateway IA." },
-              429,
-            );
+            return jsonResponse({ error: "Rate limit dépassé sur le gateway IA." }, 429);
           }
           if (upstream.status === 402) {
-            return jsonResponse(
-              { error: "Crédits Lovable AI épuisés côté workspace." },
-              402,
-            );
+            return jsonResponse({ error: "Crédits Lovable AI épuisés côté workspace." }, 402);
           }
           if (!upstream.ok) {
             const txt = await upstream.text();
@@ -195,10 +181,7 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
             await supabase
               .from("profiles")
               .update({
-                credits_balance: Math.max(
-                  0,
-                  profile.credits_balance - totalTokens,
-                ),
+                credits_balance: Math.max(0, profile.credits_balance - totalTokens),
               })
               .eq("id", authed.user_id);
           }

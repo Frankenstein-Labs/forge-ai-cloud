@@ -203,9 +203,7 @@ function DeploymentsList() {
                   </span>
                 </td>
                 <td className="px-4 py-5">
-                  <code className="text-xs font-mono text-primary">
-                    {d.endpoint_url ?? "—"}
-                  </code>
+                  <code className="text-xs font-mono text-primary">{d.endpoint_url ?? "—"}</code>
                 </td>
                 <td className="px-4 py-5 text-right font-mono text-sm">
                   {d.tokens_consumed.toLocaleString("fr-FR")}
@@ -236,7 +234,9 @@ function Catalog() {
     const name = prompt(`Nom du déploiement pour ${model.name} ?`, `${model.id}-prod`);
     if (!name) return;
     setDeploying(model.id);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error("Non authentifié");
       setDeploying(null);
@@ -292,7 +292,9 @@ function Catalog() {
             <div className="flex items-start justify-between mb-3">
               <span
                 className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${
-                  m.type === "open" ? "bg-primary/10 text-primary" : "bg-secondary/10 text-secondary"
+                  m.type === "open"
+                    ? "bg-primary/10 text-primary"
+                    : "bg-secondary/10 text-secondary"
                 }`}
               >
                 {m.type === "open" ? "Open Source" : "Propriétaire"}
@@ -326,7 +328,9 @@ function ImportPanel() {
 
   const importHF = async () => {
     if (!hfUrl.trim()) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
     const { error } = await supabase.from("user_models").insert({
       user_id: user.id,
@@ -343,7 +347,9 @@ function ImportPanel() {
 
   const importURL = async () => {
     if (!publicUrl.trim()) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
     const { error } = await supabase.from("user_models").insert({
       user_id: user.id,
