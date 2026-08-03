@@ -16,9 +16,12 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardWorkspaceRouteImport } from './routes/dashboard.workspace'
+import { Route as DashboardSubscriptionRouteImport } from './routes/dashboard.subscription'
 import { Route as DashboardStorageRouteImport } from './routes/dashboard.storage'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
+import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.marketplace'
+import { Route as DashboardEnginesRouteImport } from './routes/dashboard.engines'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
@@ -64,6 +67,11 @@ const DashboardWorkspaceRoute = DashboardWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSubscriptionRoute = DashboardSubscriptionRouteImport.update({
+  id: '/subscription',
+  path: '/subscription',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardStorageRoute = DashboardStorageRouteImport.update({
   id: '/storage',
   path: '/storage',
@@ -77,6 +85,16 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
 const DashboardModelsRoute = DashboardModelsRouteImport.update({
   id: '/models',
   path: '/models',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMarketplaceRoute = DashboardMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEnginesRoute = DashboardEnginesRouteImport.update({
+  id: '/engines',
+  path: '/engines',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardBillingRoute = DashboardBillingRouteImport.update({
@@ -137,9 +155,12 @@ export interface FileRoutesByFullPath {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/engines': typeof DashboardEnginesRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
+  '/dashboard/subscription': typeof DashboardSubscriptionRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -157,9 +178,12 @@ export interface FileRoutesByTo {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/engines': typeof DashboardEnginesRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
+  '/dashboard/subscription': typeof DashboardSubscriptionRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -179,9 +203,12 @@ export interface FileRoutesById {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/engines': typeof DashboardEnginesRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
+  '/dashboard/subscription': typeof DashboardSubscriptionRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -202,9 +229,12 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/engines'
+    | '/dashboard/marketplace'
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
+    | '/dashboard/subscription'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -222,9 +252,12 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/engines'
+    | '/dashboard/marketplace'
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
+    | '/dashboard/subscription'
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
@@ -243,9 +276,12 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/engines'
+    | '/dashboard/marketplace'
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
+    | '/dashboard/subscription'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -319,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardWorkspaceRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/subscription': {
+      id: '/dashboard/subscription'
+      path: '/subscription'
+      fullPath: '/dashboard/subscription'
+      preLoaderRoute: typeof DashboardSubscriptionRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/storage': {
       id: '/dashboard/storage'
       path: '/storage'
@@ -338,6 +381,20 @@ declare module '@tanstack/react-router' {
       path: '/models'
       fullPath: '/dashboard/models'
       preLoaderRoute: typeof DashboardModelsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/marketplace': {
+      id: '/dashboard/marketplace'
+      path: '/marketplace'
+      fullPath: '/dashboard/marketplace'
+      preLoaderRoute: typeof DashboardMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/engines': {
+      id: '/dashboard/engines'
+      path: '/engines'
+      fullPath: '/dashboard/engines'
+      preLoaderRoute: typeof DashboardEnginesRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/billing': {
@@ -409,9 +466,12 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardApiKeysRoute: typeof DashboardApiKeysRoute
   DashboardBillingRoute: typeof DashboardBillingRoute
+  DashboardEnginesRoute: typeof DashboardEnginesRoute
+  DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
   DashboardModelsRoute: typeof DashboardModelsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStorageRoute: typeof DashboardStorageRoute
+  DashboardSubscriptionRoute: typeof DashboardSubscriptionRoute
   DashboardWorkspaceRoute: typeof DashboardWorkspaceRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -419,9 +479,12 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardApiKeysRoute: DashboardApiKeysRoute,
   DashboardBillingRoute: DashboardBillingRoute,
+  DashboardEnginesRoute: DashboardEnginesRoute,
+  DashboardMarketplaceRoute: DashboardMarketplaceRoute,
   DashboardModelsRoute: DashboardModelsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStorageRoute: DashboardStorageRoute,
+  DashboardSubscriptionRoute: DashboardSubscriptionRoute,
   DashboardWorkspaceRoute: DashboardWorkspaceRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -447,12 +510,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
