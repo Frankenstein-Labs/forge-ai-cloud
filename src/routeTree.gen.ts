@@ -19,6 +19,7 @@ import { Route as DashboardWorkspaceRouteImport } from './routes/dashboard.works
 import { Route as DashboardStorageRouteImport } from './routes/dashboard.storage'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
+import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.marketplace'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
@@ -79,6 +80,11 @@ const DashboardModelsRoute = DashboardModelsRouteImport.update({
   path: '/models',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardMarketplaceRoute = DashboardMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardBillingRoute = DashboardBillingRouteImport.update({
   id: '/billing',
   path: '/billing',
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/marketplace'
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/marketplace'
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/marketplace'
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
@@ -340,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardModelsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/marketplace': {
+      id: '/dashboard/marketplace'
+      path: '/marketplace'
+      fullPath: '/dashboard/marketplace'
+      preLoaderRoute: typeof DashboardMarketplaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/billing': {
       id: '/dashboard/billing'
       path: '/billing'
@@ -409,6 +428,7 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteChildren {
   DashboardApiKeysRoute: typeof DashboardApiKeysRoute
   DashboardBillingRoute: typeof DashboardBillingRoute
+  DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
   DashboardModelsRoute: typeof DashboardModelsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStorageRoute: typeof DashboardStorageRoute
@@ -419,6 +439,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardApiKeysRoute: DashboardApiKeysRoute,
   DashboardBillingRoute: DashboardBillingRoute,
+  DashboardMarketplaceRoute: DashboardMarketplaceRoute,
   DashboardModelsRoute: DashboardModelsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStorageRoute: DashboardStorageRoute,
