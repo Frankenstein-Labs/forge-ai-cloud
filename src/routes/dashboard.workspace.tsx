@@ -1,169 +1,268 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Code2, Github, ExternalLink, TerminalSquare, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Activity,
+  Cpu,
+  Download,
+  MemoryStick,
+  Play,
+  RotateCw,
+  Square,
+  HardDrive,
+  Code2,
+} from "lucide-react";
+import { toast } from "sonner";
 import { AetherisTerminal } from "@/components/workspace/AetherisTerminal";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const Route = createFileRoute("/dashboard/workspace")({
   head: () => ({
-    meta: [{ title: "Workspace — Aetheris" }],
+    meta: [
+      { title: "Workspace — Terminal cloud Aetheris" },
+      {
+        name: "description",
+        content:
+          "Terminal web, moteur de dev cloud et monitoring CPU/RAM de vos conteneurs Aetheris.",
+      },
+      { property: "og:title", content: "Workspace — Terminal cloud Aetheris" },
+      {
+        property: "og:description",
+        content: "Pilotez vos moteurs Docker et vos modèles IA depuis un terminal web.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
   }),
   component: WorkspacePage,
 });
 
-type Tab = "terminal" | "vscode";
+type EngineState = "running" | "stopped" | "restarting";
 
 function WorkspacePage() {
-  const [tab, setTab] = useState<Tab>("terminal");
-  const [repo, setRepo] = useState("");
+  const [engine, setEngine] = useState<EngineState>("running");
+  const [cpu, setCpu] = useState(18);
+  const [ram, setRam] = useState(42);
+  const [disk] = useState(31);
+  const [uptime, setUptime] = useState(0);
 
-  const cleanRepo = repo
-    .trim()
-    .replace(/^https?:\/\/github\.com\//, "")
-    .replace(/\.git$/, "")
-    .replace(/^\/+|\/+$/g, "");
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (engine === "running") {
+        setCpu((v) => Math.max(4, Math.min(96, v + (Math.random() * 18 - 9))));
+        setRam((v) => Math.max(10, Math.min(94, v + (Math.random() * 8 - 4))));
+        setUptime((v) => v + 2);
+      } else {
+        setCpu(0);
+        setRam(0);
+      }
+    }, 2000);
+    return () => clearInterval(id);
+  }, [engine]);
 
-  const githubDevUrl = cleanRepo ? `https://github.dev/${cleanRepo}` : "https://github.dev";
-  const vscodeDevUrl = cleanRepo
-    ? `https://vscode.dev/github/${cleanRepo}`
-    : "https://vscode.dev";
+  const statusMeta: Record<EngineState, { label: string; dot: string; variant: "default" | "secondary" | "destructive" }> = {
+    running: { label: "En cours", dot: "bg-primary", variant: "default" },
+    stopped: { label: "Arrêté", dot: "bg-destructive", variant: "destructive" },
+    restarting: { label: "Redémarrage…", dot: "bg-secondary", variant: "secondary" },
+  };
+
+  const restart = () => {
+    setEngine("restarting");
+    toast.info("Redémarrage du moteur…");
+    setTimeout(() => {
+      setEngine("running");
+      setUptime(0);
+      toast.success("Moteur redémarré");
+    }, 1800);
+  };
+
+  const stop = () => {
+    setEngine("stopped");
+    setUptime(0);
+    toast.warning("Moteur arrêté");
+  };
+
+  const start = () => {
+    setEngine("running");
+    toast.success("Moteur démarré");
+  };
+
+  const fmtUptime = () => {
+    const h = Math.floor(uptime / 3600);
+    const m = Math.floor((uptime % 3600) / 60);
+    const s = uptime % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="px-2">
-        <h1 className="font-display text-4xl font-light tracking-tight">Workspace</h1>
-        <p className="text-muted-foreground mt-2 text-sm">
-          Terminal interactif Aetheris + éditeurs de code dans le navigateur.
-        </p>
+    <div className="flex flex-1 flex-col gap-6">
+      {/* Header + action bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="font-display text-2xl font-semibold tracking-tight">Espace de travail</h1>
+          <p className="text-muted-foreground text-sm">
+            Terminal cloud connecté à votre moteur de dev (Docker / Coder).
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {engine === "stopped" ? (
+            <Button size="sm" onClick={start}>
+              <Play className="mr-2 size-4" /> Démarrer
+            </Button>
+          ) : (
+            <Button size="sm" variant="outline" onClick={restart}>
+              <RotateCw className="mr-2 size-4" /> Redémarrer le moteur
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={stop}
+            disabled={engine === "stopped"}
+          >
+            <Square className="mr-2 size-4" /> Stop
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              engine === "running"
+                ? toast.info("Ouverture de VS Code Web (code-server)…")
+                : toast.error("Démarrez le moteur avant d'ouvrir VS Code")
+            }
+          >
+            <Code2 className="mr-2 size-4" /> Ouvrir VS Code
+          </Button>
+          <Button
+            size="sm"
+            onClick={() =>
+              toast.info("Utilisez « pull <modèle> » dans le terminal pour télécharger un modèle IA.")
+            }
+          >
+            <Download className="mr-2 size-4" /> Télécharger le modèle IA
+          </Button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="inline-flex gap-1 rounded-xl bg-surface-elevated/50 border border-border p-1">
-        <button
-          onClick={() => setTab("terminal")}
-          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition ${
-            tab === "terminal"
-              ? "bg-gradient-primary text-primary-foreground shadow-glow-cyan"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <TerminalSquare className="h-4 w-4" />
-          Terminal
-        </button>
-        <button
-          onClick={() => setTab("vscode")}
-          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition ${
-            tab === "vscode"
-              ? "bg-gradient-primary text-primary-foreground shadow-glow-cyan"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Code2 className="h-4 w-4" />
-          Éditeurs Web
-        </button>
+      {/* Terminal + engine panel */}
+      <div className="grid flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <Card className="flex min-h-[520px] flex-col overflow-hidden p-0">
+          <CardHeader className="flex-row items-center justify-between gap-2 border-b px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="flex gap-1.5">
+                <span className="size-3 rounded-full bg-destructive/70" />
+                <span className="size-3 rounded-full bg-secondary/70" />
+                <span className="size-3 rounded-full bg-primary/70" />
+              </span>
+              <CardTitle className="ml-2 font-mono text-sm">aetheris@workspace: ~</CardTitle>
+            </div>
+            <Badge variant={statusMeta[engine].variant} className="gap-1.5">
+              <span className={`size-1.5 rounded-full ${statusMeta[engine].dot}`} />
+              {statusMeta[engine].label}
+            </Badge>
+          </CardHeader>
+          <CardContent className="flex-1 p-0">
+            <AetherisTerminal />
+          </CardContent>
+        </Card>
+
+        <div className="flex flex-col gap-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Statut du moteur</CardTitle>
+              <CardDescription>Conteneur aetheris-dev-eu-1</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <Metric
+                icon={Cpu}
+                label="CPU"
+                value={`${cpu.toFixed(0)} %`}
+                pct={cpu}
+              />
+              <Metric
+                icon={MemoryStick}
+                label="RAM"
+                value={`${((ram / 100) * 8).toFixed(1)} / 8 Go`}
+                pct={ram}
+              />
+              <Metric
+                icon={HardDrive}
+                label="Disque"
+                value={`${((disk / 100) * 50).toFixed(0)} / 50 Go`}
+                pct={disk}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Détails</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <Row label="Statut" value={statusMeta[engine].label} />
+              <Row label="Uptime" value={fmtUptime()} mono />
+              <Row label="Image" value="ghcr.io/aetheris/dev:latest" mono />
+              <Row label="Région" value="EU · Paris" />
+              <Row label="Runtime" value="Docker · envbuilder" />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Activity className="size-4" /> Astuce
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-muted-foreground text-sm">
+              Tapez <code className="text-primary font-mono">help</code> puis{" "}
+              <code className="text-primary font-mono">login sk-aeth-…</code> pour authentifier
+              votre session, et <code className="text-primary font-mono">export-key</code> pour un
+              snippet Python prêt à l'emploi.
+            </CardContent>
+          </Card>
+        </div>
       </div>
+    </div>
+  );
+}
 
-      {tab === "terminal" ? (
-        <div className="space-y-4">
-          <AetherisTerminal />
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="glass rounded-2xl p-5 flex items-start gap-4 border border-primary/10">
-              <Sparkles className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium">Premiers pas</p>
-                <p className="text-muted-foreground mt-1">
-                  1) <code className="text-primary">login sk-aeth-…</code><br />
-                  2) <code className="text-primary">catalog</code><br />
-                  3) <code className="text-primary">run google/gemini-2.5-flash "Bonjour"</code>
-                </p>
-              </div>
-            </div>
-            <div className="glass rounded-2xl p-5 flex items-start gap-4 border border-secondary/20">
-              <Sparkles className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium">Modèles HuggingFace</p>
-                <p className="text-muted-foreground mt-1">
-                  <code className="text-secondary">import hf mistralai/Mistral-7B-Instruct-v0.3</code><br />
-                  puis <code className="text-secondary">run hf/mistralai/Mistral-7B-Instruct-v0.3 "..."</code>
-                </p>
-              </div>
-            </div>
-            <div className="glass rounded-2xl p-5 flex items-start gap-4 border border-primary/10">
-              <TerminalSquare className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium">API publique</p>
-                <p className="text-muted-foreground mt-1">
-                  <code className="text-primary">POST /api/v1/chat/completions</code> — compatible OpenAI.{" "}
-                  Tape <code className="text-primary">export-key</code> pour le snippet Python, ou
-                  va sur <a href="/docs" className="text-primary underline">/docs</a>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="glass rounded-3xl p-6">
-            <label className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Github className="h-4 w-4 text-primary" />
-              Dépôt GitHub (optionnel)
-            </label>
-            <p className="text-xs text-muted-foreground mt-1">
-              Format : <code className="text-primary">owner/repo</code> ou URL complète.
-            </p>
-            <input
-              type="text"
-              value={repo}
-              onChange={(e) => setRepo(e.target.value)}
-              placeholder="aetheris-ai/exemple-projet"
-              className="mt-4 w-full rounded-xl bg-surface-elevated/50 border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-            />
-          </div>
+function Metric({
+  icon: Icon,
+  label,
+  value,
+  pct,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  pct: number;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground flex items-center gap-2">
+          <Icon className="size-4" /> {label}
+        </span>
+        <span className="font-mono">{value}</span>
+      </div>
+      <Progress value={pct} className="h-1.5" />
+    </div>
+  );
+}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a
-              href={vscodeDevUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass rounded-3xl p-8 hover:shadow-glow-cyan transition-all group"
-            >
-              <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center shadow-glow-cyan mb-4">
-                <Code2 className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-display text-xl font-medium flex items-center gap-2">
-                vscode.dev
-                <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition" />
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                VSCode complet dans le navigateur, hébergé par Microsoft.
-              </p>
-              <div className="mt-6 w-full rounded-xl bg-gradient-primary text-primary-foreground font-medium px-4 py-3 text-sm text-center shadow-glow-cyan">
-                {cleanRepo ? `Ouvrir ${cleanRepo}` : "Ouvrir vscode.dev"}
-              </div>
-            </a>
-
-            <a
-              href={githubDevUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass rounded-3xl p-8 hover:shadow-glow-plasma transition-all group"
-            >
-              <div className="size-12 rounded-2xl bg-secondary/10 flex items-center justify-center shadow-glow-plasma mb-4">
-                <Github className="h-6 w-6 text-secondary" />
-              </div>
-              <h3 className="font-display text-xl font-medium flex items-center gap-2">
-                github.dev
-                <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-secondary transition" />
-              </h3>
-              <p className="text-sm text-muted-foreground mt-2">
-                Édition directe sur GitHub avec authentification intégrée.
-              </p>
-              <div className="mt-6 w-full rounded-xl bg-secondary/20 text-foreground font-medium px-4 py-3 text-sm text-center border border-secondary/30">
-                {cleanRepo ? `Ouvrir ${cleanRepo} sur github.dev` : "Ouvrir github.dev"}
-              </div>
-            </a>
-          </div>
-        </div>
-      )}
+function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-muted-foreground">{label}</span>
+      <span className={`truncate ${mono ? "font-mono text-xs" : ""}`}>{value}</span>
     </div>
   );
 }
