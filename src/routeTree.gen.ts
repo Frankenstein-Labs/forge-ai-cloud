@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardWorkspaceRouteImport } from './routes/dashboard.workspace'
+import { Route as DashboardSubscriptionRouteImport } from './routes/dashboard.subscription'
 import { Route as DashboardStorageRouteImport } from './routes/dashboard.storage'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
@@ -64,6 +65,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const DashboardWorkspaceRoute = DashboardWorkspaceRouteImport.update({
   id: '/workspace',
   path: '/workspace',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSubscriptionRoute = DashboardSubscriptionRouteImport.update({
+  id: '/subscription',
+  path: '/subscription',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardStorageRoute = DashboardStorageRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
+  '/dashboard/subscription': typeof DashboardSubscriptionRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
+  '/dashboard/subscription': typeof DashboardSubscriptionRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/dashboard/models': typeof DashboardModelsRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/storage': typeof DashboardStorageRoute
+  '/dashboard/subscription': typeof DashboardSubscriptionRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
+    | '/dashboard/subscription'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
+    | '/dashboard/subscription'
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/dashboard/models'
     | '/dashboard/settings'
     | '/dashboard/storage'
+    | '/dashboard/subscription'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
@@ -341,6 +353,13 @@ declare module '@tanstack/react-router' {
       path: '/workspace'
       fullPath: '/dashboard/workspace'
       preLoaderRoute: typeof DashboardWorkspaceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/subscription': {
+      id: '/dashboard/subscription'
+      path: '/subscription'
+      fullPath: '/dashboard/subscription'
+      preLoaderRoute: typeof DashboardSubscriptionRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/storage': {
@@ -452,6 +471,7 @@ interface DashboardRouteChildren {
   DashboardModelsRoute: typeof DashboardModelsRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStorageRoute: typeof DashboardStorageRoute
+  DashboardSubscriptionRoute: typeof DashboardSubscriptionRoute
   DashboardWorkspaceRoute: typeof DashboardWorkspaceRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -464,6 +484,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardModelsRoute: DashboardModelsRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStorageRoute: DashboardStorageRoute,
+  DashboardSubscriptionRoute: DashboardSubscriptionRoute,
   DashboardWorkspaceRoute: DashboardWorkspaceRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
