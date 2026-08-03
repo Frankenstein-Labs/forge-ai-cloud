@@ -25,9 +25,7 @@ function DashboardHome() {
 
   useEffect(() => {
     const load = async () => {
-      const { data: deploys } = await supabase
-        .from("deployments")
-        .select("status");
+      const { data: deploys } = await supabase.from("deployments").select("status");
       if (deploys) {
         setTotalDeployments(deploys.length);
         setActiveDeployments(deploys.filter((d) => d.status === "active").length);
@@ -209,7 +207,9 @@ function StatCard({
           <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
             {label}
           </p>
-          <div className={`size-8 rounded-xl bg-white/5 flex items-center justify-center ${glowClass}`}>
+          <div
+            className={`size-8 rounded-xl bg-white/5 flex items-center justify-center ${glowClass}`}
+          >
             <Icon className={`h-4 w-4 ${accentClass}`} />
           </div>
         </div>

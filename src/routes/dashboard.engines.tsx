@@ -4,13 +4,7 @@ import { Plus, Server, Play, Square, Terminal as TerminalIcon } from "lucide-rea
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -26,8 +20,7 @@ export const Route = createFileRoute("/dashboard/engines")({
       { title: "Mes Moteurs Cloud — Aetheris" },
       {
         name: "description",
-        content:
-          "Gérez vos conteneurs de développement cloud loués : Docker, Coder et envbuilder.",
+        content: "Gérez vos conteneurs de développement cloud loués : Docker, Coder et envbuilder.",
       },
       { property: "og:title", content: "Mes Moteurs Cloud — Aetheris" },
       {
@@ -42,9 +35,30 @@ export const Route = createFileRoute("/dashboard/engines")({
 });
 
 const ENGINES = [
-  { name: "aetheris-dev-eu-1", image: "ghcr.io/aetheris/dev:latest", region: "EU · Paris", specs: "4 vCPU · 8 Go · 50 Go", status: "running", price: "0,08 €/h" },
-  { name: "gpu-a100-train", image: "nvidia/cuda:12.4-runtime", region: "EU · Frankfurt", specs: "12 vCPU · 64 Go · A100", status: "stopped", price: "1,90 €/h" },
-  { name: "coder-node20", image: "codercom/enterprise-node:20", region: "US · Ashburn", specs: "2 vCPU · 4 Go · 20 Go", status: "running", price: "0,04 €/h" },
+  {
+    name: "aetheris-dev-eu-1",
+    image: "ghcr.io/aetheris/dev:latest",
+    region: "EU · Paris",
+    specs: "4 vCPU · 8 Go · 50 Go",
+    status: "running",
+    price: "0,08 €/h",
+  },
+  {
+    name: "gpu-a100-train",
+    image: "nvidia/cuda:12.4-runtime",
+    region: "EU · Frankfurt",
+    specs: "12 vCPU · 64 Go · A100",
+    status: "stopped",
+    price: "1,90 €/h",
+  },
+  {
+    name: "coder-node20",
+    image: "codercom/enterprise-node:20",
+    region: "US · Ashburn",
+    specs: "2 vCPU · 4 Go · 20 Go",
+    status: "running",
+    price: "0,04 €/h",
+  },
 ];
 
 function EnginesPage() {
@@ -97,11 +111,18 @@ function EnginesPage() {
                     </span>
                     <span className="text-muted-foreground text-xs">{e.price}</span>
                   </TableCell>
-                  <TableCell className="hidden font-mono text-xs md:table-cell">{e.image}</TableCell>
+                  <TableCell className="hidden font-mono text-xs md:table-cell">
+                    {e.image}
+                  </TableCell>
                   <TableCell className="hidden lg:table-cell">{e.region}</TableCell>
-                  <TableCell className="hidden font-mono text-xs lg:table-cell">{e.specs}</TableCell>
+                  <TableCell className="hidden font-mono text-xs lg:table-cell">
+                    {e.specs}
+                  </TableCell>
                   <TableCell>
-                    <Badge variant={e.status === "running" ? "default" : "secondary"} className="gap-1.5">
+                    <Badge
+                      variant={e.status === "running" ? "default" : "secondary"}
+                      className="gap-1.5"
+                    >
                       <span
                         className={`size-1.5 rounded-full ${e.status === "running" ? "bg-primary" : "bg-muted-foreground"}`}
                       />

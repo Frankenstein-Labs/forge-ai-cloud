@@ -17,9 +17,9 @@ export function Partners() {
               Devenez le <span className="text-gradient">moteur IA</span> de vos clients.
             </h2>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              Agences web, intégrateurs, cabinets de conseil — rejoignez la place de
-              marché Aetheris. Vendez des solutions IA clés en main, gardez 80-90% des
-              revenus, et accédez à un pipeline de clients qualifiés.
+              Agences web, intégrateurs, cabinets de conseil — rejoignez la place de marché
+              Aetheris. Vendez des solutions IA clés en main, gardez 80-90% des revenus, et accédez
+              à un pipeline de clients qualifiés.
             </p>
 
             <div className="mt-10 space-y-5">
@@ -73,9 +73,7 @@ export function Partners() {
                   <div className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
                     Tableau partenaire
                   </div>
-                  <div className="font-display text-2xl font-semibold mt-1">
-                    Q4 · 2025
-                  </div>
+                  <div className="font-display text-2xl font-semibold mt-1">Q4 · 2025</div>
                 </div>
                 <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-xs font-mono text-primary">
                   ● ACTIVE
@@ -86,9 +84,7 @@ export function Partners() {
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Revenus du mois</span>
-                    <span className="font-mono font-semibold text-foreground">
-                      €24,380
-                    </span>
+                    <span className="font-mono font-semibold text-foreground">€24,380</span>
                   </div>
                   <div className="h-2 rounded-full bg-background overflow-hidden">
                     <div className="h-full w-3/4 bg-gradient-primary rounded-full" />
@@ -121,9 +117,7 @@ export function Partners() {
                   { v: "12 pays", l: "couverts" },
                 ].map((s) => (
                   <div key={s.l}>
-                    <div className="font-display text-lg font-semibold text-gradient">
-                      {s.v}
-                    </div>
+                    <div className="font-display text-lg font-semibold text-gradient">{s.v}</div>
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">
                       {s.l}
                     </div>

@@ -170,9 +170,7 @@ export function AppSidebar() {
                     <span className="truncate text-sm font-medium">
                       {profile?.full_name ?? "Développeur"}
                     </span>
-                    <span className="text-muted-foreground truncate text-xs">
-                      {profile?.email}
-                    </span>
+                    <span className="text-muted-foreground truncate text-xs">{profile?.email}</span>
                   </div>
                   {!collapsed && <ChevronsUpDown className="ml-auto size-4" />}
                 </SidebarMenuButton>

@@ -214,9 +214,9 @@ function StoragePage() {
               Stockage <span className="italic text-primary">&</span> Intégrations
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl">
-              Branche tes modèles, ta DB et tes connecteurs IA. Chaque utilisateur
-              dispose de <span className="text-primary font-semibold">1 Go gratuit</span> pour son
-              index DB sémantique.
+              Branche tes modèles, ta DB et tes connecteurs IA. Chaque utilisateur dispose de{" "}
+              <span className="text-primary font-semibold">1 Go gratuit</span> pour son index DB
+              sémantique.
             </p>
           </div>
           <button
@@ -250,19 +250,14 @@ function StoragePage() {
               placeholder="aether_..."
               className="flex-1 bg-background/50 border border-white/10 rounded-xl px-4 py-2 font-mono text-sm"
               onKeyDown={(e) => {
-                if (e.key === "Enter")
-                  fetchStatus((e.target as HTMLInputElement).value);
+                if (e.key === "Enter") fetchStatus((e.target as HTMLInputElement).value);
               }}
             />
           </div>
         </section>
       )}
 
-      {error && (
-        <div className="glass rounded-2xl p-4 text-sm text-destructive">
-          ❌ {error}
-        </div>
-      )}
+      {error && <div className="glass rounded-2xl p-4 text-sm text-destructive">❌ {error}</div>}
 
       {/* Quotas */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -297,11 +292,10 @@ function StoragePage() {
               <PlugZap className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-display text-xl font-semibold">
-                Connecter ton proxy MongoDB
-              </h2>
+              <h2 className="font-display text-xl font-semibold">Connecter ton proxy MongoDB</h2>
               <p className="text-xs text-muted-foreground">
-                Renseigne l'URL publique et le token <code className="font-mono">PROXY_TOKEN</code> du VPS.
+                Renseigne l'URL publique et le token <code className="font-mono">PROXY_TOKEN</code>{" "}
+                du VPS.
               </p>
             </div>
           </div>
@@ -361,9 +355,10 @@ function StoragePage() {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          ℹ <strong>Tester</strong> ping le proxy. <strong>Enregistrer</strong> stocke l'URL et le token
-          pour ton compte : ils seront utilisés automatiquement dans <code className="font-mono">models</code>,
-          <code className="font-mono"> import</code>, <code className="font-mono">push</code>, <code className="font-mono">rm</code>
+          ℹ <strong>Tester</strong> ping le proxy. <strong>Enregistrer</strong> stocke l'URL et le
+          token pour ton compte : ils seront utilisés automatiquement dans{" "}
+          <code className="font-mono">models</code>,<code className="font-mono"> import</code>,{" "}
+          <code className="font-mono">push</code>, <code className="font-mono">rm</code>
           (au lieu du fallback Supabase).
         </p>
 
@@ -376,17 +371,13 @@ function StoragePage() {
         {mongoResult && <MongoResultPanel r={mongoResult} />}
       </section>
 
-
       <section>
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="font-display text-2xl font-semibold tracking-tight">
             Intégrations actives
           </h2>
           <span className="text-xs text-muted-foreground font-mono">
-            {integ
-              ? Object.values(integ).filter((i) => i.connected).length
-              : 0}{" "}
-            / 4 connectés
+            {integ ? Object.values(integ).filter((i) => i.connected).length : 0} / 4 connectés
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -436,9 +427,7 @@ function StoragePage() {
       {/* Snippet */}
       <section className="glass rounded-3xl p-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-display text-lg font-semibold">
-            Push un modèle vers ton stockage
-          </h3>
+          <h3 className="font-display text-lg font-semibold">Push un modèle vers ton stockage</h3>
           <button
             onClick={() => {
               navigator.clipboard.writeText(
@@ -451,7 +440,7 @@ function StoragePage() {
           </button>
         </div>
         <pre className="font-mono text-xs bg-background/50 border border-white/5 rounded-xl p-4 overflow-x-auto text-muted-foreground">
-{`# Dans le terminal Aetheris :
+          {`# Dans le terminal Aetheris :
 push mistral-7b.gguf
 # → renvoie une URL pré-signée. Puis en local :
 curl -X PUT "<url>" --data-binary @mistral-7b.gguf`}
@@ -517,9 +506,7 @@ function QuotaCard({
             <span className="font-display text-3xl font-semibold tracking-tight">
               {fmtBytes(used)}
             </span>
-            <span className="text-sm text-muted-foreground">
-              / {fmtBytes(quota)}
-            </span>
+            <span className="text-sm text-muted-foreground">/ {fmtBytes(quota)}</span>
           </div>
           <div className="mt-3 h-2 w-full bg-white/5 rounded-full overflow-hidden">
             <div
@@ -596,24 +583,16 @@ function IntegrationCard({
             {tag}
           </span>
         )}
-        {!tag && (
-          <ArrowUpRight className="h-3 w-3 opacity-50" />
-        )}
+        {!tag && <ArrowUpRight className="h-3 w-3 opacity-50" />}
       </div>
-      {error && (
-        <p className="text-[11px] text-destructive font-mono">⚠ {error}</p>
-      )}
-      {extra && (
-        <p className="text-[11px] text-muted-foreground italic">{extra}</p>
-      )}
+      {error && <p className="text-[11px] text-destructive font-mono">⚠ {error}</p>}
+      {extra && <p className="text-[11px] text-muted-foreground italic">{extra}</p>}
     </div>
   );
 }
 
 function MongoResultPanel({ r }: { r: MongoTestResult }) {
-  const tone = r.ok
-    ? "border-primary/40 bg-primary/5"
-    : "border-destructive/40 bg-destructive/5";
+  const tone = r.ok ? "border-primary/40 bg-primary/5" : "border-destructive/40 bg-destructive/5";
   return (
     <div className={`rounded-2xl border p-4 flex flex-col gap-2 ${tone}`}>
       <div className="flex items-center gap-2 text-sm font-medium">
@@ -630,25 +609,19 @@ function MongoResultPanel({ r }: { r: MongoTestResult }) {
         </span>
       </div>
       {r.message && <p className="text-sm">{r.message}</p>}
-      {r.error && (
-        <p className="text-sm text-destructive font-mono break-all">{r.error}</p>
-      )}
-      {r.hint && (
-        <p className="text-xs text-muted-foreground italic">💡 {r.hint}</p>
-      )}
+      {r.error && <p className="text-sm text-destructive font-mono break-all">{r.error}</p>}
+      {r.hint && <p className="text-xs text-muted-foreground italic">💡 {r.hint}</p>}
       {r.target && (
-        <p className="text-[11px] font-mono text-muted-foreground break-all">
-          → {r.target}
-        </p>
+        <p className="text-[11px] font-mono text-muted-foreground break-all">→ {r.target}</p>
       )}
       {r.body && (
         <pre className="text-[11px] font-mono bg-background/50 border border-white/5 rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
-{r.body}
+          {r.body}
         </pre>
       )}
       {r.ok && r.response !== undefined && (
         <pre className="text-[11px] font-mono bg-background/50 border border-white/5 rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
-{JSON.stringify(r.response, null, 2)}
+          {JSON.stringify(r.response, null, 2)}
         </pre>
       )}
     </div>

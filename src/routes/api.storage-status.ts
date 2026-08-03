@@ -1,15 +1,7 @@
 // GET /api/storage-status — agrège l'état des intégrations + quota Seaweed/index.
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  authenticateApiKey,
-  corsHeaders,
-  jsonResponse,
-} from "@/lib/api-auth";
-import {
-  getSeaweedConfig,
-  s3List,
-  userPrefix,
-} from "@/lib/seaweed";
+import { authenticateApiKey, corsHeaders, jsonResponse } from "@/lib/api-auth";
+import { getSeaweedConfig, s3List, userPrefix } from "@/lib/seaweed";
 import { getMongoConfigForUser, mongo } from "@/lib/mongo-proxy";
 
 const ONE_GB = 1_000_000_000;
@@ -17,8 +9,7 @@ const ONE_GB = 1_000_000_000;
 export const Route = createFileRoute("/api/storage-status")({
   server: {
     handlers: {
-      OPTIONS: async () =>
-        new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       GET: async ({ request }) => {
         const authed = await authenticateApiKey(request);
@@ -48,11 +39,7 @@ export const Route = createFileRoute("/api/storage-status")({
         let indexObjects = 0;
         if (seaweed && !storageError) {
           try {
-            const idx = await s3List(
-              seaweed,
-              `${userPrefix(authed.user_id)}_index/`,
-              1000,
-            );
+            const idx = await s3List(seaweed, `${userPrefix(authed.user_id)}_index/`, 1000);
             indexObjects = idx.length;
             indexBytes = idx.reduce((s, o) => s + o.size, 0);
           } catch {

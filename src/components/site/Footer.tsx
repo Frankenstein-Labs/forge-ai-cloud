@@ -34,8 +34,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-5 text-sm text-muted-foreground max-w-xs leading-relaxed">
-              Le cloud unifié pour déployer, orchestrer et facturer l'IA open source.
-              Construit en Europe.
+              Le cloud unifié pour déployer, orchestrer et facturer l'IA open source. Construit en
+              Europe.
             </p>
             <p className="mt-6 font-mono text-xs text-muted-foreground">
               © 2025 Aetheris Cloud · Made with ⚡ in Paris

@@ -61,19 +61,15 @@ export async function authenticateApiKey(request: Request) {
 export const Route = createFileRoute("/api/ai/validate")({
   server: {
     handlers: {
-      OPTIONS: async () =>
-        new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       GET: async ({ request }) => {
         const auth = await authenticateApiKey(request);
         if (!auth) {
-          return new Response(
-            JSON.stringify({ error: "Clé API invalide ou manquante" }),
-            {
-              status: 401,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
-          );
+          return new Response(JSON.stringify({ error: "Clé API invalide ou manquante" }), {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
         }
         return new Response(
           JSON.stringify({

@@ -210,10 +210,7 @@ function AuthPage() {
                   Mot de passe
                 </label>
                 {!isSignup && (
-                  <Link
-                    to="/reset-password"
-                    className="text-xs text-primary hover:text-primary/80"
-                  >
+                  <Link to="/reset-password" className="text-xs text-primary hover:text-primary/80">
                     Oublié ?
                   </Link>
                 )}

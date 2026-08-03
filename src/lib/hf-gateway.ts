@@ -96,9 +96,7 @@ export async function checkHuggingFaceRepo(repo: string): Promise<{
 }> {
   try {
     const r = await fetch(`https://huggingface.co/api/models/${encodeURIComponent(repo)}`, {
-      headers: process.env.HF_TOKEN
-        ? { Authorization: `Bearer ${process.env.HF_TOKEN}` }
-        : {},
+      headers: process.env.HF_TOKEN ? { Authorization: `Bearer ${process.env.HF_TOKEN}` } : {},
     });
     if (r.status === 404) return { exists: false, error: "Repo introuvable" };
     if (!r.ok) return { exists: false, error: `HTTP ${r.status}` };

@@ -3,16 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import {
-  Plus,
-  Copy,
-  Check,
-  Trash2,
-  Loader2,
-  KeyRound,
-  ShieldCheck,
-  X,
-} from "lucide-react";
+import { Plus, Copy, Check, Trash2, Loader2, KeyRound, ShieldCheck, X } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/api-keys")({
   head: () => ({
@@ -64,10 +55,7 @@ function ApiKeysPage() {
 
   const revoke = async (id: string) => {
     if (!confirm("Révoquer cette clé ? Cette action est irréversible.")) return;
-    const { error } = await supabase
-      .from("api_keys")
-      .update({ status: "revoked" })
-      .eq("id", id);
+    const { error } = await supabase.from("api_keys").update({ status: "revoked" }).eq("id", id);
     if (error) toast.error(error.message);
     else {
       toast.success("Clé révoquée");
@@ -209,11 +197,11 @@ function ApiKeysPage() {
         <div className="text-sm">
           <p className="font-medium text-foreground">Utilisation depuis votre terminal</p>
           <p className="text-muted-foreground mt-1">
-            Une fois votre clé créée, vous pouvez l'utiliser via notre API REST, le CLI ou les
-            SDK Python/JS.
+            Une fois votre clé créée, vous pouvez l'utiliser via notre API REST, le CLI ou les SDK
+            Python/JS.
           </p>
           <pre className="mt-3 bg-black/40 border border-white/10 rounded-xl px-4 py-3 font-mono text-xs text-primary overflow-x-auto">
-{`curl ${typeof window !== "undefined" ? window.location.origin : "https://app.aetheris.ai"}/api/ai/validate \\
+            {`curl ${typeof window !== "undefined" ? window.location.origin : "https://app.aetheris.ai"}/api/ai/validate \\
   -H "X-API-Key: ae_live_xxx"`}
           </pre>
         </div>
@@ -249,7 +237,8 @@ function ApiKeysPage() {
               <h3 className="font-display text-xl font-semibold">Votre nouvelle clé</h3>
             </div>
             <p className="text-sm text-muted-foreground">
-              Conservez-la précieusement. <strong className="text-destructive">Elle ne sera plus jamais affichée.</strong>
+              Conservez-la précieusement.{" "}
+              <strong className="text-destructive">Elle ne sera plus jamais affichée.</strong>
             </p>
             <div className="mt-4 bg-black/60 border border-primary/30 rounded-xl p-4 font-mono text-xs text-primary break-all">
               {revealedKey}
@@ -315,7 +304,8 @@ function TestEndpointCard() {
         <div>
           <h3 className="font-display text-lg font-medium">Tester ma clé</h3>
           <p className="text-xs text-muted-foreground">
-            Vérifie que ta clé est acceptée par le middleware <code className="font-mono">/api/ai/*</code>
+            Vérifie que ta clé est acceptée par le middleware{" "}
+            <code className="font-mono">/api/ai/*</code>
           </p>
         </div>
       </div>
@@ -350,7 +340,8 @@ function TestEndpointCard() {
               <div>user_id: {result.user_id}</div>
               <div>permissions: {result.permissions}</div>
               <div>
-                budget: {result.budget_limit_tokens ? `${result.budget_limit_tokens} tk` : "illimité"}
+                budget:{" "}
+                {result.budget_limit_tokens ? `${result.budget_limit_tokens} tk` : "illimité"}
               </div>
             </div>
           ) : (
@@ -365,11 +356,23 @@ function TestEndpointCard() {
 function StatusBadge({ status }: { status: ApiKey["status"] }) {
   const cfg = {
     active: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary", label: "Actif" },
-    revoked: { bg: "bg-destructive/10", text: "text-destructive", dot: "bg-destructive", label: "Révoqué" },
-    expired: { bg: "bg-muted", text: "text-muted-foreground", dot: "bg-muted-foreground", label: "Expiré" },
+    revoked: {
+      bg: "bg-destructive/10",
+      text: "text-destructive",
+      dot: "bg-destructive",
+      label: "Révoqué",
+    },
+    expired: {
+      bg: "bg-muted",
+      text: "text-muted-foreground",
+      dot: "bg-muted-foreground",
+      label: "Expiré",
+    },
   }[status];
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${cfg.bg} ${cfg.text}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${cfg.bg} ${cfg.text}`}
+    >
       <span className={`size-1.5 rounded-full ${cfg.dot}`} />
       {cfg.label}
     </span>

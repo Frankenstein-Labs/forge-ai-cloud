@@ -13,8 +13,7 @@ export function CTA() {
           <div className="relative px-8 py-20 md:px-16 md:py-28 text-center">
             <h2 className="font-display text-4xl md:text-6xl font-semibold tracking-tight max-w-3xl mx-auto leading-tight">
               Ton prochain modèle IA <br />
-              tourne déjà sur{" "}
-              <span className="text-gradient">Aetheris</span>.
+              tourne déjà sur <span className="text-gradient">Aetheris</span>.
             </h2>
             <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto">
               Rejoins 4 200 développeurs qui construisent l'avenir de l'IA souveraine.

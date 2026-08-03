@@ -64,25 +64,16 @@ function toHex(buf: ArrayBuffer | Uint8Array): string {
 }
 
 async function sha256Hex(input: string | Uint8Array): Promise<string> {
-  const data: BufferSource =
-    typeof input === "string" ? enc.encode(input) : new Uint8Array(input);
+  const data: BufferSource = typeof input === "string" ? enc.encode(input) : new Uint8Array(input);
   const h = await crypto.subtle.digest("SHA-256", data);
   return toHex(h);
 }
 
-async function hmac(
-  key: ArrayBuffer | Uint8Array,
-  data: string,
-): Promise<ArrayBuffer> {
-  const keyBuf: BufferSource =
-    key instanceof Uint8Array ? new Uint8Array(key) : key;
-  const k = await crypto.subtle.importKey(
-    "raw",
-    keyBuf,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
+async function hmac(key: ArrayBuffer | Uint8Array, data: string): Promise<ArrayBuffer> {
+  const keyBuf: BufferSource = key instanceof Uint8Array ? new Uint8Array(key) : key;
+  const k = await crypto.subtle.importKey("raw", keyBuf, { name: "HMAC", hash: "SHA-256" }, false, [
+    "sign",
+  ]);
   return crypto.subtle.sign("HMAC", k, enc.encode(data));
 }
 
@@ -115,8 +106,9 @@ function encodeRfc3986(s: string, encodeSlash = true): string {
         return c;
       }
       if (c === "/" && !encodeSlash) return c;
-      return encodeURIComponent(c).replace(/[!'()*]/g, (ch) =>
-        "%" + ch.charCodeAt(0).toString(16).toUpperCase(),
+      return encodeURIComponent(c).replace(
+        /[!'()*]/g,
+        (ch) => "%" + ch.charCodeAt(0).toString(16).toUpperCase(),
       );
     })
     .join("");
@@ -126,7 +118,10 @@ function encodeRfc3986(s: string, encodeSlash = true): string {
 
 function buildObjectUrl(cfg: SeaweedConfig, key: string): URL {
   // path-style : https://endpoint/bucket/key  (le plus compatible avec Seaweed)
-  const safeKey = key.split("/").map((p) => encodeRfc3986(p, true)).join("/");
+  const safeKey = key
+    .split("/")
+    .map((p) => encodeRfc3986(p, true))
+    .join("/");
   return new URL(`${cfg.endpoint}/${cfg.bucket}/${safeKey}`);
 }
 
@@ -173,7 +168,10 @@ export async function presignS3Url(
   const url = buildObjectUrl(cfg, opts.key);
   const now = new Date();
   const amzDate =
-    now.toISOString().replace(/[:-]|\.\d{3}/g, "").slice(0, 15) + "Z"; // YYYYMMDDTHHMMSSZ
+    now
+      .toISOString()
+      .replace(/[:-]|\.\d{3}/g, "")
+      .slice(0, 15) + "Z"; // YYYYMMDDTHHMMSSZ
   const dateStamp = amzDate.slice(0, 8);
   const credentialScope = `${dateStamp}/${cfg.region}/${SERVICE}/aws4_request`;
 
@@ -190,10 +188,7 @@ export async function presignS3Url(
   // Tri alpha pour canonical query
   const sortedQs = [...params.entries()]
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-    .map(
-      ([k, v]) =>
-        `${encodeRfc3986(k, true)}=${encodeRfc3986(v, true)}`,
-    )
+    .map(([k, v]) => `${encodeRfc3986(k, true)}=${encodeRfc3986(v, true)}`)
     .join("&");
 
   const canonicalRequest = [
@@ -229,7 +224,10 @@ async function signedRequest(
 ): Promise<Response> {
   const now = new Date();
   const amzDate =
-    now.toISOString().replace(/[:-]|\.\d{3}/g, "").slice(0, 15) + "Z";
+    now
+      .toISOString()
+      .replace(/[:-]|\.\d{3}/g, "")
+      .slice(0, 15) + "Z";
   const dateStamp = amzDate.slice(0, 8);
   const credentialScope = `${dateStamp}/${cfg.region}/${SERVICE}/aws4_request`;
   const payloadHash = await sha256Hex("");
@@ -237,10 +235,7 @@ async function signedRequest(
   const qs = new URLSearchParams(query);
   const sortedQs = [...qs.entries()]
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-    .map(
-      ([k, v]) =>
-        `${encodeRfc3986(k, true)}=${encodeRfc3986(v, true)}`,
-    )
+    .map(([k, v]) => `${encodeRfc3986(k, true)}=${encodeRfc3986(v, true)}`)
     .join("&");
 
   const canonicalHeaders =
@@ -343,18 +338,10 @@ export async function s3Head(
   };
 }
 
-export async function presignGet(
-  cfg: SeaweedConfig,
-  key: string,
-  expiresInSeconds = 3600,
-) {
+export async function presignGet(cfg: SeaweedConfig, key: string, expiresInSeconds = 3600) {
   return presignS3Url(cfg, { method: "GET", key, expiresInSeconds });
 }
 
-export async function presignPut(
-  cfg: SeaweedConfig,
-  key: string,
-  expiresInSeconds = 7200,
-) {
+export async function presignPut(cfg: SeaweedConfig, key: string, expiresInSeconds = 7200) {
   return presignS3Url(cfg, { method: "PUT", key, expiresInSeconds });
 }
