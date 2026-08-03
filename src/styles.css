@@ -136,6 +136,16 @@
   --shadow-card: 0 8px 32px -8px oklch(0.05 0.02 265 / 0.6);
 
   --grid-color: oklch(0.78 0.18 220 / 0.06);
+
+  /* Sidebar (shadcn-admin structure) */
+  --sidebar: oklch(0.16 0.032 265);
+  --sidebar-foreground: oklch(0.97 0.01 250);
+  --sidebar-primary: oklch(0.78 0.18 220);
+  --sidebar-primary-foreground: oklch(0.14 0.03 265);
+  --sidebar-accent: oklch(0.24 0.045 270);
+  --sidebar-accent-foreground: oklch(0.97 0.01 250);
+  --sidebar-border: oklch(0.28 0.04 270 / 0.6);
+  --sidebar-ring: oklch(0.78 0.18 220);
 }
 
 .dark {
