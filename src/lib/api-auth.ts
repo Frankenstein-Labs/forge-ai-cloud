@@ -69,6 +69,31 @@ export async function authenticateApiKey(request: Request): Promise<AuthedKey | 
   };
 }
 
+/**
+ * Authentifie soit une clé API Aetheris (sk-aeth-...), soit un JWT utilisateur
+ * Supabase (dashboard). Retourne un AuthedKey normalisé.
+ */
+export async function authenticateRequest(request: Request): Promise<AuthedKey | null> {
+  const raw = extractApiKey(request);
+  if (!raw) return null;
+  if (raw.startsWith("sk-aeth")) return authenticateApiKey(request);
+
+  // JWT utilisateur Supabase
+  try {
+    const supabase = getServerSupabase();
+    const { data, error } = await supabase.auth.getUser(raw);
+    if (error || !data.user) return await authenticateApiKey(request);
+    return {
+      user_id: data.user.id,
+      api_key_id: "session",
+      permissions: "admin",
+      budget_limit_tokens: null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
