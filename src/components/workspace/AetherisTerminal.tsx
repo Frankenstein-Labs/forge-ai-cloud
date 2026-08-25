@@ -7,6 +7,8 @@ import "@xterm/xterm/css/xterm.css";
  * Terminal interactif Aetheris (xterm.js).
  * - login <api-key>     : stocke la clé en mémoire + valide via /api/terminal
  * - help / whoami / models / run / upload / clear / logout / export-key
+ * Fonctions UI : historique (↑/↓), édition de ligne, autoscroll, Ctrl+C / Ctrl+L,
+ * gestion d'erreurs réseau détaillée.
  */
 export function AetherisTerminal() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -17,6 +19,8 @@ export function AetherisTerminal() {
 
     const term = new Terminal({
       cursorBlink: true,
+      scrollback: 5000,
+      convertEol: true,
       fontFamily: '"JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace',
       fontSize: 13,
       theme: {
@@ -43,9 +47,11 @@ export function AetherisTerminal() {
     let apiKey: string | null = null;
     let authedBadge = false;
     let buffer = "";
+    let cursor = 0;
     let busy = false;
+    const history: string[] = [];
+    let histIndex = -1;
 
-    // Origin absolu pour éviter les soucis de proxy preview (lovable.js)
     const ORIGIN = typeof window !== "undefined" ? window.location.origin : "";
     const ENDPOINT = `${ORIGIN}/api/terminal`;
     const CHAT_ENDPOINT = `${ORIGIN}/api/v1/chat/completions`;
@@ -55,12 +61,29 @@ export function AetherisTerminal() {
         ? "\x1b[38;5;82m●\x1b[0m \x1b[38;5;51maetheris\x1b[0m:\x1b[38;5;213m~\x1b[0m$ "
         : "\x1b[38;5;240m○\x1b[0m \x1b[38;5;51maetheris\x1b[0m:\x1b[38;5;213m~\x1b[0m$ ";
 
-    const writeln = (s: string) => term.writeln(s);
-    const prompt = () => term.write(PROMPT());
+    const writeln = (s: string) => {
+      term.writeln(s);
+      term.scrollToBottom();
+    };
+    const prompt = () => {
+      term.write(PROMPT());
+      term.scrollToBottom();
+    };
 
-    writeln("\x1b[38;5;51m⚡ Aetheris Terminal\x1b[0m  v0.2");
+    /** Réaffiche la ligne courante (après historique / édition). */
+    const redraw = () => {
+      term.write("\x1b[2K\r");
+      term.write(PROMPT() + buffer);
+      const back = buffer.length - cursor;
+      if (back > 0) term.write(`\x1b[${back}D`);
+    };
+
+    writeln("\x1b[38;5;51m⚡ Aetheris Terminal\x1b[0m  v0.3");
     writeln(
-      "Tape \x1b[38;5;213mhelp\x1b[0m pour la liste des commandes. Commence par \x1b[38;5;213mlogin <ta-clé-api>\x1b[0m.\n",
+      "Tape \x1b[38;5;213mhelp\x1b[0m pour la liste des commandes. Commence par \x1b[38;5;213mlogin <ta-clé-api>\x1b[0m.",
+    );
+    writeln(
+      "\x1b[38;5;245mAstuce : ↑/↓ pour l'historique, Ctrl+L pour nettoyer, Ctrl+C pour annuler.\x1b[0m\n",
     );
     prompt();
 
@@ -68,9 +91,7 @@ export function AetherisTerminal() {
       output?: string;
       authenticated?: boolean;
     } | null> {
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (apiKey) headers["X-API-Key"] = apiKey;
 
       try {
@@ -83,25 +104,28 @@ export function AetherisTerminal() {
         try {
           return JSON.parse(text) as { output?: string; authenticated?: boolean };
         } catch {
-          return { output: text || `(HTTP ${res.status})` };
+          if (!res.ok) {
+            writeln(`\x1b[38;5;203m✖ HTTP ${res.status} — ${res.statusText || "erreur"}\x1b[0m`);
+            if (text) writeln(`\x1b[38;5;245m${text.slice(0, 400)}\x1b[0m`);
+            return null;
+          }
+          return { output: text };
         }
       } catch (e) {
         writeln(`\x1b[38;5;203m✖ Erreur réseau : ${(e as Error).message}\x1b[0m`);
+        writeln("\x1b[38;5;245m  Vérifie ta connexion puis réessaie.\x1b[0m");
         return null;
       }
     }
 
     async function runRemote(command: string) {
       busy = true;
+      term.write("\x1b[38;5;245m… exécution\x1b[0m\r");
       const data = await callTerminal(command);
+      term.write("\x1b[2K\r");
       if (data) {
-        // Met à jour l'indicateur d'auth
-        if (typeof data.authenticated === "boolean") {
-          authedBadge = data.authenticated;
-        }
-        if (data.output) {
-          data.output.split("\n").forEach((line) => writeln(line));
-        }
+        if (typeof data.authenticated === "boolean") authedBadge = data.authenticated;
+        if (data.output) data.output.split("\n").forEach((line) => writeln(line));
       }
       busy = false;
       prompt();
@@ -155,10 +179,16 @@ export function AetherisTerminal() {
         prompt();
         return;
       }
+      if (history[history.length - 1] !== trimmed) history.push(trimmed);
+      histIndex = -1;
 
-      // Commandes locales (n'appellent pas le serveur)
       if (trimmed === "clear") {
         term.clear();
+        prompt();
+        return;
+      }
+      if (trimmed === "history") {
+        history.forEach((h, i) => writeln(`\x1b[38;5;245m${String(i + 1).padStart(3)}\x1b[0m  ${h}`));
         prompt();
         return;
       }
@@ -201,22 +231,64 @@ export function AetherisTerminal() {
           term.write("\r\n");
           execute(buffer);
           buffer = "";
+          cursor = 0;
           break;
         case "\u007F": // Backspace
-          if (buffer.length > 0) {
-            buffer = buffer.slice(0, -1);
-            term.write("\b \b");
+          if (cursor > 0) {
+            buffer = buffer.slice(0, cursor - 1) + buffer.slice(cursor);
+            cursor--;
+            redraw();
           }
           break;
         case "\u0003": // Ctrl+C
           term.write("^C\r\n");
           buffer = "";
+          cursor = 0;
           prompt();
+          break;
+        case "\u000c": // Ctrl+L
+          term.clear();
+          redraw();
+          break;
+        case "\u001b[A": // ↑
+          if (history.length) {
+            histIndex = histIndex < 0 ? history.length - 1 : Math.max(0, histIndex - 1);
+            buffer = history[histIndex] ?? "";
+            cursor = buffer.length;
+            redraw();
+          }
+          break;
+        case "\u001b[B": // ↓
+          if (histIndex >= 0) {
+            histIndex++;
+            if (histIndex >= history.length) {
+              histIndex = -1;
+              buffer = "";
+            } else {
+              buffer = history[histIndex] ?? "";
+            }
+            cursor = buffer.length;
+            redraw();
+          }
+          break;
+        case "\u001b[D": // ←
+          if (cursor > 0) {
+            cursor--;
+            term.write("\x1b[D");
+          }
+          break;
+        case "\u001b[C": // →
+          if (cursor < buffer.length) {
+            cursor++;
+            term.write("\x1b[C");
+          }
           break;
         default:
           if (data >= " " || data === "\t") {
-            buffer += data;
-            term.write(data);
+            buffer = buffer.slice(0, cursor) + data + buffer.slice(cursor);
+            cursor += data.length;
+            redraw();
+            term.scrollToBottom();
           }
       }
     });
@@ -229,9 +301,12 @@ export function AetherisTerminal() {
       }
     };
     window.addEventListener("resize", onResize);
+    const ro = new ResizeObserver(onResize);
+    ro.observe(containerRef.current);
 
     return () => {
       window.removeEventListener("resize", onResize);
+      ro.disconnect();
       dataDisp.dispose();
       term.dispose();
       termRef.current = null;
