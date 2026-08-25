@@ -29,6 +29,8 @@ import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-statu
 import { Route as ApiMongoTestRouteImport } from './routes/api.mongo-test'
 import { Route as ApiMongoConfigRouteImport } from './routes/api.mongo-config'
 import { Route as ApiMarketplaceRouteImport } from './routes/api.marketplace'
+import { Route as ApiEnginesRouteImport } from './routes/api.engines'
+import { Route as ApiMarketplaceDownloadRouteImport } from './routes/api.marketplace.download'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
 import { Route as ApiV1ModelsNameDownloadRouteImport } from './routes/api.v1.models.$name.download'
@@ -133,6 +135,16 @@ const ApiMarketplaceRoute = ApiMarketplaceRouteImport.update({
   path: '/api/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEnginesRoute = ApiEnginesRouteImport.update({
+  id: '/api/engines',
+  path: '/api/engines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMarketplaceDownloadRoute = ApiMarketplaceDownloadRouteImport.update({
+  id: '/download',
+  path: '/download',
+  getParentRoute: () => ApiMarketplaceRoute,
+} as any)
 const ApiAiValidateRoute = ApiAiValidateRouteImport.update({
   id: '/api/ai/validate',
   path: '/api/ai/validate',
@@ -155,7 +167,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/api/marketplace': typeof ApiMarketplaceRoute
+  '/api/engines': typeof ApiEnginesRoute
+  '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
   '/api/storage-status': typeof ApiStorageStatusRoute
@@ -171,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
+  '/api/marketplace/download': typeof ApiMarketplaceDownloadRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
@@ -179,7 +193,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/api/marketplace': typeof ApiMarketplaceRoute
+  '/api/engines': typeof ApiEnginesRoute
+  '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
   '/api/storage-status': typeof ApiStorageStatusRoute
@@ -195,6 +210,7 @@ export interface FileRoutesByTo {
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
+  '/api/marketplace/download': typeof ApiMarketplaceDownloadRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
@@ -205,7 +221,8 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/api/marketplace': typeof ApiMarketplaceRoute
+  '/api/engines': typeof ApiEnginesRoute
+  '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
   '/api/storage-status': typeof ApiStorageStatusRoute
@@ -221,6 +238,7 @@ export interface FileRoutesById {
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
+  '/api/marketplace/download': typeof ApiMarketplaceDownloadRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
@@ -232,6 +250,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/engines'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -248,6 +267,7 @@ export interface FileRouteTypes {
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
+    | '/api/marketplace/download'
     | '/api/v1/chat/completions'
     | '/api/v1/models/$name/download'
   fileRoutesByTo: FileRoutesByTo
@@ -256,6 +276,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/reset-password'
+    | '/api/engines'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -272,6 +293,7 @@ export interface FileRouteTypes {
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
+    | '/api/marketplace/download'
     | '/api/v1/chat/completions'
     | '/api/v1/models/$name/download'
   id:
@@ -281,6 +303,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/engines'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -297,6 +320,7 @@ export interface FileRouteTypes {
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
+    | '/api/marketplace/download'
     | '/api/v1/chat/completions'
     | '/api/v1/models/$name/download'
   fileRoutesById: FileRoutesById
@@ -307,7 +331,8 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   DocsRoute: typeof DocsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ApiMarketplaceRoute: typeof ApiMarketplaceRoute
+  ApiEnginesRoute: typeof ApiEnginesRoute
+  ApiMarketplaceRoute: typeof ApiMarketplaceRouteWithChildren
   ApiMongoConfigRoute: typeof ApiMongoConfigRoute
   ApiMongoTestRoute: typeof ApiMongoTestRoute
   ApiStorageStatusRoute: typeof ApiStorageStatusRoute
@@ -459,6 +484,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/engines': {
+      id: '/api/engines'
+      path: '/api/engines'
+      fullPath: '/api/engines'
+      preLoaderRoute: typeof ApiEnginesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/marketplace/download': {
+      id: '/api/marketplace/download'
+      path: '/download'
+      fullPath: '/api/marketplace/download'
+      preLoaderRoute: typeof ApiMarketplaceDownloadRouteImport
+      parentRoute: typeof ApiMarketplaceRoute
+    }
     '/api/ai/validate': {
       id: '/api/ai/validate'
       path: '/api/ai/validate'
@@ -513,13 +552,26 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface ApiMarketplaceRouteChildren {
+  ApiMarketplaceDownloadRoute: typeof ApiMarketplaceDownloadRoute
+}
+
+const ApiMarketplaceRouteChildren: ApiMarketplaceRouteChildren = {
+  ApiMarketplaceDownloadRoute: ApiMarketplaceDownloadRoute,
+}
+
+const ApiMarketplaceRouteWithChildren = ApiMarketplaceRoute._addFileChildren(
+  ApiMarketplaceRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DocsRoute: DocsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ApiMarketplaceRoute: ApiMarketplaceRoute,
+  ApiEnginesRoute: ApiEnginesRoute,
+  ApiMarketplaceRoute: ApiMarketplaceRouteWithChildren,
   ApiMongoConfigRoute: ApiMongoConfigRoute,
   ApiMongoTestRoute: ApiMongoTestRoute,
   ApiStorageStatusRoute: ApiStorageStatusRoute,
