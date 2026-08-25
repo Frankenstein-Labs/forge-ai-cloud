@@ -29,6 +29,7 @@ import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-statu
 import { Route as ApiMongoTestRouteImport } from './routes/api.mongo-test'
 import { Route as ApiMongoConfigRouteImport } from './routes/api.mongo-config'
 import { Route as ApiMarketplaceRouteImport } from './routes/api.marketplace'
+import { Route as ApiEnginesRouteImport } from './routes/api.engines'
 import { Route as ApiMarketplaceDownloadRouteImport } from './routes/api.marketplace.download'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
@@ -134,6 +135,11 @@ const ApiMarketplaceRoute = ApiMarketplaceRouteImport.update({
   path: '/api/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEnginesRoute = ApiEnginesRouteImport.update({
+  id: '/api/engines',
+  path: '/api/engines',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMarketplaceDownloadRoute = ApiMarketplaceDownloadRouteImport.update({
   id: '/download',
   path: '/download',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/engines': typeof ApiEnginesRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/engines': typeof ApiEnginesRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/api/engines': typeof ApiEnginesRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/engines'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/reset-password'
+    | '/api/engines'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/docs'
     | '/reset-password'
+    | '/api/engines'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -319,6 +331,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   DocsRoute: typeof DocsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiEnginesRoute: typeof ApiEnginesRoute
   ApiMarketplaceRoute: typeof ApiMarketplaceRouteWithChildren
   ApiMongoConfigRoute: typeof ApiMongoConfigRoute
   ApiMongoTestRoute: typeof ApiMongoTestRoute
@@ -471,6 +484,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/engines': {
+      id: '/api/engines'
+      path: '/api/engines'
+      fullPath: '/api/engines'
+      preLoaderRoute: typeof ApiEnginesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/marketplace/download': {
       id: '/api/marketplace/download'
       path: '/download'
@@ -550,6 +570,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   DocsRoute: DocsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiEnginesRoute: ApiEnginesRoute,
   ApiMarketplaceRoute: ApiMarketplaceRouteWithChildren,
   ApiMongoConfigRoute: ApiMongoConfigRoute,
   ApiMongoTestRoute: ApiMongoTestRoute,
