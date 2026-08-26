@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Activity,
   Cpu,
   Download,
+  Loader2,
   MemoryStick,
   Play,
   RotateCw,
@@ -15,8 +16,18 @@ import { toast } from "sonner";
 import { AetherisTerminal } from "@/components/workspace/AetherisTerminal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { formatUptime, useEngines } from "@/hooks/useEngines";
 
 export const Route = createFileRoute("/dashboard/workspace")({
   head: () => ({
@@ -39,69 +50,46 @@ export const Route = createFileRoute("/dashboard/workspace")({
   component: WorkspacePage,
 });
 
-type EngineState = "running" | "stopped" | "restarting";
+const STATUS_META: Record<
+  string,
+  { label: string; dot: string; variant: "default" | "secondary" | "destructive" }
+> = {
+  running: { label: "En cours", dot: "bg-primary", variant: "default" },
+  stopped: { label: "Arrêté", dot: "bg-destructive", variant: "destructive" },
+  restarting: { label: "Redémarrage…", dot: "bg-secondary", variant: "secondary" },
+};
 
 function WorkspacePage() {
-  const [engine, setEngine] = useState<EngineState>("running");
-  const [cpu, setCpu] = useState(18);
-  const [ram, setRam] = useState(42);
-  const [disk] = useState(31);
-  const [uptime, setUptime] = useState(0);
+  const { engines, events, loading, error, busy, runAction } = useEngines(4000);
+  const engine = engines[0];
+  const status = engine?.status ?? "stopped";
+  const meta = STATUS_META[status] ?? STATUS_META.stopped;
+  const metrics = engine?.metrics ?? { cpu: 0, ram: 0, disk: 0, uptime_seconds: 0 };
+  const ramGb = engine?.ram_gb ?? 8;
+  const diskGb = engine?.disk_gb ?? 50;
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (engine === "running") {
-        setCpu((v) => Math.max(4, Math.min(96, v + (Math.random() * 18 - 9))));
-        setRam((v) => Math.max(10, Math.min(94, v + (Math.random() * 8 - 4))));
-        setUptime((v) => v + 2);
-      } else {
-        setCpu(0);
-        setRam(0);
+  const [pullOpen, setPullOpen] = useState(false);
+  const [model, setModel] = useState("mistralai/Mistral-7B-Instruct-v0.3");
+
+  const act = async (
+    action: "start" | "stop" | "restart" | "vscode" | "pull-model",
+    modelName?: string,
+  ) => {
+    try {
+      const res = await runAction(action, engine?.id, modelName);
+      if (res.url) {
+        window.open(res.url, "_blank", "noopener,noreferrer");
       }
-    }, 2000);
-    return () => clearInterval(id);
-  }, [engine]);
-
-  const statusMeta: Record<
-    EngineState,
-    { label: string; dot: string; variant: "default" | "secondary" | "destructive" }
-  > = {
-    running: { label: "En cours", dot: "bg-primary", variant: "default" },
-    stopped: { label: "Arrêté", dot: "bg-destructive", variant: "destructive" },
-    restarting: { label: "Redémarrage…", dot: "bg-secondary", variant: "secondary" },
-  };
-
-  const restart = () => {
-    setEngine("restarting");
-    toast.info("Redémarrage du moteur…");
-    setTimeout(() => {
-      setEngine("running");
-      setUptime(0);
-      toast.success("Moteur redémarré");
-    }, 1800);
-  };
-
-  const stop = () => {
-    setEngine("stopped");
-    setUptime(0);
-    toast.warning("Moteur arrêté");
-  };
-
-  const start = () => {
-    setEngine("running");
-    toast.success("Moteur démarré");
-  };
-
-  const fmtUptime = () => {
-    const h = Math.floor(uptime / 3600);
-    const m = Math.floor((uptime % 3600) / 60);
-    const s = uptime % 60;
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      toast.success(res.message);
+      return true;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Action impossible");
+      return false;
+    }
   };
 
   return (
     <div className="flex flex-1 flex-col gap-6">
-      {/* Header + action bar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="font-display text-2xl font-semibold tracking-tight">Espace de travail</h1>
@@ -110,43 +98,58 @@ function WorkspacePage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {engine === "stopped" ? (
-            <Button size="sm" onClick={start}>
-              <Play className="mr-2 size-4" /> Démarrer
+          {status === "stopped" ? (
+            <Button size="sm" onClick={() => act("start")} disabled={!!busy || loading}>
+              {busy?.startsWith("start") ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Play className="mr-2 size-4" />
+              )}
+              Démarrer
             </Button>
           ) : (
-            <Button size="sm" variant="outline" onClick={restart}>
-              <RotateCw className="mr-2 size-4" /> Redémarrer le moteur
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => act("restart")}
+              disabled={!!busy || loading}
+            >
+              {busy?.startsWith("restart") ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <RotateCw className="mr-2 size-4" />
+              )}
+              Redémarrer le moteur
             </Button>
           )}
-          <Button size="sm" variant="outline" onClick={stop} disabled={engine === "stopped"}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => act("stop")}
+            disabled={!!busy || loading || status === "stopped"}
+          >
             <Square className="mr-2 size-4" /> Stop
           </Button>
           <Button
             size="sm"
             variant="outline"
-            onClick={() =>
-              engine === "running"
-                ? toast.info("Ouverture de VS Code Web (code-server)…")
-                : toast.error("Démarrez le moteur avant d'ouvrir VS Code")
-            }
+            onClick={() => act("vscode")}
+            disabled={!!busy || loading}
           >
             <Code2 className="mr-2 size-4" /> Ouvrir VS Code
           </Button>
-          <Button
-            size="sm"
-            onClick={() =>
-              toast.info(
-                "Utilisez « pull <modèle> » dans le terminal pour télécharger un modèle IA.",
-              )
-            }
-          >
+          <Button size="sm" onClick={() => setPullOpen(true)} disabled={loading}>
             <Download className="mr-2 size-4" /> Télécharger le modèle IA
           </Button>
         </div>
       </div>
 
-      {/* Terminal + engine panel */}
+      {error && (
+        <p className="text-destructive text-sm">
+          Impossible de joindre le service des moteurs : {error}
+        </p>
+      )}
+
       <div className="grid flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="flex min-h-[520px] flex-col overflow-hidden p-0">
           <CardHeader className="flex-row items-center justify-between gap-2 border-b px-4 py-3">
@@ -156,11 +159,13 @@ function WorkspacePage() {
                 <span className="size-3 rounded-full bg-secondary/70" />
                 <span className="size-3 rounded-full bg-primary/70" />
               </span>
-              <CardTitle className="ml-2 font-mono text-sm">aetheris@workspace: ~</CardTitle>
+              <CardTitle className="ml-2 font-mono text-sm">
+                aetheris@{engine?.name ?? "workspace"}: ~
+              </CardTitle>
             </div>
-            <Badge variant={statusMeta[engine].variant} className="gap-1.5">
-              <span className={`size-1.5 rounded-full ${statusMeta[engine].dot}`} />
-              {statusMeta[engine].label}
+            <Badge variant={meta.variant} className="gap-1.5">
+              <span className={`size-1.5 rounded-full ${meta.dot}`} />
+              {loading ? "Connexion…" : meta.label}
             </Badge>
           </CardHeader>
           <CardContent className="flex-1 p-0">
@@ -172,21 +177,21 @@ function WorkspacePage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Statut du moteur</CardTitle>
-              <CardDescription>Conteneur aetheris-dev-eu-1</CardDescription>
+              <CardDescription>{engine?.name ?? "Aucun moteur"}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <Metric icon={Cpu} label="CPU" value={`${cpu.toFixed(0)} %`} pct={cpu} />
+              <Metric icon={Cpu} label="CPU" value={`${metrics.cpu} %`} pct={metrics.cpu} />
               <Metric
                 icon={MemoryStick}
                 label="RAM"
-                value={`${((ram / 100) * 8).toFixed(1)} / 8 Go`}
-                pct={ram}
+                value={`${((metrics.ram / 100) * ramGb).toFixed(1)} / ${ramGb} Go`}
+                pct={metrics.ram}
               />
               <Metric
                 icon={HardDrive}
                 label="Disque"
-                value={`${((disk / 100) * 50).toFixed(0)} / 50 Go`}
-                pct={disk}
+                value={`${((metrics.disk / 100) * diskGb).toFixed(0)} / ${diskGb} Go`}
+                pct={metrics.disk}
               />
             </CardContent>
           </Card>
@@ -196,29 +201,84 @@ function WorkspacePage() {
               <CardTitle className="text-base">Détails</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <Row label="Statut" value={statusMeta[engine].label} />
-              <Row label="Uptime" value={fmtUptime()} mono />
-              <Row label="Image" value="ghcr.io/aetheris/dev:latest" mono />
-              <Row label="Région" value="EU · Paris" />
-              <Row label="Runtime" value="Docker · envbuilder" />
+              <Row label="Statut" value={meta.label} />
+              <Row label="Uptime" value={formatUptime(metrics.uptime_seconds)} mono />
+              <Row label="Image" value={engine?.image ?? "—"} mono />
+              <Row label="Région" value={engine?.region ?? "—"} />
+              <Row
+                label="Ressources"
+                value={
+                  engine ? `${engine.cpu_cores} vCPU · ${engine.ram_gb} Go · ${engine.disk_gb} Go` : "—"
+                }
+                mono
+              />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Activity className="size-4" /> Astuce
+                <Activity className="size-4" /> Journal
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-muted-foreground text-sm">
-              Tapez <code className="text-primary font-mono">help</code> puis{" "}
-              <code className="text-primary font-mono">login sk-aeth-…</code> pour authentifier
-              votre session, et <code className="text-primary font-mono">export-key</code> pour un
-              snippet Python prêt à l'emploi.
+            <CardContent className="space-y-2 text-sm">
+              {events.length === 0 ? (
+                <p className="text-muted-foreground">
+                  Aucune opération encore. Tapez <code className="text-primary font-mono">help</code>{" "}
+                  dans le terminal.
+                </p>
+              ) : (
+                events.slice(0, 6).map((ev) => (
+                  <div key={ev.id} className="flex items-start gap-2">
+                    <span
+                      className={`mt-1.5 size-1.5 shrink-0 rounded-full ${ev.status === "ok" ? "bg-primary" : "bg-destructive"}`}
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate text-xs">{ev.message}</p>
+                      <p className="text-muted-foreground font-mono text-[10px]">
+                        {new Date(ev.created_at).toLocaleTimeString()} · {ev.action}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <Dialog open={pullOpen} onOpenChange={setPullOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Télécharger un modèle IA</DialogTitle>
+            <DialogDescription>
+              Indiquez un dépôt HuggingFace (ex. <code>mistralai/Mistral-7B-Instruct-v0.3</code>).
+              Le modèle est vérifié puis rattaché à votre moteur.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            placeholder="org/nom-du-modele"
+            className="font-mono"
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPullOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              disabled={!model.trim() || !!busy}
+              onClick={async () => {
+                const ok = await act("pull-model", model.trim());
+                if (ok) setPullOpen(false);
+              }}
+            >
+              {busy?.startsWith("pull") && <Loader2 className="mr-2 size-4 animate-spin" />}
+              Télécharger
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
