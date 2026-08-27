@@ -5,9 +5,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
   authenticateApiKey,
-  corsHeaders,
+  apiError,
+  corsHeadersFor,
   getServerSupabase,
   jsonResponse,
+  readJsonBody,
+  RequestBodyTooLargeError,
+  requireApiPermission,
   unauthorizedResponse,
 } from "@/lib/api-auth";
 import { callHuggingFace } from "@/lib/hf-gateway";
@@ -41,25 +45,42 @@ const DEFAULT_MODEL = "google/gemini-2.5-flash";
 export const Route = createFileRoute("/api/v1/chat/completions")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: corsHeadersFor(request) }),
 
       POST: async ({ request }) => {
         // 1) Auth par clé API
         const authed = await authenticateApiKey(request);
-        if (!authed) return unauthorizedResponse();
+        if (!authed) return unauthorizedResponse(undefined, request);
+        if (!requireApiPermission(authed, "read_write")) {
+          return apiError(
+            request,
+            403,
+            "INSUFFICIENT_SCOPE",
+            "Cette clé ne peut pas exécuter une inférence.",
+          );
+        }
 
         // 2) Parse + validation
         let body: ChatRequest;
         try {
-          body = (await request.json()) as ChatRequest;
-        } catch {
-          return jsonResponse({ error: "JSON invalide" }, 400);
+          body = await readJsonBody<ChatRequest>(request);
+        } catch (error) {
+          if (error instanceof RequestBodyTooLargeError) {
+            return apiError(
+              request,
+              413,
+              "REQUEST_TOO_LARGE",
+              "Le corps de la requête est trop volumineux.",
+            );
+          }
+          return apiError(request, 400, "INVALID_JSON", "Corps JSON invalide.");
         }
 
         const requestedModel = (body.model ?? DEFAULT_MODEL).trim();
         const messages = Array.isArray(body.messages) ? body.messages : [];
         if (messages.length === 0) {
-          return jsonResponse({ error: "'messages' requis (format OpenAI chat.completions)" }, 400);
+          return apiError(request, 400, "INVALID_REQUEST", "'messages' est requis.");
         }
 
         // 3) Vérifier les crédits utilisateur
@@ -71,10 +92,7 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           .maybeSingle();
 
         if (profile && profile.credits_balance <= 0) {
-          return jsonResponse(
-            { error: "Crédits épuisés. Recharge ton compte sur /dashboard/billing." },
-            402,
-          );
+          return apiError(request, 402, "CREDITS_EXHAUSTED", "Crédits épuisés.");
         }
 
         // 4) Routing : HuggingFace ou Lovable AI Gateway
@@ -98,12 +116,11 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           // ── Route HuggingFace ────────────────────────────────────────
           const repo = requestedModel.slice(3); // "hf/owner/name" -> "owner/name"
           if (!repo.includes("/")) {
-            return jsonResponse(
-              {
-                error:
-                  "Format attendu : 'hf/<owner>/<repo>' (ex: hf/mistralai/Mistral-7B-Instruct-v0.3)",
-              },
+            return apiError(
+              request,
               400,
+              "INVALID_MODEL",
+              "Format de modèle Hugging Face invalide.",
             );
           }
           const hf = await callHuggingFace(repo, {
@@ -114,9 +131,11 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           });
           if (!hf.ok) {
             const status = hf.status === 401 ? 502 : hf.status; // évite 401 vers le client
-            return jsonResponse(
-              { error: `HuggingFace error (${hf.status})`, details: hf.message },
+            return apiError(
+              request,
               status >= 400 && status < 600 ? status : 502,
+              "PROVIDER_UNAVAILABLE",
+              "Le provider Hugging Face n'a pas pu traiter cette requête.",
             );
           }
           result = hf.data;
@@ -126,9 +145,11 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           const model = LOVABLE_MODELS.has(requestedModel) ? requestedModel : DEFAULT_MODEL;
           const lovableKey = process.env.LOVABLE_API_KEY;
           if (!lovableKey) {
-            return jsonResponse(
-              { error: "Backend mal configuré (LOVABLE_API_KEY manquante)." },
-              500,
+            return apiError(
+              request,
+              503,
+              "PROVIDER_NOT_CONFIGURED",
+              "Le provider demandé n'est pas configuré.",
             );
           }
 
@@ -147,17 +168,24 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           });
 
           if (upstream.status === 429) {
-            return jsonResponse({ error: "Rate limit dépassé sur le gateway IA." }, 429);
+            return apiError(
+              request,
+              429,
+              "PROVIDER_RATE_LIMITED",
+              "Le provider a limité cette requête.",
+            );
           }
           if (upstream.status === 402) {
-            return jsonResponse({ error: "Crédits Lovable AI épuisés côté workspace." }, 402);
+            return apiError(
+              request,
+              503,
+              "PROVIDER_UNAVAILABLE",
+              "Le provider ne peut pas traiter cette requête.",
+            );
           }
           if (!upstream.ok) {
-            const txt = await upstream.text();
-            return jsonResponse(
-              { error: `Erreur gateway (${upstream.status})`, details: txt.slice(0, 500) },
-              502,
-            );
+            await upstream.text();
+            return apiError(request, 502, "PROVIDER_ERROR", "Le provider a renvoyé une erreur.");
           }
           result = (await upstream.json()) as typeof result;
           resultModel = model;
@@ -190,18 +218,22 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
         }
 
         // 6) Réponse au format OpenAI
-        return jsonResponse({
-          id: result.id ?? `aetheris-${crypto.randomUUID()}`,
-          object: "chat.completion",
-          created: Math.floor(Date.now() / 1000),
-          model: resultModel,
-          choices: result.choices ?? [],
-          usage: {
-            prompt_tokens: tokensIn,
-            completion_tokens: tokensOut,
-            total_tokens: totalTokens,
+        return jsonResponse(
+          {
+            id: result.id ?? `aetheris-${crypto.randomUUID()}`,
+            object: "chat.completion",
+            created: Math.floor(Date.now() / 1000),
+            model: resultModel,
+            choices: result.choices ?? [],
+            usage: {
+              prompt_tokens: tokensIn,
+              completion_tokens: tokensOut,
+              total_tokens: totalTokens,
+            },
           },
-        });
+          200,
+          request,
+        );
       },
     },
   },

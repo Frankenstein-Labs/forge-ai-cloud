@@ -188,7 +188,9 @@ export function AetherisTerminal() {
         return;
       }
       if (trimmed === "history") {
-        history.forEach((h, i) => writeln(`\x1b[38;5;245m${String(i + 1).padStart(3)}\x1b[0m  ${h}`));
+        history.forEach((h, i) =>
+          writeln(`\x1b[38;5;245m${String(i + 1).padStart(3)}\x1b[0m  ${h}`),
+        );
         prompt();
         return;
       }

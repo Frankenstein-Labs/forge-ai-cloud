@@ -57,13 +57,9 @@ function SettingsPage() {
   };
 
   const deleteAccount = async () => {
-    if (
-      !confirm(
-        "Cette action est irréversible. Toutes vos données, clés API et déploiements seront effacés. Continuer ?",
-      )
-    )
-      return;
-    toast.info("Suppression de compte — fonctionnalité à activer côté backend");
+    toast.error(
+      "La suppression de compte n'est pas encore disponible. Aucune donnée n'a été supprimée.",
+    );
   };
 
   return (
@@ -155,15 +151,17 @@ function SettingsPage() {
       <div className="glass rounded-3xl p-6 lg:p-8 border border-destructive/20">
         <h2 className="font-display text-xl font-medium text-destructive">Zone dangereuse</h2>
         <p className="text-sm text-muted-foreground mt-2">
-          La suppression du compte est irréversible. Toutes vos données, clés API et déploiements
-          seront effacés.
+          La suppression automatique n'est pas encore disponible. Aucune donnée ne sera supprimée
+          tant qu'un parcours serveur audité n'aura pas été mis en service.
         </p>
         <button
           onClick={deleteAccount}
-          className="mt-5 px-5 py-3 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm font-medium hover:bg-destructive/20 transition inline-flex items-center gap-2"
+          disabled
+          title="Un parcours serveur audité est requis avant de pouvoir supprimer un compte."
+          className="mt-5 px-5 py-3 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm font-medium inline-flex items-center gap-2 cursor-not-allowed opacity-60"
         >
           <Trash2 className="h-4 w-4" />
-          Supprimer mon compte
+          Suppression indisponible
         </button>
       </div>
     </div>

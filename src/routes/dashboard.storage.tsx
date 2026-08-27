@@ -86,18 +86,12 @@ function StoragePage() {
   const [mongoResult, setMongoResult] = useState<MongoTestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Récupère la dernière clé API non révoquée
+  // Les secrets restent uniquement en mémoire : aucun token n'est persisté dans le navigateur.
   useEffect(() => {
     (async () => {
       const { data: sess } = await supabase.auth.getSession();
       if (!sess.session) return;
-      // Note : on lit le hash plain stocké côté client après création.
-      // Si pas dispo, l'user devra coller une clé.
-      const cached = localStorage.getItem("aetheris.apikey");
-      if (cached) setApiKey(cached);
     })();
-    setMongoUrl(localStorage.getItem("aetheris.mongo.url") ?? "");
-    setMongoToken(localStorage.getItem("aetheris.mongo.token") ?? "");
   }, []);
 
   const saveMongo = async () => {
@@ -121,8 +115,6 @@ function StoragePage() {
         setMongoResult({ ok: false, stage: "save", error: j.error ?? `HTTP ${r.status}` });
       } else {
         setMongoSaved(j.message ?? "Config enregistrée ✅");
-        localStorage.setItem("aetheris.mongo.url", mongoUrl);
-        localStorage.setItem("aetheris.mongo.token", mongoToken);
         fetchStatus(apiKey);
       }
     } catch (e) {
@@ -150,10 +142,6 @@ function StoragePage() {
       });
       const j = (await r.json()) as MongoTestResult;
       setMongoResult(j);
-      if (j.ok) {
-        localStorage.setItem("aetheris.mongo.url", mongoUrl);
-        localStorage.setItem("aetheris.mongo.token", mongoToken);
-      }
     } catch (e) {
       setMongoResult({ ok: false, stage: "client", error: (e as Error).message });
     } finally {
@@ -172,7 +160,6 @@ function StoragePage() {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const j = (await r.json()) as Status;
       setStatus(j);
-      localStorage.setItem("aetheris.apikey", key);
     } catch (e) {
       setError((e as Error).message);
     } finally {

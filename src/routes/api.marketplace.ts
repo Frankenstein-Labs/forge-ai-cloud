@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/marketplace")({
         const category = CATEGORIES.includes(body.category || "") ? body.category! : "LLM";
 
         let source_url = body.source_url?.trim() || null;
-        let size_bytes: number | null = null;
+        const size_bytes: number | null = null;
 
         if (source === "huggingface") {
           if (!name.includes("/")) {

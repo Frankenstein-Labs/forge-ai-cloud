@@ -2,14 +2,54 @@
 // Utilisable depuis n'importe quelle route serveur (/api/*).
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { allowedOrigins } from "@/lib/server-config";
 
 export const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers":
     "Content-Type, Authorization, X-API-Key, X-Requested-With, Accept, Origin",
   "Access-Control-Max-Age": "86400",
 };
+
+/** Returns CORS headers only for explicitly allowed origins; never reflects arbitrary origins. */
+export function corsHeadersFor(request: Request): Record<string, string> {
+  const origin = request.headers.get("origin");
+  if (!origin || !allowedOrigins().includes(origin)) return corsHeaders;
+  return { ...corsHeaders, "Access-Control-Allow-Origin": origin, Vary: "Origin" };
+}
+
+export function requestId(request: Request): string {
+  return request.headers.get("x-request-id")?.slice(0, 128) || crypto.randomUUID();
+}
+
+export function apiError(
+  request: Request,
+  status: number,
+  code: string,
+  message: string,
+): Response {
+  const id = requestId(request);
+  return new Response(JSON.stringify({ error: { code, message, request_id: id } }), {
+    status,
+    headers: {
+      ...corsHeadersFor(request),
+      "Content-Type": "application/json",
+      "X-Request-ID": id,
+    },
+  });
+}
+
+export async function readJsonBody<T>(request: Request, maxBytes = 1_000_000): Promise<T> {
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+    throw new RequestBodyTooLargeError();
+  }
+  const text = await request.text();
+  if (new TextEncoder().encode(text).byteLength > maxBytes) throw new RequestBodyTooLargeError();
+  return JSON.parse(text) as T;
+}
+
+export class RequestBodyTooLargeError extends Error {}
 
 export function getServerSupabase(): SupabaseClient<Database> {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -18,7 +58,8 @@ export function getServerSupabase(): SupabaseClient<Database> {
     process.env.SUPABASE_PUBLISHABLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) throw new Error("Supabase env vars missing on server");
+  if (!url || !key)
+    throw new Error("Missing required server configuration: SUPABASE_URL and Supabase key");
   return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -45,6 +86,14 @@ export interface AuthedKey {
   api_key_id: string;
   permissions: "read_only" | "read_write" | "admin";
   budget_limit_tokens: number | null;
+}
+
+export function requireApiPermission(
+  auth: AuthedKey,
+  minimum: "read_only" | "read_write" | "admin",
+): boolean {
+  const rank = { read_only: 1, read_write: 2, admin: 3 } as const;
+  return rank[auth.permissions] >= rank[minimum];
 }
 
 /**
@@ -94,15 +143,21 @@ export async function authenticateRequest(request: Request): Promise<AuthedKey |
   }
 }
 
-export function jsonResponse(body: unknown, status = 200): Response {
+export function jsonResponse(body: unknown, status = 200, request?: Request): Response {
+  const id = request ? requestId(request) : crypto.randomUUID();
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: {
+      ...(request ? corsHeadersFor(request) : corsHeaders),
+      "Content-Type": "application/json",
+      "X-Request-ID": id,
+    },
   });
 }
 
 export function unauthorizedResponse(
   message = "Clé API invalide ou manquante. Header attendu : 'Authorization: Bearer sk-aeth-...' ou 'X-API-Key: sk-aeth-...'",
+  request?: Request,
 ): Response {
-  return jsonResponse({ error: message }, 401);
+  return jsonResponse({ error: message }, 401, request);
 }

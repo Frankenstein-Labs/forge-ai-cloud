@@ -291,9 +291,7 @@ function PublishDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Publier un modèle</DialogTitle>
-          <DialogDescription>
-            Le dépôt HuggingFace est vérifié avant publication.
-          </DialogDescription>
+          <DialogDescription>Le dépôt HuggingFace est vérifié avant publication.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">

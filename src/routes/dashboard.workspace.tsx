@@ -208,7 +208,9 @@ function WorkspacePage() {
               <Row
                 label="Ressources"
                 value={
-                  engine ? `${engine.cpu_cores} vCPU · ${engine.ram_gb} Go · ${engine.disk_gb} Go` : "—"
+                  engine
+                    ? `${engine.cpu_cores} vCPU · ${engine.ram_gb} Go · ${engine.disk_gb} Go`
+                    : "—"
                 }
                 mono
               />
@@ -224,8 +226,8 @@ function WorkspacePage() {
             <CardContent className="space-y-2 text-sm">
               {events.length === 0 ? (
                 <p className="text-muted-foreground">
-                  Aucune opération encore. Tapez <code className="text-primary font-mono">help</code>{" "}
-                  dans le terminal.
+                  Aucune opération encore. Tapez{" "}
+                  <code className="text-primary font-mono">help</code> dans le terminal.
                 </p>
               ) : (
                 events.slice(0, 6).map((ev) => (
