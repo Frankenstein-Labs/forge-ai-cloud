@@ -13,6 +13,7 @@ import {
   RequestBodyTooLargeError,
   requireApiPermission,
   requireApiScope,
+  requestId,
   unauthorizedResponse,
 } from "@/lib/api-auth";
 import { DEFAULT_CHAT_MODEL, resolveChatProvider } from "@/lib/providers/registry";
@@ -29,6 +30,15 @@ interface ChatRequest {
   stream?: boolean;
   temperature?: number;
   max_tokens?: number;
+}
+
+const DEFAULT_MAX_TOKENS = 1024;
+const MAX_COMPLETION_TOKENS = 8192;
+
+function reserveTokens(messages: ChatMessage[], maxTokens: number): number {
+  const inputCharacters = messages.reduce((total, message) => total + message.content.length, 0);
+  // Conservative pre-call reservation only; provider-reported usage settles the final amount.
+  return maxTokens + inputCharacters * 4 + 128;
 }
 
 export const Route = createFileRoute("/api/v1/chat/completions")({
@@ -75,22 +85,52 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           return apiError(request, 400, "INVALID_REQUEST", "'messages' est requis.");
         }
 
-        // 3) Vérifier les crédits utilisateur
-        const supabase = getServerSupabase();
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("credits_balance")
-          .eq("id", authed.user_id)
-          .maybeSingle();
-
-        if (profile && profile.credits_balance <= 0) {
-          return apiError(request, 402, "CREDITS_EXHAUSTED", "Crédits épuisés.");
+        const maxTokens = body.max_tokens ?? DEFAULT_MAX_TOKENS;
+        if (!Number.isInteger(maxTokens) || maxTokens < 1 || maxTokens > MAX_COMPLETION_TOKENS) {
+          return apiError(
+            request,
+            400,
+            "INVALID_MAX_TOKENS",
+            "max_tokens doit être compris entre 1 et 8192.",
+          );
         }
 
-        // 4) Provider registry: a missing credential is NOT CONFIGURED, never connected.
+        // 3) Resolve the provider before charging a reservation.
+        const supabase = getServerSupabase();
         const resolved = resolveChatProvider(requestedModel);
         if (!resolved)
           return apiError(request, 404, "MODEL_NOT_FOUND", "Modèle non pris en charge.");
+        if (!authed.organization_id) {
+          return apiError(
+            request,
+            409,
+            "ORGANIZATION_REQUIRED",
+            "Cette clé doit être liée à une organisation.",
+          );
+        }
+
+        const requestedReservation = reserveTokens(messages, maxTokens);
+        const reservationResponse = (await supabase.rpc(
+          "reserve_usage_tokens" as never,
+          {
+            _organization_id: authed.organization_id,
+            _user_id: authed.user_id,
+            _api_key_id: authed.api_key_id,
+            _request_id: requestId(request),
+            _reserved_tokens: requestedReservation,
+            _expires_at: new Date(Date.now() + 5 * 60_000).toISOString(),
+          } as never,
+        )) as unknown as { data: string | null; error: { message: string } | null };
+        if (reservationResponse.error || !reservationResponse.data) {
+          const insufficient = reservationResponse.error?.message.includes("INSUFFICIENT_CREDITS");
+          return apiError(
+            request,
+            insufficient ? 402 : 503,
+            insufficient ? "CREDITS_EXHAUSTED" : "USAGE_ACCOUNTING_UNAVAILABLE",
+            insufficient ? "Crédits insuffisants." : "La comptabilité d'usage est indisponible.",
+          );
+        }
+        const reservationId = reservationResponse.data;
 
         let result;
         try {
@@ -98,9 +138,16 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
             model: resolved.upstreamModel,
             messages,
             temperature: body.temperature,
-            maxTokens: body.max_tokens,
+            maxTokens,
           });
         } catch (error) {
+          await supabase.rpc(
+            "release_usage_reservation" as never,
+            {
+              _reservation_id: reservationId,
+              _reason: "provider failure",
+            } as never,
+          );
           if (!(error instanceof ProviderError)) {
             return apiError(request, 502, "PROVIDER_ERROR", "Le provider a renvoyé une erreur.");
           }
@@ -116,7 +163,20 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
         const tokensOut = result.usage?.completion_tokens ?? 0;
         const totalTokens = result.usage?.total_tokens ?? tokensIn + tokensOut;
 
-        // 5) Log usage + décompte (best-effort, n'échoue pas la requête)
+        const settlement = (await supabase.rpc(
+          "settle_usage_reservation" as never,
+          { _reservation_id: reservationId, _actual_tokens: totalTokens } as never,
+        )) as unknown as { error: { message: string } | null };
+        if (settlement.error) {
+          return apiError(
+            request,
+            503,
+            "USAGE_ACCOUNTING_UNAVAILABLE",
+            "La comptabilité d'usage est indisponible.",
+          );
+        }
+
+        // 5) Log provider-reported usage. Ledger settlement is completed before this best-effort view.
         try {
           await supabase.from("usage_events" as never).insert({
             user_id: authed.user_id,
@@ -127,14 +187,6 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
             tokens_output: tokensOut,
             cost_eur: 0,
           } as never);
-          if (totalTokens > 0 && profile) {
-            await supabase
-              .from("profiles")
-              .update({
-                credits_balance: Math.max(0, profile.credits_balance - totalTokens),
-              })
-              .eq("id", authed.user_id);
-          }
         } catch {
           console.error("usage logging failed");
         }

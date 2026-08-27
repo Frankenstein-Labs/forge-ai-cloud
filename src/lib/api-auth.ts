@@ -11,6 +11,8 @@ export const corsHeaders: Record<string, string> = {
   "Access-Control-Max-Age": "86400",
 };
 
+const requestIds = new WeakMap<Request, string>();
+
 /** Returns CORS headers only for explicitly allowed origins; never reflects arbitrary origins. */
 export function corsHeadersFor(request: Request): Record<string, string> {
   const origin = request.headers.get("origin");
@@ -19,7 +21,12 @@ export function corsHeadersFor(request: Request): Record<string, string> {
 }
 
 export function requestId(request: Request): string {
-  return request.headers.get("x-request-id")?.slice(0, 128) || crypto.randomUUID();
+  // Request IDs are generated server-side. Client supplied values are not safe idempotency keys.
+  const existing = requestIds.get(request);
+  if (existing) return existing;
+  const id = crypto.randomUUID();
+  requestIds.set(request, id);
+  return id;
 }
 
 export function apiError(
