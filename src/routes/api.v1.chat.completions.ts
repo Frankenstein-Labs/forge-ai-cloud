@@ -15,7 +15,8 @@ import {
   requireApiScope,
   unauthorizedResponse,
 } from "@/lib/api-auth";
-import { callHuggingFace } from "@/lib/hf-gateway";
+import { DEFAULT_CHAT_MODEL, resolveChatProvider } from "@/lib/providers/registry";
+import { ProviderError } from "@/lib/providers/types";
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -29,19 +30,6 @@ interface ChatRequest {
   temperature?: number;
   max_tokens?: number;
 }
-
-const LOVABLE_MODELS = new Set([
-  "google/gemini-2.5-pro",
-  "google/gemini-2.5-flash",
-  "google/gemini-2.5-flash-lite",
-  "google/gemini-3-flash-preview",
-  "google/gemini-3.1-pro-preview",
-  "openai/gpt-5",
-  "openai/gpt-5-mini",
-  "openai/gpt-5-nano",
-]);
-
-const DEFAULT_MODEL = "google/gemini-2.5-flash";
 
 export const Route = createFileRoute("/api/v1/chat/completions")({
   server: {
@@ -81,7 +69,7 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           return apiError(request, 400, "INVALID_JSON", "Corps JSON invalide.");
         }
 
-        const requestedModel = (body.model ?? DEFAULT_MODEL).trim();
+        const requestedModel = (body.model ?? DEFAULT_CHAT_MODEL).trim();
         const messages = Array.isArray(body.messages) ? body.messages : [];
         if (messages.length === 0) {
           return apiError(request, 400, "INVALID_REQUEST", "'messages' est requis.");
@@ -99,101 +87,30 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           return apiError(request, 402, "CREDITS_EXHAUSTED", "Crédits épuisés.");
         }
 
-        // 4) Routing : HuggingFace ou Lovable AI Gateway
-        const isHF = requestedModel.startsWith("hf/");
-        let resultModel = requestedModel;
-        let result: {
-          id?: string;
-          choices?: Array<{
-            index?: number;
-            message?: { role: string; content: string };
-            finish_reason?: string;
-          }>;
-          usage?: {
-            prompt_tokens?: number;
-            completion_tokens?: number;
-            total_tokens?: number;
-          };
-        };
+        // 4) Provider registry: a missing credential is NOT CONFIGURED, never connected.
+        const resolved = resolveChatProvider(requestedModel);
+        if (!resolved)
+          return apiError(request, 404, "MODEL_NOT_FOUND", "Modèle non pris en charge.");
 
-        if (isHF) {
-          // ── Route HuggingFace ────────────────────────────────────────
-          const repo = requestedModel.slice(3); // "hf/owner/name" -> "owner/name"
-          if (!repo.includes("/")) {
-            return apiError(
-              request,
-              400,
-              "INVALID_MODEL",
-              "Format de modèle Hugging Face invalide.",
-            );
-          }
-          const hf = await callHuggingFace(repo, {
-            model: repo,
+        let result;
+        try {
+          result = await resolved.provider.chatCompletion({
+            model: resolved.upstreamModel,
             messages,
             temperature: body.temperature,
-            max_tokens: body.max_tokens,
+            maxTokens: body.max_tokens,
           });
-          if (!hf.ok) {
-            const status = hf.status === 401 ? 502 : hf.status; // évite 401 vers le client
-            return apiError(
-              request,
-              status >= 400 && status < 600 ? status : 502,
-              "PROVIDER_UNAVAILABLE",
-              "Le provider Hugging Face n'a pas pu traiter cette requête.",
-            );
-          }
-          result = hf.data;
-          resultModel = `hf/${repo}`;
-        } else {
-          // ── Route Lovable AI Gateway ─────────────────────────────────
-          const model = LOVABLE_MODELS.has(requestedModel) ? requestedModel : DEFAULT_MODEL;
-          const lovableKey = process.env.LOVABLE_API_KEY;
-          if (!lovableKey) {
-            return apiError(
-              request,
-              503,
-              "PROVIDER_NOT_CONFIGURED",
-              "Le provider demandé n'est pas configuré.",
-            );
-          }
-
-          const upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${lovableKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model,
-              messages,
-              ...(typeof body.temperature === "number" ? { temperature: body.temperature } : {}),
-              ...(typeof body.max_tokens === "number" ? { max_tokens: body.max_tokens } : {}),
-            }),
-          });
-
-          if (upstream.status === 429) {
-            return apiError(
-              request,
-              429,
-              "PROVIDER_RATE_LIMITED",
-              "Le provider a limité cette requête.",
-            );
-          }
-          if (upstream.status === 402) {
-            return apiError(
-              request,
-              503,
-              "PROVIDER_UNAVAILABLE",
-              "Le provider ne peut pas traiter cette requête.",
-            );
-          }
-          if (!upstream.ok) {
-            await upstream.text();
+        } catch (error) {
+          if (!(error instanceof ProviderError)) {
             return apiError(request, 502, "PROVIDER_ERROR", "Le provider a renvoyé une erreur.");
           }
-          result = (await upstream.json()) as typeof result;
-          resultModel = model;
+          const status = error.code === "RATE_LIMITED" ? 429 : error.status;
+          const code =
+            error.code === "NOT_CONFIGURED" ? "PROVIDER_NOT_CONFIGURED" : `PROVIDER_${error.code}`;
+          return apiError(request, status, code, "Le provider ne peut pas traiter cette requête.");
         }
+
+        const resultModel = result.model;
 
         const tokensIn = result.usage?.prompt_tokens ?? 0;
         const tokensOut = result.usage?.completion_tokens ?? 0;
@@ -201,14 +118,15 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
 
         // 5) Log usage + décompte (best-effort, n'échoue pas la requête)
         try {
-          await supabase.from("usage_events").insert({
+          await supabase.from("usage_events" as never).insert({
             user_id: authed.user_id,
             api_key_id: authed.api_key_id,
+            organization_id: authed.organization_id,
             model_name: resultModel,
             tokens_input: tokensIn,
             tokens_output: tokensOut,
             cost_eur: 0,
-          });
+          } as never);
           if (totalTokens > 0 && profile) {
             await supabase
               .from("profiles")
@@ -217,8 +135,8 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
               })
               .eq("id", authed.user_id);
           }
-        } catch (e) {
-          console.error("usage logging failed:", e);
+        } catch {
+          console.error("usage logging failed");
         }
 
         // 6) Réponse au format OpenAI

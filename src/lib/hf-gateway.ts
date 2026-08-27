@@ -56,6 +56,7 @@ export async function callHuggingFace(
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      signal: AbortSignal.timeout(30_000),
       body: JSON.stringify({
         model: repo, // HF accepte "owner/name" directement
         messages: body.messages,
