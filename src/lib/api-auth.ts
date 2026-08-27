@@ -84,8 +84,13 @@ export function extractApiKey(request: Request): string | null {
 export interface AuthedKey {
   user_id: string;
   api_key_id: string;
+  organization_id: string | null;
   permissions: "read_only" | "read_write" | "admin";
+  scopes: string[];
+  environment: "test" | "live";
   budget_limit_tokens: number | null;
+  budget_limit_eur: number | null;
+  rate_limit_per_minute: number;
 }
 
 export function requireApiPermission(
@@ -94,6 +99,12 @@ export function requireApiPermission(
 ): boolean {
   const rank = { read_only: 1, read_write: 2, admin: 3 } as const;
   return rank[auth.permissions] >= rank[minimum];
+}
+
+export function requireApiScope(auth: AuthedKey, scope: string): boolean {
+  return (
+    auth.permissions === "admin" || auth.scopes.includes("admin") || auth.scopes.includes(scope)
+  );
 }
 
 /**
@@ -113,8 +124,13 @@ export async function authenticateApiKey(request: Request): Promise<AuthedKey | 
   return {
     user_id: row.user_id,
     api_key_id: row.api_key_id,
+    organization_id: row.organization_id,
     permissions: row.permissions,
+    scopes: row.scopes,
+    environment: row.environment,
     budget_limit_tokens: row.budget_limit_tokens,
+    budget_limit_eur: row.budget_limit_eur,
+    rate_limit_per_minute: row.rate_limit_per_minute,
   };
 }
 
@@ -135,8 +151,13 @@ export async function authenticateRequest(request: Request): Promise<AuthedKey |
     return {
       user_id: data.user.id,
       api_key_id: "session",
+      organization_id: null,
       permissions: "admin",
+      scopes: ["admin"],
+      environment: "live",
       budget_limit_tokens: null,
+      budget_limit_eur: null,
+      rate_limit_per_minute: 0,
     };
   } catch {
     return null;

@@ -10,41 +10,56 @@ export type Database = {
     Tables: {
       api_keys: {
         Row: {
+          budget_limit_eur: number | null;
           budget_limit_tokens: number | null;
           created_at: string;
           expires_at: string | null;
+          environment: Database["public"]["Enums"]["api_key_environment"];
           hashed_key: string;
           id: string;
           key_prefix: string;
           last_used_at: string | null;
           name: string;
+          organization_id: string | null;
           permissions: Database["public"]["Enums"]["api_key_permission"];
+          rate_limit_per_minute: number;
+          scopes: string[];
           status: Database["public"]["Enums"]["api_key_status"];
           user_id: string;
         };
         Insert: {
+          budget_limit_eur?: number | null;
           budget_limit_tokens?: number | null;
           created_at?: string;
           expires_at?: string | null;
+          environment?: Database["public"]["Enums"]["api_key_environment"];
           hashed_key: string;
           id?: string;
           key_prefix: string;
           last_used_at?: string | null;
           name: string;
+          organization_id?: string | null;
           permissions?: Database["public"]["Enums"]["api_key_permission"];
+          rate_limit_per_minute?: number;
+          scopes?: string[];
           status?: Database["public"]["Enums"]["api_key_status"];
           user_id: string;
         };
         Update: {
+          budget_limit_eur?: number | null;
           budget_limit_tokens?: number | null;
           created_at?: string;
           expires_at?: string | null;
+          environment?: Database["public"]["Enums"]["api_key_environment"];
           hashed_key?: string;
           id?: string;
           key_prefix?: string;
           last_used_at?: string | null;
           name?: string;
+          organization_id?: string | null;
           permissions?: Database["public"]["Enums"]["api_key_permission"];
+          rate_limit_per_minute?: number;
+          scopes?: string[];
           status?: Database["public"]["Enums"]["api_key_status"];
           user_id?: string;
         };
@@ -326,13 +341,19 @@ export type Database = {
         Args: { _hashed_key: string };
         Returns: {
           api_key_id: string;
-          budget_limit_tokens: number;
+          budget_limit_eur: number | null;
+          budget_limit_tokens: number | null;
+          environment: Database["public"]["Enums"]["api_key_environment"];
+          organization_id: string | null;
           permissions: Database["public"]["Enums"]["api_key_permission"];
+          rate_limit_per_minute: number;
+          scopes: string[];
           user_id: string;
         }[];
       };
     };
     Enums: {
+      api_key_environment: "test" | "live";
       api_key_permission: "read_only" | "read_write" | "admin";
       api_key_status: "active" | "revoked" | "expired";
       app_role: "admin" | "developer" | "member";
@@ -464,6 +485,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      api_key_environment: ["test", "live"],
       api_key_permission: ["read_only", "read_write", "admin"],
       api_key_status: ["active", "revoked", "expired"],
       app_role: ["admin", "developer", "member"],

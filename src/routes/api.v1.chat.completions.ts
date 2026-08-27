@@ -12,6 +12,7 @@ import {
   readJsonBody,
   RequestBodyTooLargeError,
   requireApiPermission,
+  requireApiScope,
   unauthorizedResponse,
 } from "@/lib/api-auth";
 import { callHuggingFace } from "@/lib/hf-gateway";
@@ -52,7 +53,10 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
         // 1) Auth par clé API
         const authed = await authenticateApiKey(request);
         if (!authed) return unauthorizedResponse(undefined, request);
-        if (!requireApiPermission(authed, "read_write")) {
+        if (
+          !requireApiPermission(authed, "read_write") ||
+          !requireApiScope(authed, "inference:chat")
+        ) {
           return apiError(
             request,
             403,
