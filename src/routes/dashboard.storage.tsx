@@ -589,7 +589,7 @@ function MongoResultPanel({ r }: { r: MongoTestResult }) {
           <AlertTriangle className="h-4 w-4 text-destructive" />
         )}
         {r.ok ? "Connexion réussie" : "Échec de la connexion"}
-        <span className="ml-auto text-[10px] font-mono text-muted-foreground">
+        <span className="ms-auto text-[10px] font-mono text-muted-foreground">
           stage: {r.stage}
           {r.elapsed_ms !== undefined && ` · ${r.elapsed_ms}ms`}
           {r.status !== undefined && ` · HTTP ${r.status}`}

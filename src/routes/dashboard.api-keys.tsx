@@ -103,7 +103,7 @@ function ApiKeysPage() {
       <div className="glass rounded-3xl overflow-hidden">
         {loading ? (
           <div className="p-12 flex items-center justify-center text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin mr-2" /> Chargement...
+            <Loader2 className="h-5 w-5 animate-spin me-2" /> Chargement...
           </div>
         ) : keys.length === 0 ? (
           <EmptyState onCreate={() => setShowCreate(true)} />

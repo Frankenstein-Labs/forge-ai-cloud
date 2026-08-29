@@ -28,8 +28,8 @@ function DashboardLayout() {
         <AppSidebar />
         <SidebarInset className="min-w-0">
           <header className="bg-background/70 sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b px-4 backdrop-blur-xl">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+            <SidebarTrigger className="-ms-1" />
+            <Separator orientation="vertical" className="me-2 h-4" />
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Aetheris</span>
               <span className="text-muted-foreground">/</span>
