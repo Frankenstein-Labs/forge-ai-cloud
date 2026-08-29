@@ -172,18 +172,18 @@ export function AppSidebar() {
                     </span>
                     <span className="text-muted-foreground truncate text-xs">{profile?.email}</span>
                   </div>
-                  {!collapsed && <ChevronsUpDown className="ml-auto size-4" />}
+                  {!collapsed && <ChevronsUpDown className="ms-auto size-4" />}
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuItem asChild>
                   <Link to="/dashboard/settings">
-                    <Settings className="mr-2 size-4" /> Paramètres
+                    <Settings className="me-2 size-4" /> Paramètres
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/dashboard/subscription">
-                    <CreditCard className="mr-2 size-4" /> Abonnement
+                    <CreditCard className="me-2 size-4" /> Abonnement
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -193,7 +193,7 @@ export function AppSidebar() {
                     navigate({ to: "/" });
                   }}
                 >
-                  <LogOut className="mr-2 size-4" /> Déconnexion
+                  <LogOut className="me-2 size-4" /> Déconnexion
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

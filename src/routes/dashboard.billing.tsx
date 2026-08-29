@@ -58,7 +58,7 @@ function BillingPage() {
           </p>
           <p className="font-display text-5xl font-light mt-3 tabular-nums">
             {Number(profile?.credits_balance ?? 0).toLocaleString("fr-FR")}
-            <span className="text-muted-foreground text-2xl ml-2">tokens</span>
+            <span className="text-muted-foreground text-2xl ms-2">tokens</span>
           </p>
           <button
             onClick={() => toast.info("Paiements Stripe — disponible à l'itération 2")}
@@ -112,7 +112,7 @@ function BillingPage() {
                 </div>
                 <p className="font-display text-3xl font-light mt-4">
                   {t.price}
-                  <span className="text-sm text-muted-foreground ml-1">{t.period}</span>
+                  <span className="text-sm text-muted-foreground ms-1">{t.period}</span>
                 </p>
                 <ul className="mt-5 space-y-2">
                   {t.features.map((f) => (

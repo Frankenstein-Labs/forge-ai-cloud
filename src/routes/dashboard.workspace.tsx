@@ -101,9 +101,9 @@ function WorkspacePage() {
           {status === "stopped" ? (
             <Button size="sm" onClick={() => act("start")} disabled={!!busy || loading}>
               {busy?.startsWith("start") ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="me-2 size-4 animate-spin" />
               ) : (
-                <Play className="mr-2 size-4" />
+                <Play className="me-2 size-4" />
               )}
               Démarrer
             </Button>
@@ -115,9 +115,9 @@ function WorkspacePage() {
               disabled={!!busy || loading}
             >
               {busy?.startsWith("restart") ? (
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader2 className="me-2 size-4 animate-spin" />
               ) : (
-                <RotateCw className="mr-2 size-4" />
+                <RotateCw className="me-2 size-4" />
               )}
               Redémarrer le moteur
             </Button>
@@ -128,7 +128,7 @@ function WorkspacePage() {
             onClick={() => act("stop")}
             disabled={!!busy || loading || status === "stopped"}
           >
-            <Square className="mr-2 size-4" /> Stop
+            <Square className="me-2 size-4" /> Stop
           </Button>
           <Button
             size="sm"
@@ -136,10 +136,10 @@ function WorkspacePage() {
             onClick={() => act("vscode")}
             disabled={!!busy || loading}
           >
-            <Code2 className="mr-2 size-4" /> Ouvrir VS Code
+            <Code2 className="me-2 size-4" /> Ouvrir VS Code
           </Button>
           <Button size="sm" onClick={() => setPullOpen(true)} disabled={loading}>
-            <Download className="mr-2 size-4" /> Télécharger le modèle IA
+            <Download className="me-2 size-4" /> Télécharger le modèle IA
           </Button>
         </div>
       </div>
@@ -159,7 +159,7 @@ function WorkspacePage() {
                 <span className="size-3 rounded-full bg-secondary/70" />
                 <span className="size-3 rounded-full bg-primary/70" />
               </span>
-              <CardTitle className="ml-2 font-mono text-sm">
+              <CardTitle className="ms-2 font-mono text-sm">
                 aetheris@{engine?.name ?? "workspace"}: ~
               </CardTitle>
             </div>
@@ -275,7 +275,7 @@ function WorkspacePage() {
                 if (ok) setPullOpen(false);
               }}
             >
-              {busy?.startsWith("pull") && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {busy?.startsWith("pull") && <Loader2 className="me-2 size-4 animate-spin" />}
               Télécharger
             </Button>
           </DialogFooter>

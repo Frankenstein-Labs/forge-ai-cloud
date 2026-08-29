@@ -150,7 +150,7 @@ function DeploymentsList() {
   if (loading) {
     return (
       <div className="glass rounded-3xl p-12 flex items-center justify-center text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin mr-2" /> Chargement...
+        <Loader2 className="h-5 w-5 animate-spin me-2" /> Chargement...
       </div>
     );
   }
@@ -264,7 +264,7 @@ function Catalog() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un modèle..."
-            className="w-full pl-11 rounded-2xl bg-surface-elevated/50 border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full ps-11 rounded-2xl bg-surface-elevated/50 border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
         <div className="glass rounded-2xl p-1 inline-flex">

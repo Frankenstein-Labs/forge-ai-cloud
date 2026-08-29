@@ -74,7 +74,7 @@ function EnginesPage() {
           </p>
         </div>
         <Button onClick={() => toast.info("Sélection d'un gabarit de moteur à venir.")}>
-          <Plus className="mr-2 size-4" /> Louer un moteur
+          <Plus className="me-2 size-4" /> Louer un moteur
         </Button>
       </div>
 

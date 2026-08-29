@@ -150,7 +150,7 @@ function MarketplacePage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher un modèle…"
-            className="pl-9"
+            className="ps-9"
           />
         </div>
         <Tabs value={cat} onValueChange={(v) => setCat(v as typeof cat)}>
@@ -216,9 +216,9 @@ function MarketplacePage() {
                   onClick={() => download.mutate(item.id)}
                 >
                   {download.isPending && download.variables === item.id ? (
-                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    <Loader2 className="me-2 size-4 animate-spin" />
                   ) : (
-                    <Download className="mr-2 size-4" />
+                    <Download className="me-2 size-4" />
                   )}
                   Télécharger
                 </Button>
@@ -285,7 +285,7 @@ function PublishDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button>
-          <Upload className="mr-2 size-4" /> Publier un modèle
+          <Upload className="me-2 size-4" /> Publier un modèle
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -342,7 +342,7 @@ function PublishDialog({
         </div>
         <DialogFooter>
           <Button onClick={() => publish.mutate()} disabled={!name.trim() || publish.isPending}>
-            {publish.isPending && <Loader2 className="mr-2 size-4 animate-spin" />} Publier
+            {publish.isPending && <Loader2 className="me-2 size-4 animate-spin" />} Publier
           </Button>
         </DialogFooter>
       </DialogContent>
