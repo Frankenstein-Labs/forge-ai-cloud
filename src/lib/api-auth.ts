@@ -127,17 +127,27 @@ export async function authenticateApiKey(request: Request): Promise<AuthedKey | 
     _hashed_key: hashed,
   });
   if (error || !data || data.length === 0) return null;
-  const row = data[0];
+  const row = data[0] as {
+    user_id: string;
+    api_key_id: string;
+    permissions: AuthedKey["permissions"];
+    budget_limit_tokens: number | null;
+    organization_id?: string | null;
+    scopes?: string[] | null;
+    environment?: AuthedKey["environment"] | null;
+    budget_limit_eur?: number | null;
+    rate_limit_per_minute?: number | null;
+  };
   return {
     user_id: row.user_id,
     api_key_id: row.api_key_id,
-    organization_id: row.organization_id,
+    organization_id: row.organization_id ?? null,
     permissions: row.permissions,
-    scopes: row.scopes,
-    environment: row.environment,
-    budget_limit_tokens: row.budget_limit_tokens,
-    budget_limit_eur: row.budget_limit_eur,
-    rate_limit_per_minute: row.rate_limit_per_minute,
+    scopes: row.scopes ?? [],
+    environment: row.environment ?? "live",
+    budget_limit_tokens: row.budget_limit_tokens ?? null,
+    budget_limit_eur: row.budget_limit_eur ?? null,
+    rate_limit_per_minute: row.rate_limit_per_minute ?? 0,
   };
 }
 
