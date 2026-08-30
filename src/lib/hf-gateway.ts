@@ -96,7 +96,9 @@ export async function checkHuggingFaceRepo(repo: string): Promise<{
   error?: string;
 }> {
   try {
-    const r = await fetch(`https://huggingface.co/api/models/${encodeURIComponent(repo)}`, {
+    // Encoder chaque segment séparément : le "/" de "org/nom" doit rester intact.
+    const path = repo.split("/").map(encodeURIComponent).join("/");
+    const r = await fetch(`https://huggingface.co/api/models/${path}`, {
       headers: process.env.HF_TOKEN ? { Authorization: `Bearer ${process.env.HF_TOKEN}` } : {},
     });
     if (r.status === 404) return { exists: false, error: "Repo introuvable" };
