@@ -29,6 +29,7 @@ import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-statu
 import { Route as ApiMongoTestRouteImport } from './routes/api.mongo-test'
 import { Route as ApiMongoConfigRouteImport } from './routes/api.mongo-config'
 import { Route as ApiMarketplaceRouteImport } from './routes/api.marketplace'
+import { Route as ApiHfConfigRouteImport } from './routes/api.hf-config'
 import { Route as ApiEnginesRouteImport } from './routes/api.engines'
 import { Route as ApiMarketplaceDownloadRouteImport } from './routes/api.marketplace.download'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
@@ -135,6 +136,11 @@ const ApiMarketplaceRoute = ApiMarketplaceRouteImport.update({
   path: '/api/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHfConfigRoute = ApiHfConfigRouteImport.update({
+  id: '/api/hf-config',
+  path: '/api/hf-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiEnginesRoute = ApiEnginesRouteImport.update({
   id: '/api/engines',
   path: '/api/engines',
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/engines': typeof ApiEnginesRoute
+  '/api/hf-config': typeof ApiHfConfigRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/engines': typeof ApiEnginesRoute
+  '/api/hf-config': typeof ApiHfConfigRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/docs': typeof DocsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/engines': typeof ApiEnginesRoute
+  '/api/hf-config': typeof ApiHfConfigRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/reset-password'
     | '/api/engines'
+    | '/api/hf-config'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/reset-password'
     | '/api/engines'
+    | '/api/hf-config'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/reset-password'
     | '/api/engines'
+    | '/api/hf-config'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   DocsRoute: typeof DocsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiEnginesRoute: typeof ApiEnginesRoute
+  ApiHfConfigRoute: typeof ApiHfConfigRoute
   ApiMarketplaceRoute: typeof ApiMarketplaceRouteWithChildren
   ApiMongoConfigRoute: typeof ApiMongoConfigRoute
   ApiMongoTestRoute: typeof ApiMongoTestRoute
@@ -484,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/hf-config': {
+      id: '/api/hf-config'
+      path: '/api/hf-config'
+      fullPath: '/api/hf-config'
+      preLoaderRoute: typeof ApiHfConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/engines': {
       id: '/api/engines'
       path: '/api/engines'
@@ -571,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiEnginesRoute: ApiEnginesRoute,
+  ApiHfConfigRoute: ApiHfConfigRoute,
   ApiMarketplaceRoute: ApiMarketplaceRouteWithChildren,
   ApiMongoConfigRoute: ApiMongoConfigRoute,
   ApiMongoTestRoute: ApiMongoTestRoute,
