@@ -324,6 +324,30 @@ export type Database = {
           },
         ]
       }
+      user_hf_config: {
+        Row: {
+          created_at: string
+          label: string | null
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          label?: string | null
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          label?: string | null
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_models: {
         Row: {
           created_at: string
