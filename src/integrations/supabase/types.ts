@@ -145,6 +145,95 @@ export type Database = {
           },
         ]
       }
+      engine_events: {
+        Row: {
+          action: string
+          created_at: string
+          engine_id: string | null
+          id: string
+          message: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          engine_id?: string | null
+          id?: string
+          message: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          engine_id?: string | null
+          id?: string
+          message?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "engine_events_engine_id_fkey"
+            columns: ["engine_id"]
+            isOneToOne: false
+            referencedRelation: "engines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      engines: {
+        Row: {
+          cpu_cores: number
+          created_at: string
+          disk_gb: number
+          id: string
+          image: string
+          last_started_at: string | null
+          name: string
+          price_per_hour: number
+          ram_gb: number
+          region: string
+          status: string
+          updated_at: string
+          user_id: string
+          vscode_url: string | null
+        }
+        Insert: {
+          cpu_cores?: number
+          created_at?: string
+          disk_gb?: number
+          id?: string
+          image?: string
+          last_started_at?: string | null
+          name: string
+          price_per_hour?: number
+          ram_gb?: number
+          region?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          vscode_url?: string | null
+        }
+        Update: {
+          cpu_cores?: number
+          created_at?: string
+          disk_gb?: number
+          id?: string
+          image?: string
+          last_started_at?: string | null
+          name?: string
+          price_per_hour?: number
+          ram_gb?: number
+          region?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          vscode_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
