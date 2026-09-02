@@ -27,6 +27,7 @@ export function Hero() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/auth"
+              search={{ mode: "signup", redirect: "/dashboard" }}
               className="group inline-flex items-center gap-2 rounded-xl bg-gradient-primary px-7 py-4 font-medium text-primary-foreground shadow-glow-cyan hover:shadow-glow-plasma transition-all"
             >
               Créer un compte
