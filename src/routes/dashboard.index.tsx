@@ -22,6 +22,7 @@ function DashboardHome() {
   const [totalDeployments, setTotalDeployments] = useState(0);
   const [tokensThisMonth, setTokensThisMonth] = useState(0);
   const [usage, setUsage] = useState<UsageDay[]>([]);
+  const [recent, setRecent] = useState<RecentEvent[]>([]);
 
   useEffect(() => {
     const load = async () => {
