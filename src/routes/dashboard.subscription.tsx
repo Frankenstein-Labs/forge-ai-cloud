@@ -161,40 +161,10 @@ function SubscriptionPage() {
           <CardTitle className="text-base">Factures</CardTitle>
           <CardDescription>Historique de vos paiements.</CardDescription>
         </CardHeader>
-        <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Référence</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Montant</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">PDF</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {INVOICES.map((inv) => (
-                <TableRow key={inv.id}>
-                  <TableCell className="font-mono text-xs">{inv.id}</TableCell>
-                  <TableCell>{inv.date}</TableCell>
-                  <TableCell>{inv.amount}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{inv.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      aria-label={`Télécharger la facture ${inv.id}`}
-                      onClick={() => toast.info("Facture PDF bientôt disponible.")}
-                    >
-                      <Download className="size-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">
+            Aucune facture : le paiement n'est pas encore activé sur votre compte.
+          </p>
         </CardContent>
       </Card>
     </div>
