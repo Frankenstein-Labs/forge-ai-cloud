@@ -16,6 +16,13 @@ interface UsageDay {
   tokens: number;
 }
 
+interface RecentEvent {
+  id: string;
+  created_at: string;
+  model_name: string | null;
+  tokens: number;
+}
+
 function DashboardHome() {
   const { profile } = useAuth();
   const [activeDeployments, setActiveDeployments] = useState(0);
