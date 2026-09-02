@@ -44,7 +44,7 @@ function DashboardHome() {
       );
       setTokensThisMonth(total);
 
-      // Build 30-day series (mocked when empty so the chart isn't blank)
+      // Série réelle sur 30 jours (0 quand il n'y a aucune consommation)
       const days: UsageDay[] = [];
       for (let i = 29; i >= 0; i--) {
         const d = new Date();
@@ -53,11 +53,7 @@ function DashboardHome() {
         const dayTotal = (events ?? [])
           .filter((e) => e.created_at?.slice(0, 10) === key)
           .reduce((a, e) => a + (e.tokens_input ?? 0) + (e.tokens_output ?? 0), 0);
-        // demo data when no real usage
-        days.push({
-          day: key,
-          tokens: dayTotal || Math.floor(Math.random() * 5000 + 500),
-        });
+        days.push({ day: key, tokens: dayTotal });
       }
       setUsage(days);
     };
