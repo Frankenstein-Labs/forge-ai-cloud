@@ -64,6 +64,20 @@ function DashboardHome() {
         days.push({ day: key, tokens: dayTotal });
       }
       setUsage(days);
+
+      const { data: last } = await supabase
+        .from("usage_events")
+        .select("id, created_at, model_name, tokens_input, tokens_output")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      setRecent(
+        (last ?? []).map((e) => ({
+          id: String(e.id),
+          created_at: e.created_at ?? "",
+          model_name: e.model_name ?? null,
+          tokens: (e.tokens_input ?? 0) + (e.tokens_output ?? 0),
+        })),
+      );
     };
     void load();
   }, []);
