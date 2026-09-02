@@ -76,11 +76,6 @@ const TIERS = [
   },
 ];
 
-const INVOICES = [
-  { id: "AET-2026-004", date: "01/02/2026", amount: "29,00 €", status: "Payée" },
-  { id: "AET-2026-003", date: "01/01/2026", amount: "29,00 €", status: "Payée" },
-  { id: "AET-2025-012", date: "01/12/2025", amount: "29,00 €", status: "Payée" },
-];
 
 function SubscriptionPage() {
   const { profile } = useAuth();
