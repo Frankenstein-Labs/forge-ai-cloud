@@ -16,12 +16,20 @@ interface UsageDay {
   tokens: number;
 }
 
+interface RecentEvent {
+  id: string;
+  created_at: string;
+  model_name: string | null;
+  tokens: number;
+}
+
 function DashboardHome() {
   const { profile } = useAuth();
   const [activeDeployments, setActiveDeployments] = useState(0);
   const [totalDeployments, setTotalDeployments] = useState(0);
   const [tokensThisMonth, setTokensThisMonth] = useState(0);
   const [usage, setUsage] = useState<UsageDay[]>([]);
+  const [recent, setRecent] = useState<RecentEvent[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -44,7 +52,7 @@ function DashboardHome() {
       );
       setTokensThisMonth(total);
 
-      // Build 30-day series (mocked when empty so the chart isn't blank)
+      // Série réelle sur 30 jours (0 quand il n'y a aucune consommation)
       const days: UsageDay[] = [];
       for (let i = 29; i >= 0; i--) {
         const d = new Date();
@@ -53,13 +61,23 @@ function DashboardHome() {
         const dayTotal = (events ?? [])
           .filter((e) => e.created_at?.slice(0, 10) === key)
           .reduce((a, e) => a + (e.tokens_input ?? 0) + (e.tokens_output ?? 0), 0);
-        // demo data when no real usage
-        days.push({
-          day: key,
-          tokens: dayTotal || Math.floor(Math.random() * 5000 + 500),
-        });
+        days.push({ day: key, tokens: dayTotal });
       }
       setUsage(days);
+
+      const { data: last } = await supabase
+        .from("usage_events")
+        .select("id, created_at, model_name, tokens_input, tokens_output")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      setRecent(
+        (last ?? []).map((e) => ({
+          id: String(e.id),
+          created_at: e.created_at ?? "",
+          model_name: e.model_name ?? null,
+          tokens: (e.tokens_input ?? 0) + (e.tokens_output ?? 0),
+        })),
+      );
     };
     void load();
   }, []);
@@ -143,35 +161,39 @@ function DashboardHome() {
       {/* Recent activities */}
       <div className="glass rounded-3xl p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-display text-xl font-medium">Activités récentes</h2>
-          <button className="text-xs text-primary hover:text-primary/80 uppercase tracking-widest font-semibold">
-            Voir tout
-          </button>
+          <h2 className="font-display text-xl font-medium">Inférences récentes</h2>
         </div>
-        <div className="space-y-1">
-          {[
-            { date: "À l'instant", action: "Création de compte", model: "—", cost: "—" },
-            { date: "Il y a 2 min", action: "Génération clé API", model: "—", cost: "—" },
-            { date: "Il y a 1 h", action: "Inférence", model: "llama-3.1-70b", cost: "0,87 €" },
-          ].map((a, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/[0.02] transition-colors"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="size-2 rounded-full bg-primary shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{a.action}</p>
-                  <p className="text-xs text-muted-foreground font-mono">{a.model}</p>
+        {recent.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Aucune inférence enregistrée pour le moment. Les appels à{" "}
+            <code className="font-mono">/api/v1/chat/completions</code> apparaîtront ici.
+          </p>
+        ) : (
+          <div className="space-y-1">
+            {recent.map((a) => (
+              <div
+                key={a.id}
+                className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/[0.02] transition-colors"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="size-2 rounded-full bg-primary shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">Inférence</p>
+                    <p className="text-xs text-muted-foreground font-mono truncate">
+                      {a.model_name ?? "—"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xs text-muted-foreground">
+                    {a.created_at ? new Date(a.created_at).toLocaleString("fr-FR") : "—"}
+                  </p>
+                  <p className="text-xs font-mono">{a.tokens.toLocaleString("fr-FR")} tokens</p>
                 </div>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-xs text-muted-foreground">{a.date}</p>
-                <p className="text-xs font-mono">{a.cost}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
