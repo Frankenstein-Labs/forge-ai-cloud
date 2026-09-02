@@ -161,35 +161,39 @@ function DashboardHome() {
       {/* Recent activities */}
       <div className="glass rounded-3xl p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-display text-xl font-medium">Activités récentes</h2>
-          <button className="text-xs text-primary hover:text-primary/80 uppercase tracking-widest font-semibold">
-            Voir tout
-          </button>
+          <h2 className="font-display text-xl font-medium">Inférences récentes</h2>
         </div>
-        <div className="space-y-1">
-          {[
-            { date: "À l'instant", action: "Création de compte", model: "—", cost: "—" },
-            { date: "Il y a 2 min", action: "Génération clé API", model: "—", cost: "—" },
-            { date: "Il y a 1 h", action: "Inférence", model: "llama-3.1-70b", cost: "0,87 €" },
-          ].map((a, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/[0.02] transition-colors"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="size-2 rounded-full bg-primary shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{a.action}</p>
-                  <p className="text-xs text-muted-foreground font-mono">{a.model}</p>
+        {recent.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Aucune inférence enregistrée pour le moment. Les appels à{" "}
+            <code className="font-mono">/api/v1/chat/completions</code> apparaîtront ici.
+          </p>
+        ) : (
+          <div className="space-y-1">
+            {recent.map((a) => (
+              <div
+                key={a.id}
+                className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/[0.02] transition-colors"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="size-2 rounded-full bg-primary shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">Inférence</p>
+                    <p className="text-xs text-muted-foreground font-mono truncate">
+                      {a.model_name ?? "—"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xs text-muted-foreground">
+                    {a.created_at ? new Date(a.created_at).toLocaleString("fr-FR") : "—"}
+                  </p>
+                  <p className="text-xs font-mono">{a.tokens.toLocaleString("fr-FR")} tokens</p>
                 </div>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-xs text-muted-foreground">{a.date}</p>
-                <p className="text-xs font-mono">{a.cost}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
