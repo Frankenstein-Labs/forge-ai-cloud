@@ -4,6 +4,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { authenticateRequest, corsHeaders, getServerSupabase, jsonResponse } from "@/lib/api-auth";
 import { checkHuggingFaceRepo } from "@/lib/hf-gateway";
+import { getHfTokenForUser } from "@/lib/hf-token.server";
 
 type PublishBody = {
   name?: string;
@@ -75,7 +76,8 @@ export const Route = createFileRoute("/api/marketplace")({
           if (!name.includes("/")) {
             return jsonResponse({ error: "Format attendu : <owner>/<repo> (HuggingFace)." }, 400);
           }
-          const check = await checkHuggingFaceRepo(name);
+          const hfToken = await getHfTokenForUser(authed.user_id);
+          const check = await checkHuggingFaceRepo(name, hfToken);
           if (!check.exists) {
             return jsonResponse(
               { error: `Repo introuvable sur HuggingFace : ${check.error ?? "inconnu"}` },

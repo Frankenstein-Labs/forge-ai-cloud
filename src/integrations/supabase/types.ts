@@ -234,6 +234,95 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_downloads: {
+        Row: {
+          created_at: string
+          id: string
+          model_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          model_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          model_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_downloads_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_models: {
+        Row: {
+          author: string
+          category: string
+          created_at: string
+          description: string
+          downloads: number
+          id: string
+          is_public: boolean
+          name: string
+          price_eur: number
+          size_bytes: number | null
+          source: string
+          source_url: string | null
+          stars: number
+          storage_path: string | null
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author?: string
+          category?: string
+          created_at?: string
+          description?: string
+          downloads?: number
+          id?: string
+          is_public?: boolean
+          name: string
+          price_eur?: number
+          size_bytes?: number | null
+          source?: string
+          source_url?: string | null
+          stars?: number
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author?: string
+          category?: string
+          created_at?: string
+          description?: string
+          downloads?: number
+          id?: string
+          is_public?: boolean
+          name?: string
+          price_eur?: number
+          size_bytes?: number | null
+          source?: string
+          source_url?: string | null
+          stars?: number
+          storage_path?: string | null
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

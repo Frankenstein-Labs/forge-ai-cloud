@@ -16,6 +16,11 @@ export class HuggingFaceProvider implements ProviderAdapter {
     return configured("HF_TOKEN");
   }
 
+  /** La clé de l'utilisateur suffit même si le serveur n'en a pas. */
+  isUsable(userToken?: string) {
+    return Boolean(userToken?.trim()) || this.isConfigured();
+  }
+
   async healthCheck(): Promise<ProviderHealth> {
     return this.isConfigured() ? "configured" : "not_configured";
   }
@@ -25,13 +30,17 @@ export class HuggingFaceProvider implements ProviderAdapter {
   }
 
   async chatCompletion(input: ChatCompletionInput): Promise<ChatCompletionResult> {
-    if (!this.isConfigured()) throw new ProviderError("NOT_CONFIGURED", this.id, 503);
-    const result = await callHuggingFace(input.model, {
+    if (!this.isUsable(input.hfToken)) throw new ProviderError("NOT_CONFIGURED", this.id, 503);
+    const result = await callHuggingFace(
+      input.model,
+      {
       model: input.model,
       messages: input.messages,
       temperature: input.temperature,
-      max_tokens: input.maxTokens,
-    });
+        max_tokens: input.maxTokens,
+      },
+      input.hfToken,
+    );
     if (result.ok)
       return { ...result.data, model: `hf/${input.model}`, choices: result.data.choices ?? [] };
 

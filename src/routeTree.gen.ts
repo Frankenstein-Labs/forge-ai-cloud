@@ -29,6 +29,7 @@ import { Route as ApiStorageStatusRouteImport } from './routes/api.storage-statu
 import { Route as ApiMongoTestRouteImport } from './routes/api.mongo-test'
 import { Route as ApiMongoConfigRouteImport } from './routes/api.mongo-config'
 import { Route as ApiMarketplaceRouteImport } from './routes/api.marketplace'
+import { Route as ApiHfModelsRouteImport } from './routes/api.hf-models'
 import { Route as ApiHfConfigRouteImport } from './routes/api.hf-config'
 import { Route as ApiEnginesRouteImport } from './routes/api.engines'
 import { Route as ApiMarketplaceDownloadRouteImport } from './routes/api.marketplace.download'
@@ -136,6 +137,11 @@ const ApiMarketplaceRoute = ApiMarketplaceRouteImport.update({
   path: '/api/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHfModelsRoute = ApiHfModelsRouteImport.update({
+  id: '/api/hf-models',
+  path: '/api/hf-models',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiHfConfigRoute = ApiHfConfigRouteImport.update({
   id: '/api/hf-config',
   path: '/api/hf-config',
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/api/engines': typeof ApiEnginesRoute
   '/api/hf-config': typeof ApiHfConfigRoute
+  '/api/hf-models': typeof ApiHfModelsRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/api/engines': typeof ApiEnginesRoute
   '/api/hf-config': typeof ApiHfConfigRoute
+  '/api/hf-models': typeof ApiHfModelsRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/api/engines': typeof ApiEnginesRoute
   '/api/hf-config': typeof ApiHfConfigRoute
+  '/api/hf-models': typeof ApiHfModelsRoute
   '/api/marketplace': typeof ApiMarketplaceRouteWithChildren
   '/api/mongo-config': typeof ApiMongoConfigRoute
   '/api/mongo-test': typeof ApiMongoTestRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/api/engines'
     | '/api/hf-config'
+    | '/api/hf-models'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/api/engines'
     | '/api/hf-config'
+    | '/api/hf-models'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/api/engines'
     | '/api/hf-config'
+    | '/api/hf-models'
     | '/api/marketplace'
     | '/api/mongo-config'
     | '/api/mongo-test'
@@ -345,6 +357,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiEnginesRoute: typeof ApiEnginesRoute
   ApiHfConfigRoute: typeof ApiHfConfigRoute
+  ApiHfModelsRoute: typeof ApiHfModelsRoute
   ApiMarketplaceRoute: typeof ApiMarketplaceRouteWithChildren
   ApiMongoConfigRoute: typeof ApiMongoConfigRoute
   ApiMongoTestRoute: typeof ApiMongoTestRoute
@@ -497,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/hf-models': {
+      id: '/api/hf-models'
+      path: '/api/hf-models'
+      fullPath: '/api/hf-models'
+      preLoaderRoute: typeof ApiHfModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/hf-config': {
       id: '/api/hf-config'
       path: '/api/hf-config'
@@ -592,6 +612,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ApiEnginesRoute: ApiEnginesRoute,
   ApiHfConfigRoute: ApiHfConfigRoute,
+  ApiHfModelsRoute: ApiHfModelsRoute,
   ApiMarketplaceRoute: ApiMarketplaceRouteWithChildren,
   ApiMongoConfigRoute: ApiMongoConfigRoute,
   ApiMongoTestRoute: ApiMongoTestRoute,
