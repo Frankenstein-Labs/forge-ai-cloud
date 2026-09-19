@@ -230,12 +230,19 @@ async function handleCommand(command: string, authed: AuthedKey | null): Promise
         if (!repo.includes("/")) {
           return "❌ Format attendu : hf/<owner>/<repo>";
         }
-        const hf = await callHuggingFace(repo, {
-          model: repo,
-          messages: [{ role: "user", content: prompt }],
-        });
+        const hfToken = await getHfTokenForUser(authed.user_id);
+        if (!hfToken)
+          return "❌ Aucune clé Hugging Face. Ajoute-la dans Paramètres → Clé Hugging Face.";
+        const hf = await callHuggingFace(
+          repo,
+          {
+            model: repo,
+            messages: [{ role: "user", content: prompt }],
+          },
+          hfToken,
+        );
         if (!hf.ok) {
-          if (hf.status === 401) return "❌ HF_TOKEN invalide côté serveur.";
+          if (hf.status === 401) return "❌ Clé Hugging Face invalide ou sans accès à ce modèle.";
           if (hf.status === 402) return "💳 Quota HuggingFace dépassé.";
           if (hf.status === 429) return "⏱️ Rate limit HuggingFace.";
           if (hf.status === 503)
