@@ -35,8 +35,9 @@ export interface HFChatResponse {
 export async function callHuggingFace(
   repo: string,
   body: HFChatRequest,
+  userToken?: string,
 ): Promise<{ ok: true; data: HFChatResponse } | { ok: false; status: number; message: string }> {
-  const token = process.env.HF_TOKEN;
+  const token = userToken?.trim() || process.env.HF_TOKEN;
   if (!token) {
     return {
       ok: false,
@@ -90,16 +91,20 @@ export async function callHuggingFace(
  * Vérifie qu'un repo HF existe et est utilisable (HEAD sur l'API model card).
  * Léger, sans charger le modèle.
  */
-export async function checkHuggingFaceRepo(repo: string): Promise<{
+export async function checkHuggingFaceRepo(
+  repo: string,
+  userToken?: string,
+): Promise<{
   exists: boolean;
   pipeline_tag?: string;
   error?: string;
 }> {
+  const token = userToken?.trim() || process.env.HF_TOKEN;
   try {
     // Encoder chaque segment séparément : le "/" de "org/nom" doit rester intact.
     const path = repo.split("/").map(encodeURIComponent).join("/");
     const r = await fetch(`https://huggingface.co/api/models/${path}`, {
-      headers: process.env.HF_TOKEN ? { Authorization: `Bearer ${process.env.HF_TOKEN}` } : {},
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (r.status === 404) return { exists: false, error: "Repo introuvable" };
     if (!r.ok) return { exists: false, error: `HTTP ${r.status}` };
