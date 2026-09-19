@@ -17,6 +17,7 @@ import {
   unauthorizedResponse,
 } from "@/lib/api-auth";
 import { DEFAULT_CHAT_MODEL, resolveChatProvider } from "@/lib/providers/registry";
+import { getHfTokenForUser } from "@/lib/hf-token.server";
 import { ProviderError } from "@/lib/providers/types";
 
 interface ChatMessage {
@@ -134,11 +135,16 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
 
         let result;
         try {
+          const hfToken =
+            resolved.provider.id === "huggingface"
+              ? await getHfTokenForUser(authed.user_id)
+              : undefined;
           result = await resolved.provider.chatCompletion({
             model: resolved.upstreamModel,
             messages,
             temperature: body.temperature,
             maxTokens,
+            hfToken,
           });
         } catch (error) {
           await supabase.rpc(

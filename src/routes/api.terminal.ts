@@ -20,6 +20,7 @@ import {
   userPrefix,
 } from "@/lib/seaweed";
 import { getMongoConfigForUser, mongo } from "@/lib/mongo-proxy";
+import { getHfTokenForUser } from "@/lib/hf-token.server";
 
 type ModelDoc = {
   user_id: string;
@@ -148,7 +149,7 @@ async function handleCommand(command: string, authed: AuthedKey | null): Promise
       if (!repo.includes("/")) {
         return "❌ Format invalide. Attendu : <owner>/<repo>";
       }
-      const check = await checkHuggingFaceRepo(repo);
+      const check = await checkHuggingFaceRepo(repo, await getHfTokenForUser(authed.user_id));
       if (!check.exists) {
         return `❌ Repo introuvable sur HuggingFace : ${check.error ?? "inconnu"}`;
       }
