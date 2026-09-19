@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, Crown, Sparkles, Zap, Download } from "lucide-react";
+import { Check, Crown, Sparkles, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -13,14 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export const Route = createFileRoute("/dashboard/subscription")({
   head: () => ({
@@ -101,7 +93,6 @@ function SubscriptionPage() {
               <CardDescription>Forfait actuel</CardDescription>
               <CardTitle className="font-display text-2xl capitalize">{current}</CardTitle>
             </div>
-            <Badge variant="secondary">Renouvellement le 01/03/2026</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-2">
