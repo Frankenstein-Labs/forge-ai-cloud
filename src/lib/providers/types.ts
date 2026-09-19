@@ -5,6 +5,8 @@ export type ChatCompletionInput = {
   messages: ChatMessage[];
   temperature?: number;
   maxTokens?: number;
+  /** Clé Hugging Face de l'utilisateur (sinon repli sur la clé serveur). */
+  hfToken?: string;
 };
 
 export type ChatCompletionResult = {
