@@ -74,8 +74,8 @@ async function handleCommand(command: string, authed: AuthedKey | null): Promise
         `  endpoint    : POST /api/v1/chat/completions (compatible OpenAI)`,
       ].join("\n");
 
-    case "catalog":
-      return [
+    case "catalog": {
+      const lines = [
         "🌐 Modèles Lovable AI (instantanés, pas d'import nécessaire) :",
         "  • google/gemini-2.5-flash       (rapide, équilibré)",
         "  • google/gemini-2.5-pro         (raisonnement)",
@@ -84,16 +84,47 @@ async function handleCommand(command: string, authed: AuthedKey | null): Promise
         "  • openai/gpt-5                  (haut de gamme)",
         "  • openai/gpt-5-mini             (multimodal)",
         "",
-        "🤗 Modèles HuggingFace (préfixe hf/) — exécute n'importe quel repo chat :",
-        "  • hf/mistralai/Mistral-7B-Instruct-v0.3",
-        "  • hf/meta-llama/Llama-3.1-8B-Instruct",
-        "  • hf/Qwen/Qwen2.5-7B-Instruct",
-        "  • hf/<ton-fine-tune>",
+      ];
+      const hfToken = authed ? await getHfTokenForUser(authed.user_id) : null;
+      if (!hfToken) {
+        lines.push(
+          "🤗 Hugging Face : aucune clé enregistrée.",
+          "   Ajoute-la dans Paramètres → Clé Hugging Face pour voir tes modèles ici.",
+        );
+      } else {
+        try {
+          const who = await fetch("https://huggingface.co/api/whoami-v2", {
+            headers: { Authorization: `Bearer ${hfToken}` },
+          });
+          if (!who.ok) throw new Error("clé invalide");
+          const account = ((await who.json()) as { name?: string }).name ?? "";
+          const res = await fetch(
+            `https://huggingface.co/api/models?author=${encodeURIComponent(account)}&limit=50&full=false`,
+            { headers: { Authorization: `Bearer ${hfToken}` } },
+          );
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const repos = (await res.json()) as Array<{ id: string; pipeline_tag?: string }>;
+          if (!repos.length) {
+            lines.push(`🤗 Hugging Face (${account}) : aucun modèle sur ton compte.`);
+          } else {
+            lines.push(`🤗 Tes modèles Hugging Face (${account}) — préfixe hf/ :`);
+            for (const r of repos) {
+              lines.push(`  • hf/${r.id}${r.pipeline_tag ? `  [${r.pipeline_tag}]` : ""}`);
+            }
+          }
+        } catch (e) {
+          lines.push(`🤗 Hugging Face : ❌ ${(e as Error).message}`);
+        }
+      }
+      lines.push(
         "",
         "Exemples :",
         '  run google/gemini-2.5-flash "Explique la relativité"',
-        '  run hf/mistralai/Mistral-7B-Instruct-v0.3 "Bonjour"',
-      ].join("\n");
+        '  run hf/<owner>/<repo> "Bonjour"',
+      );
+      return lines.join("\n");
+    }
+
 
     case "models": {
       if (!authed) return "❌ Non authentifié.";
