@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Search, Loader2, Link as LinkIcon, Upload } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { authJson } from "@/lib/api-client";
 
 export const Route = createFileRoute("/dashboard/models")({
   head: () => ({
@@ -22,72 +24,17 @@ interface Deployment {
   created_at: string;
 }
 
-interface CatalogModel {
-  id: string;
+interface HfRepoItem {
   name: string;
-  provider: string;
-  context: string;
-  price: string;
-  type: "open" | "proprietary";
-  description: string;
+  pipeline_tag: string | null;
+  category: string;
+  downloads: number;
+  likes: number;
+  private: boolean;
+  last_modified: string | null;
+  url: string;
+  published: boolean;
 }
-
-const CATALOG: CatalogModel[] = [
-  {
-    id: "llama-3.1-70b",
-    name: "Llama 3.1 70B",
-    provider: "Meta",
-    context: "128k tokens",
-    price: "$0.80 / M tokens",
-    type: "open",
-    description: "Modèle multilingue performant pour génération et raisonnement.",
-  },
-  {
-    id: "mistral-large",
-    name: "Mistral Large",
-    provider: "Mistral AI",
-    context: "32k tokens",
-    price: "$2.00 / M tokens",
-    type: "open",
-    description: "Excellence européenne, optimisé pour le français et le code.",
-  },
-  {
-    id: "deepseek-v3",
-    name: "DeepSeek V3",
-    provider: "DeepSeek",
-    context: "64k tokens",
-    price: "$0.27 / M tokens",
-    type: "open",
-    description: "Performance state-of-the-art à coût réduit.",
-  },
-  {
-    id: "gpt-4.1",
-    name: "GPT-4.1",
-    provider: "OpenAI",
-    context: "128k tokens",
-    price: "$2.50 / M tokens",
-    type: "proprietary",
-    description: "Le modèle référence, accessible via notre proxy.",
-  },
-  {
-    id: "claude-sonnet-4",
-    name: "Claude Sonnet 4",
-    provider: "Anthropic",
-    context: "200k tokens",
-    price: "$3.00 / M tokens",
-    type: "proprietary",
-    description: "Raisonnement long contexte et appels d'outils.",
-  },
-  {
-    id: "gemini-2.5-pro",
-    name: "Gemini 2.5 Pro",
-    provider: "Google",
-    context: "1M tokens",
-    price: "$1.25 / M tokens",
-    type: "proprietary",
-    description: "Multimodal natif avec contexte d'1 million de tokens.",
-  },
-];
 
 function ModelsPage() {
   const [tab, setTab] = useState<"deployments" | "catalog" | "import">("deployments");
@@ -107,7 +54,7 @@ function ModelsPage() {
       <div className="glass rounded-2xl p-1.5 inline-flex w-full sm:w-auto">
         {[
           { id: "deployments", label: "Mes déploiements" },
-          { id: "catalog", label: "Catalogue" },
+          { id: "catalog", label: "Mes modèles HF" },
           { id: "import", label: "Importer" },
         ].map((t) => (
           <button
@@ -219,21 +166,22 @@ function DeploymentsList() {
 
 function Catalog() {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "open" | "proprietary">("all");
   const [deploying, setDeploying] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["hf-models"],
+    queryFn: () => authJson<{ account: string | null; items: HfRepoItem[] }>("/api/hf-models"),
+    retry: false,
+  });
 
-  const filtered = CATALOG.filter(
-    (m) =>
-      (filter === "all" || m.type === filter) &&
-      (search === "" ||
-        m.name.toLowerCase().includes(search.toLowerCase()) ||
-        m.provider.toLowerCase().includes(search.toLowerCase())),
+  const items = (data?.items ?? []).filter(
+    (m) => search === "" || m.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const deploy = async (model: CatalogModel) => {
-    const name = prompt(`Nom du déploiement pour ${model.name} ?`, `${model.id}-prod`);
+  const deploy = async (model: HfRepoItem) => {
+    const short = model.name.split("/").pop() ?? model.name;
+    const name = prompt(`Nom du déploiement pour ${model.name} ?`, `${short}-prod`);
     if (!name) return;
-    setDeploying(model.id);
+    setDeploying(model.name);
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -242,76 +190,84 @@ function Catalog() {
       setDeploying(null);
       return;
     }
-    const { error } = await supabase.from("deployments").insert({
+    const { error: dbError } = await supabase.from("deployments").insert({
       user_id: user.id,
-      catalog_model_id: model.id,
+      catalog_model_id: `hf/${model.name}`,
       deployment_name: name.trim(),
       status: "deploying",
-      endpoint_url: `https://api.aetheris.cloud/v1/models/${name.trim().toLowerCase().replace(/\s+/g, "-")}`,
     });
     setDeploying(null);
-    if (error) toast.error(error.message);
+    if (dbError) toast.error(dbError.message);
     else toast.success(`Déploiement de ${model.name} lancé`);
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un modèle..."
-            className="w-full ps-11 rounded-2xl bg-surface-elevated/50 border border-border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-        </div>
-        <div className="glass rounded-2xl p-1 inline-flex">
-          {[
-            { id: "all", label: "Tous" },
-            { id: "open", label: "Open source" },
-            { id: "proprietary", label: "Propriétaires" },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFilter(f.id as typeof filter)}
-              className={`px-4 py-2 rounded-xl text-xs font-medium ${
-                filter === f.id ? "bg-white/10 text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+      <div className="relative">
+        <Search className="text-muted-foreground absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Rechercher parmi vos modèles Hugging Face..."
+          className="bg-surface-elevated/50 border-border focus:ring-primary/50 w-full rounded-2xl border px-4 py-3 ps-11 text-sm focus:ring-2 focus:outline-none"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.map((m) => (
-          <div key={m.id} className="glass rounded-3xl p-6 flex flex-col">
-            <div className="flex items-start justify-between mb-3">
-              <span
-                className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${
-                  m.type === "open"
-                    ? "bg-primary/10 text-primary"
-                    : "bg-secondary/10 text-secondary"
-                }`}
-              >
-                {m.type === "open" ? "Open Source" : "Propriétaire"}
+      {isLoading && (
+        <div className="text-muted-foreground flex items-center gap-2 text-sm">
+          <Loader2 className="h-4 w-4 animate-spin" /> Chargement de vos dépôts Hugging Face…
+        </div>
+      )}
+
+      {error && (
+        <div className="glass rounded-3xl p-6 text-sm">
+          <p className="text-destructive">{(error as Error).message}</p>
+          <p className="text-muted-foreground mt-2">
+            Enregistrez votre clé Hugging Face dans Paramètres pour afficher vos vrais modèles.
+          </p>
+        </div>
+      )}
+
+      {!isLoading && !error && items.length === 0 && (
+        <p className="text-muted-foreground text-sm">
+          Aucun dépôt sur le compte Hugging Face {data?.account ?? ""}.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {items.map((m) => (
+          <div key={m.name} className="glass flex flex-col rounded-3xl p-6">
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-[10px] font-bold tracking-widest uppercase">
+                {m.private ? "Privé" : "Public"}
               </span>
-              <span className="text-xs text-muted-foreground font-mono">{m.context}</span>
+              <span className="text-muted-foreground font-mono text-xs">
+                {m.pipeline_tag ?? m.category}
+              </span>
             </div>
-            <h3 className="font-display text-xl font-medium">{m.name}</h3>
-            <p className="text-xs text-muted-foreground">{m.provider}</p>
-            <p className="text-sm text-muted-foreground mt-3 flex-1">{m.description}</p>
+            <h3 className="font-display text-lg font-medium break-all">{m.name}</h3>
+            <p className="text-muted-foreground mt-3 flex-1 text-xs">
+              {m.downloads} téléchargements · {m.likes} likes
+              {m.last_modified
+                ? ` · maj ${new Date(m.last_modified).toLocaleDateString("fr-FR")}`
+                : ""}
+            </p>
             <div className="mt-5 flex items-center justify-between gap-3">
-              <span className="text-xs font-mono">{m.price}</span>
+              <a
+                href={m.url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-muted-foreground hover:text-foreground font-mono text-xs"
+              >
+                huggingface.co
+              </a>
               <button
                 onClick={() => deploy(m)}
-                disabled={deploying === m.id}
-                className="px-4 py-2 rounded-xl bg-foreground text-background font-semibold text-xs hover:opacity-90 transition disabled:opacity-60 flex items-center gap-2"
+                disabled={deploying === m.name}
+                className="bg-foreground text-background flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition hover:opacity-90 disabled:opacity-60"
               >
-                {deploying === m.id && <Loader2 className="h-3 w-3 animate-spin" />}
+                {deploying === m.name && <Loader2 className="h-3 w-3 animate-spin" />}
                 Déployer
               </button>
             </div>

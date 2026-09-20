@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Trash2 } from "lucide-react";
+import { HfKeyCard } from "@/components/dashboard/HfKeyCard";
 
 export const Route = createFileRoute("/dashboard/settings")({
   head: () => ({
@@ -121,6 +122,9 @@ function SettingsPage() {
           Mettre à jour
         </button>
       </form>
+
+      {/* Clé Hugging Face */}
+      <HfKeyCard className="glass rounded-3xl border-0" />
 
       {/* Sécurité */}
       <form onSubmit={changePassword} className="glass rounded-3xl p-6 lg:p-8 space-y-5">

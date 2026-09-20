@@ -16,6 +16,7 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
+import { HfKeyCard } from "@/components/dashboard/HfKeyCard";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dashboard/storage")({
@@ -245,6 +246,8 @@ function StoragePage() {
       )}
 
       {error && <div className="glass rounded-2xl p-4 text-sm text-destructive">❌ {error}</div>}
+
+      <HfKeyCard className="glass rounded-3xl border-0" />
 
       {/* Quotas */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">

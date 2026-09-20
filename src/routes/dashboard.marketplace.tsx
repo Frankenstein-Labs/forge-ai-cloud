@@ -87,7 +87,7 @@ function MarketplacePage() {
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("Tous");
-  const [scope, setScope] = useState<"all" | "mine">("all");
+  const [scope, setScope] = useState<"all" | "mine" | "hf">("all");
   const [open, setOpen] = useState(false);
 
   const params = useMemo(() => {
@@ -162,86 +162,215 @@ function MarketplacePage() {
             ))}
           </TabsList>
         </Tabs>
-        <Tabs value={scope} onValueChange={(v) => setScope(v as "all" | "mine")}>
+        <Tabs value={scope} onValueChange={(v) => setScope(v as typeof scope)}>
           <TabsList>
             <TabsTrigger value="all">Public</TabsTrigger>
             <TabsTrigger value="mine">Mes publications</TabsTrigger>
+            <TabsTrigger value="hf">Mes modèles Hugging Face</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
-      {error && (
-        <p className="text-destructive text-sm">
-          Impossible de charger le catalogue : {(error as Error).message}
-        </p>
+      {scope === "hf" ? (
+        <HfRepoGrid />
+      ) : (
+        <>
+          {error && (
+            <p className="text-destructive text-sm">
+              Impossible de charger le catalogue : {(error as Error).message}
+            </p>
+          )}
+
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {isLoading &&
+              Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-56 rounded-xl" />
+              ))}
+
+            {!isLoading &&
+              items.map((item) => (
+                <Card key={item.id} className="flex flex-col">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="bg-muted flex size-10 items-center justify-center rounded-lg">
+                        <Cpu className="text-primary size-5" />
+                      </div>
+                      <Badge variant="secondary">{item.category}</Badge>
+                    </div>
+                    <CardTitle className="mt-3 text-base break-all">{item.name}</CardTitle>
+                    <CardDescription>{item.author}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <p className="text-muted-foreground text-sm">{item.description}</p>
+                    <div className="text-muted-foreground mt-4 flex items-center gap-4 text-xs">
+                      <span className="flex items-center gap-1">
+                        <Star className="size-3.5" /> {item.stars}
+                      </span>
+                      <span className="font-mono">{fmtSize(item.size_bytes)}</span>
+                      <span className="flex items-center gap-1">
+                        <Download className="size-3.5" /> {item.downloads}
+                      </span>
+                      <span className="text-foreground font-medium">
+                        {Number(item.price_eur) > 0 ? `${item.price_eur} €` : "Gratuit"}
+                      </span>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      disabled={download.isPending}
+                      onClick={() => download.mutate(item.id)}
+                    >
+                      {download.isPending && download.variables === item.id ? (
+                        <Loader2 className="me-2 size-4 animate-spin" />
+                      ) : (
+                        <Download className="me-2 size-4" />
+                      )}
+                      Télécharger
+                    </Button>
+                    {scope === "mine" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => remove.mutate(item.id)}
+                        disabled={remove.isPending}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    )}
+                  </CardFooter>
+                </Card>
+              ))}
+
+            {!isLoading && items.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                Aucun modèle ne correspond à la recherche.
+              </p>
+            )}
+          </div>
+        </>
       )}
+    </div>
+  );
+}
 
+type HfItem = {
+  name: string;
+  pipeline_tag: string | null;
+  category: string;
+  downloads: number;
+  likes: number;
+  private: boolean;
+  last_modified: string | null;
+  url: string;
+  published: boolean;
+};
+
+function HfRepoGrid() {
+  const qc = useQueryClient();
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["hf-models"],
+    queryFn: () => authJson<{ account: string | null; items: HfItem[] }>("/api/hf-models"),
+    retry: false,
+  });
+
+  const publish = useMutation({
+    mutationFn: (item: HfItem) =>
+      authJson<{ message: string }>("/api/hf-models", {
+        method: "POST",
+        body: JSON.stringify({ name: item.name, category: item.category }),
+      }),
+    onSuccess: (res) => {
+      toast.success(res.message);
+      qc.invalidateQueries({ queryKey: ["hf-models"] });
+      qc.invalidateQueries({ queryKey: ["marketplace"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  if (isLoading) {
+    return (
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {isLoading &&
-          Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-56 rounded-xl" />)}
-
-        {!isLoading &&
-          items.map((item) => (
-            <Card key={item.id} className="flex flex-col">
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="bg-muted flex size-10 items-center justify-center rounded-lg">
-                    <Cpu className="text-primary size-5" />
-                  </div>
-                  <Badge variant="secondary">{item.category}</Badge>
-                </div>
-                <CardTitle className="mt-3 text-base break-all">{item.name}</CardTitle>
-                <CardDescription>{item.author}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1">
-                <p className="text-muted-foreground text-sm">{item.description}</p>
-                <div className="text-muted-foreground mt-4 flex items-center gap-4 text-xs">
-                  <span className="flex items-center gap-1">
-                    <Star className="size-3.5" /> {item.stars}
-                  </span>
-                  <span className="font-mono">{fmtSize(item.size_bytes)}</span>
-                  <span className="flex items-center gap-1">
-                    <Download className="size-3.5" /> {item.downloads}
-                  </span>
-                  <span className="text-foreground font-medium">
-                    {Number(item.price_eur) > 0 ? `${item.price_eur} €` : "Gratuit"}
-                  </span>
-                </div>
-              </CardContent>
-              <CardFooter className="gap-2">
-                <Button
-                  size="sm"
-                  className="flex-1"
-                  disabled={download.isPending}
-                  onClick={() => download.mutate(item.id)}
-                >
-                  {download.isPending && download.variables === item.id ? (
-                    <Loader2 className="me-2 size-4 animate-spin" />
-                  ) : (
-                    <Download className="me-2 size-4" />
-                  )}
-                  Télécharger
-                </Button>
-                {scope === "mine" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => remove.mutate(item.id)}
-                    disabled={remove.isPending}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          ))}
-
-        {!isLoading && items.length === 0 && (
-          <p className="text-muted-foreground text-sm">
-            Aucun modèle ne correspond à la recherche.
-          </p>
-        )}
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-48 rounded-xl" />
+        ))}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border p-6 text-sm">
+        <p className="text-destructive">{(error as Error).message}</p>
+        <p className="text-muted-foreground mt-2">
+          Ajoutez votre clé Hugging Face dans Paramètres pour afficher vos dépôts réels.
+        </p>
+      </div>
+    );
+  }
+
+  const items = data?.items ?? [];
+  if (!items.length) {
+    return (
+      <p className="text-muted-foreground text-sm">
+        Aucun dépôt trouvé sur le compte Hugging Face {data?.account ?? ""}.
+      </p>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {items.map((item) => (
+        <Card key={item.name} className="flex flex-col">
+          <CardHeader>
+            <div className="flex items-start justify-between gap-2">
+              <div className="bg-muted flex size-10 items-center justify-center rounded-lg">
+                <Cpu className="text-primary size-5" />
+              </div>
+              <div className="flex gap-1.5">
+                {item.private && <Badge variant="outline">Privé</Badge>}
+                <Badge variant="secondary">{item.pipeline_tag ?? item.category}</Badge>
+              </div>
+            </div>
+            <CardTitle className="mt-3 text-base break-all">{item.name}</CardTitle>
+            <CardDescription>
+              {item.last_modified
+                ? `Modifié le ${new Date(item.last_modified).toLocaleDateString("fr-FR")}`
+                : "Hugging Face"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-muted-foreground flex-1 text-xs">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1">
+                <Download className="size-3.5" /> {item.downloads}
+              </span>
+              <span className="flex items-center gap-1">
+                <Star className="size-3.5" /> {item.likes}
+              </span>
+            </div>
+          </CardContent>
+          <CardFooter className="gap-2">
+            <Button
+              size="sm"
+              className="flex-1"
+              variant={item.published ? "outline" : "default"}
+              disabled={publish.isPending}
+              onClick={() => publish.mutate(item)}
+            >
+              {publish.isPending && publish.variables?.name === item.name ? (
+                <Loader2 className="me-2 size-4 animate-spin" />
+              ) : (
+                <Upload className="me-2 size-4" />
+              )}
+              {item.published ? "Republier" : "Publier"}
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => window.open(item.url, "_blank")}>
+              <Download className="size-4" />
+            </Button>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 }

@@ -8,13 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Status = {
   configured: boolean;
@@ -71,8 +65,8 @@ export function HfKeyCard({ className }: { className?: string }) {
               <KeyRound className="size-4" /> Clé Hugging Face
             </CardTitle>
             <CardDescription>
-              Utilisée pour exécuter vos modèles <code>hf/&lt;owner&gt;/&lt;repo&gt;</code>, importer
-              et publier vos dépôts. Elle reste chiffrée côté serveur.
+              Utilisée pour exécuter vos modèles <code>hf/&lt;owner&gt;/&lt;repo&gt;</code>,
+              importer et publier vos dépôts. Elle reste chiffrée côté serveur.
             </CardDescription>
           </div>
           {isLoading ? null : data?.configured ? (
