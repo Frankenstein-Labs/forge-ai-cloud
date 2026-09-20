@@ -34,9 +34,9 @@ export class HuggingFaceProvider implements ProviderAdapter {
     const result = await callHuggingFace(
       input.model,
       {
-      model: input.model,
-      messages: input.messages,
-      temperature: input.temperature,
+        model: input.model,
+        messages: input.messages,
+        temperature: input.temperature,
         max_tokens: input.maxTokens,
       },
       input.hfToken,
