@@ -171,6 +171,20 @@ export function AetherisTerminal() {
       writeln("");
       writeln(`\x1b[38;5;245mEndpoint OpenAI-compatible : ${CHAT_ENDPOINT}\x1b[0m`);
       writeln(`\x1b[38;5;245mDocumentation : ${ORIGIN}/docs\x1b[0m`);
+      return py.join("\n");
+    }
+
+    async function openColab() {
+      const code = exportKeySnippet();
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+        writeln("\x1b[38;5;82m✅ Code copié dans le presse-papiers.\x1b[0m");
+      } catch {
+        writeln("\x1b[38;5;214m⚠ Copie automatique impossible — copie le code ci-dessus.\x1b[0m");
+      }
+      window.open("https://colab.research.google.com/#create=true", "_blank", "noopener");
+      writeln("\x1b[38;5;82m🚀 Colab ouvert : colle le code (Ctrl+V) dans une cellule puis Shift+Entrée.\x1b[0m");
     }
 
     async function execute(cmdLine: string) {
@@ -191,6 +205,11 @@ export function AetherisTerminal() {
         history.forEach((h, i) =>
           writeln(`\x1b[38;5;245m${String(i + 1).padStart(3)}\x1b[0m  ${h}`),
         );
+        prompt();
+        return;
+      }
+      if (trimmed === "colab") {
+        await openColab();
         prompt();
         return;
       }
