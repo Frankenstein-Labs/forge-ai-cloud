@@ -60,6 +60,7 @@ async function handleCommand(command: string, authed: AuthedKey | null): Promise
         "  rm <name>                  — supprime un objet Seaweed",
         "",
         "  export-key                 — snippet Python pour Colab (local)",
+        "  colab                      — copie le code et ouvre Google Colab",
         "  clear                      — efface l'écran (local)",
         "  logout                     — oublie la clé en mémoire (local)",
       ].join("\n");
