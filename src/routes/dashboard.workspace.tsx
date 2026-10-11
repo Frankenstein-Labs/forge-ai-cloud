@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AetherisTerminal } from "@/components/workspace/AetherisTerminal";
+import { TrainInColab } from "@/components/workspace/TrainInColab";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -141,6 +142,7 @@ function WorkspacePage() {
           <Button size="sm" onClick={() => setPullOpen(true)} disabled={loading}>
             <Download className="me-2 size-4" /> Télécharger le modèle IA
           </Button>
+          <TrainInColab />
         </div>
       </div>
 
