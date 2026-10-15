@@ -1,12 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Loader2,
-  Play,
-  RotateCw,
-  Server,
-  Square,
-  Terminal as TerminalIcon,
-} from "lucide-react";
+import { Loader2, Play, RotateCw, Server, Square, Terminal as TerminalIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -145,10 +138,7 @@ function EnginesPage() {
                         {e.cpu_cores} vCPU · {e.ram_gb} Go · {e.disk_gb} Go
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={isRunning ? "default" : "secondary"}
-                          className="gap-1.5"
-                        >
+                        <Badge variant={isRunning ? "default" : "secondary"} className="gap-1.5">
                           <span
                             className={`size-1.5 rounded-full ${isRunning ? "bg-primary" : "bg-muted-foreground"}`}
                           />
@@ -168,9 +158,7 @@ function EnginesPage() {
                             size="icon"
                             variant="ghost"
                             disabled={isBusy}
-                            onClick={() =>
-                              act(isRunning ? "stop" : "start", e.id, e.name)
-                            }
+                            onClick={() => act(isRunning ? "stop" : "start", e.id, e.name)}
                             aria-label={isRunning ? "Arrêter" : "Démarrer"}
                           >
                             {isBusy ? (
