@@ -1,67 +1,71 @@
-# Connecteur SeaweedFS (S3) pour Aetheris
+# Reprise complète de Dokploy pour Aetheris
 
-Brancher le terminal `/dashboard/workspace` et l'API publique sur **ton VPS Seaweed** via son endpoint S3 (port 8333 par défaut). Les modèles lourds (GGUF, safetensors, datasets) seront stockés sur ton VPS, plus sur Supabase Storage.
+## Résultat demandé
 
-## Pré-requis côté VPS (à faire par toi)
+Faire de **Dokploy la base complète de l’espace connecté Aetheris** : reprendre fidèlement son design, sa navigation, ses cartes, ses tableaux, ses formulaires, ses paramètres et ses thèmes, puis connecter ses fonctionnalités open source. Il ne s’agit ni d’une simple inspiration ni d’un changement de couleurs limité à quelques pages.
 
-1. Lancer Seaweed avec S3 activé et accessible publiquement en HTTPS :
-   ```bash
-   weed server -dir=/data/seaweed -s3 -s3.port=8333 \
-     -s3.config=/etc/seaweed/s3.json &
-   ```
-   Avec `s3.json` qui définit un user `aetheris` + access/secret key.
-2. Reverse proxy (Caddy/Nginx) → `https://s3.tondomaine.com` vers `localhost:8333`.
-3. Créer un bucket `aetheris-models`.
-4. Me transmettre 3 valeurs (via `add_secret`) :
-   - `SEAWEED_S3_ENDPOINT` (ex: `https://s3.tondomaine.com`)
-   - `SEAWEED_S3_ACCESS_KEY`
-   - `SEAWEED_S3_SECRET_KEY`
+L’accueil public reste hors de cette refonte de la « deuxième page ». L’identité Aetheris et les fonctions IA existantes restent présentes dans le nouvel espace.
 
-## Ce que je vais faire côté code
+## Base officielle et limite de réutilisation
 
-### 1. Lib serveur `src/lib/seaweed.ts`
+- Utiliser le dépôt officiel [Dokploy/dokploy](https://github.com/Dokploy/dokploy), avec une révision identifiée pour garder une référence stable.
+- Reprendre le code réutilisable et les éléments visuels open source, avec les mentions et notices requises par Apache-2.0.
+- Le [fichier de licence officiel](https://github.com/Dokploy/dokploy/blob/canary/LICENSE.MD) exclut les dossiers `proprietary` de cette licence. Les fonctions exclusives de Dokploy Cloud ne sont donc pas automatiquement réutilisables : les inventorier séparément et signaler celles qui demandent une licence ou une autorisation. Ne pas les copier en les présentant comme open source.
 
-- Client S3 minimal en `fetch` + signature **AWS SigV4** (pas de SDK `@aws-sdk/*` lourd, on reste edge-compatible Cloudflare Workers).
-- Fonctions : `s3Put`, `s3Get`, `s3List`, `s3Delete`, `s3PresignGet`, `s3PresignPut` (URL pré-signée 1h).
-- Bucket par défaut `aetheris-models`, préfixe `users/<user_id>/`.
+## 1. Inventaire intégral, écran par écran
 
-### 2. Migration DB
+Créer une liste de correspondance entre chaque écran Dokploy, ses onglets, ses actions et sa future place dans Aetheris. Inclure les sous-écrans et fenêtres de configuration, pas seulement les pages principales.
 
-- Ajouter colonnes à `user_models` : `storage_provider TEXT DEFAULT 'supabase'` (`supabase` | `seaweed`), `storage_bucket TEXT`, `etag TEXT`.
+Familles déjà repérées dans le dépôt officiel :
+- Vue d’ensemble, projets, environnements et services.
+- Applications, Docker Compose et bases PostgreSQL, MySQL, MariaDB, MongoDB, Redis et LibSQL.
+- Déploiements, Docker, Swarm, réseaux, Traefik, suivi et tâches planifiées.
+- Paramètres : profil, sessions, utilisateurs, serveurs, fournisseurs Git, registres, clés SSH, secrets, destinations, certificats, DNS, notifications, étiquettes et configuration des déploiements.
+- Écrans dont la disponibilité libre ou Cloud doit être vérifiée individuellement : suivi avancé, audit, SSO, marque blanche, licences et facturation.
 
-### 3. Nouvelles commandes terminal (`src/routes/api.terminal.ts`)
+Cet inventaire sera le suivi de couverture de la reprise complète. Aucun écran ne sera silencieusement abandonné ou remplacé par une carte décorative.
 
-- `ls` → liste les objets du préfixe utilisateur sur Seaweed.
-- `push <name>` → renvoie une **URL pré-signée PUT** (curl à coller en local) + insère la ligne dans `user_models` avec `storage_provider='seaweed'`.
-- `pull <name>` → renvoie une URL pré-signée GET (1h).
-- `rm <name>` → supprime l'objet + la ligne DB.
-- `storage` → affiche endpoint + bucket + quota utilisé (somme `size_bytes`).
-- Mise à jour de `upload` existant pour proposer le choix `--seaweed` vs Supabase.
+## 2. Reprise fidèle du design complet
 
-### 4. Nouvelle route `/api/v1/models/:name/download`
+- Reproduire la structure Dokploy : menu latéral, en-têtes, navigation entre projets et services, onglets, menus, recherche, tableaux, cartes, fenêtres et formulaires.
+- Reprendre ses couleurs officielles, bordures, dimensions, typographie, icônes et états des contrôles ; remplacer le traitement cyan/violet et les effets vitrés actuels dans l’espace connecté.
+- Reprendre les thèmes clair, sombre et système ainsi que les autres choix réellement proposés dans la version retenue ; conserver le choix de l’utilisateur.
+- Conserver l’identité Aetheris et proposer les libellés en français sans changer arbitrairement l’organisation Dokploy.
+- Étendre ce même design à Marketplace IA, Mes modèles, Stockage, Clés API, Workspace et Colab, plutôt que conserver deux styles différents.
 
-- Auth par clé API (déjà en place via `authenticateApiKey`).
-- Redirige (302) vers une URL pré-signée Seaweed → permet à `wget`/`curl`/HuggingFace `from_pretrained` de télécharger directement depuis le VPS sans passer par Lovable.
+## 3. Reprise des fonctionnalités réelles
 
-### 5. UI workspace
+- Exécuter Dokploy sur un serveur adapté et connecter Aetheris à ses interfaces officielles pour les projets, services, déploiements, domaines, bases, sauvegardes, journaux et opérations serveur disponibles dans la version retenue.
+- Vérifier chaque action disponible et ses autorisations avant de l’exposer aux utilisateurs Aetheris. Ne jamais donner à chaque utilisateur les droits administrateur du serveur.
+- Conserver les connexions Hugging Face, les clés Aetheris, le stockage et Colab, et vérifier leur fonctionnement après adaptation.
+- Pour le terminal, distinguer les commandes Aetheris des commandes exécutées dans un vrai conteneur ; vérifier le mécanisme d’accès Dokploy avant de promettre un shell distant.
+- Remplacer les statuts et mesures de moteur simulés par des résultats réels. Tant qu’aucun serveur n’est connecté, afficher un état non connecté, jamais un serveur prétendument en marche.
+- Ne pas présenter la facturation ou une fonction réservée à Dokploy Cloud comme activée simplement parce que son écran a été repris.
 
-- Section "Storage" dans `dashboard.workspace.tsx` : endpoint Seaweed connecté ✓, espace utilisé, bouton "Copier exemple `push`".
-- Mise à jour de `docs.tsx` avec section **Stockage de modèles** (curl push/pull, exemple Python).
-- Snippet `export-key` enrichi avec la fonction `download_model()`.
+## 4. Ordre de réalisation
 
-## Sécurité
+La cible reste la reprise complète ; les lots permettent de la vérifier sans casser les fonctions actuelles :
+1. Référence officielle, inventaire de couverture et vérification des licences.
+2. Ensemble visuel commun et adaptation de toutes les pages Aetheris existantes.
+3. Pages Dokploy : projets, environnements, services et tous leurs paramètres libres.
+4. Connexion à l’instance Dokploy, déploiements réels et terminal distant si pris en charge.
+5. Autres fonctionnalités libres de l’inventaire, puis contrôle final de couverture.
 
-- Toutes les URL pré-signées scopées au préfixe `users/<authenticated_user_id>/` → impossible d'accéder aux fichiers d'un autre user même avec la presigned URL (le path est signé).
-- Validation Zod sur les noms de fichiers (regex `[a-zA-Z0-9._-]+`, max 200 chars, pas de `..`).
-- TTL court sur les presigned (1h GET, 2h PUT).
-- Les secrets `SEAWEED_*` ne sont jamais renvoyés au client.
+## Vérification et conditions de fin
 
-## Hors-scope (chantiers suivants)
+- Comparer les écrans Aetheris à ceux de la révision Dokploy retenue, en clair et sombre, sur petits et grands écrans.
+- Tester avec un utilisateur connecté : créer un projet et un service, lancer un déploiement réel, consulter son état et ses journaux, puis effectuer une opération et vérifier le résultat relu à l’écran.
+- Tester les paramètres enregistrés et la séparation des utilisateurs ; vérifier qu’aucun secret serveur n’est envoyé au navigateur.
+- Vérifier les parcours IA existants et les liens de navigation.
+- Livrer l’inventaire final : repris et vérifié, bloqué par une connexion externe, ou soumis à une licence. Un écran seul ne compte pas comme une fonctionnalité terminée.
 
-- Connecteur Mongo (chantier 2).
-- UI `/dashboard/storage` complète drag&drop (chantier 3).
-- Bridge GPU `run hf/...` → ton VPS (chantier 4).
+## Détails techniques
 
-## Action requise après approbation
+- Aetheris utilise TanStack Start ; Dokploy est une application différente. Adapter ses composants libres et ses parcours à la structure existante plutôt que remplacer Aetheris par une application Next.js incompatible.
+- Dokploy et Docker tourneront sur un serveur externe, pas dans l’environnement d’hébergement du site. Aetheris restera l’interface utilisateur, avec une connexion serveur sécurisée vers Dokploy.
+- Préserver l’authentification existante, ajouter les correspondances d’utilisateurs et de ressources nécessaires, et contrôler les autorisations à chaque opération.
+- Ajouter les pages réellement référencées, leurs métadonnées et les tests des règles d’accès ; conserver une liste de tâches pour suivre les lots.
 
-Je vais te demander via `add_secret` les 3 valeurs Seaweed. Tant qu'elles ne sont pas configurées, la lib renverra un message clair "Seaweed non configuré — voir /docs#storage".
+## Dépendances à fournir au moment de la connexion
+
+La reprise du design peut commencer sans serveur. Pour vérifier les opérations réelles, il faudra une instance Dokploy accessible et une clé fournie dans un formulaire sécurisé, jamais dans le chat. La présence actuelle d’une instance n’est pas confirmée. Les fonctions propriétaires nécessitent une autorisation distincte ; elles ne font pas partie de la promesse de reprise libre.
