@@ -1,11 +1,6 @@
 // GET/POST/DELETE /api/hf-config — gère la clé API HuggingFace de chaque utilisateur.
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  authenticateRequest,
-  corsHeaders,
-  getServerSupabase,
-  jsonResponse,
-} from "@/lib/api-auth";
+import { authenticateRequest, corsHeaders, getServerSupabase, jsonResponse } from "@/lib/api-auth";
 
 type Body = { token?: string; label?: string };
 

@@ -184,7 +184,9 @@ export function AetherisTerminal() {
         writeln("\x1b[38;5;214m⚠ Copie automatique impossible — copie le code ci-dessus.\x1b[0m");
       }
       window.open("https://colab.research.google.com/#create=true", "_blank", "noopener");
-      writeln("\x1b[38;5;82m🚀 Colab ouvert : colle le code (Ctrl+V) dans une cellule puis Shift+Entrée.\x1b[0m");
+      writeln(
+        "\x1b[38;5;82m🚀 Colab ouvert : colle le code (Ctrl+V) dans une cellule puis Shift+Entrée.\x1b[0m",
+      );
     }
 
     async function execute(cmdLine: string) {
