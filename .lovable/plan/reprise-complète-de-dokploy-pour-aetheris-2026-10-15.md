@@ -17,6 +17,7 @@ L’accueil public reste hors de cette refonte de la « deuxième page ». L’i
 Créer une liste de correspondance entre chaque écran Dokploy, ses onglets, ses actions et sa future place dans Aetheris. Inclure les sous-écrans et fenêtres de configuration, pas seulement les pages principales.
 
 Familles déjà repérées dans le dépôt officiel :
+
 - Vue d’ensemble, projets, environnements et services.
 - Applications, Docker Compose et bases PostgreSQL, MySQL, MariaDB, MongoDB, Redis et LibSQL.
 - Déploiements, Docker, Swarm, réseaux, Traefik, suivi et tâches planifiées.
@@ -45,6 +46,7 @@ Cet inventaire sera le suivi de couverture de la reprise complète. Aucun écran
 ## 4. Ordre de réalisation
 
 La cible reste la reprise complète ; les lots permettent de la vérifier sans casser les fonctions actuelles :
+
 1. Référence officielle, inventaire de couverture et vérification des licences.
 2. Ensemble visuel commun et adaptation de toutes les pages Aetheris existantes.
 3. Pages Dokploy : projets, environnements, services et tous leurs paramètres libres.

@@ -46,9 +46,7 @@ export function buildNotebook(o: {
       code(
         `AETHERIS_API_KEY = "${o.apiKey}"\nAETHERIS_BASE_URL = "${o.origin}"\nBASE_MODEL = "${o.baseModel}"\nDATASET = "${o.dataset}"\nOUTPUT_REPO = "${o.outputRepo}"`,
       ),
-      code(
-        "!pip -q install -U transformers datasets peft trl accelerate huggingface_hub",
-      ),
+      code("!pip -q install -U transformers datasets peft trl accelerate huggingface_hub"),
       md(
         "## Connexion Hugging Face\nVotre jeton `hf_…` (droit **Write**) est demandé ici — il n'est jamais écrit dans le fichier.",
       ),
@@ -101,7 +99,8 @@ export function TrainInColab() {
   const [outputRepo, setOutputRepo] = useState("");
 
   function generate() {
-    if (!apiKey.startsWith("sk-aeth-")) return toast.error("Collez une clé sk-aeth-… (page Clés API)");
+    if (!apiKey.startsWith("sk-aeth-"))
+      return toast.error("Collez une clé sk-aeth-… (page Clés API)");
     if (!/^[\w.-]+\/[\w.-]+$/.test(outputRepo))
       return toast.error("Dépôt de sortie au format compte/nom-du-modele");
     const nb = buildNotebook({
@@ -139,7 +138,13 @@ export function TrainInColab() {
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="c-key">Clé Aetheris</Label>
-              <Input id="c-key" type="password" placeholder="sk-aeth-…" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+              <Input
+                id="c-key"
+                type="password"
+                placeholder="sk-aeth-…"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="c-base">Modèle de base (Hugging Face)</Label>
@@ -151,11 +156,18 @@ export function TrainInColab() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="c-out">Dépôt de sortie</Label>
-              <Input id="c-out" placeholder="moncompte/mon-modele" value={outputRepo} onChange={(e) => setOutputRepo(e.target.value)} />
+              <Input
+                id="c-out"
+                placeholder="moncompte/mon-modele"
+                value={outputRepo}
+                onChange={(e) => setOutputRepo(e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Annuler
+            </Button>
             <Button onClick={generate}>Générer et ouvrir Colab</Button>
           </DialogFooter>
         </DialogContent>

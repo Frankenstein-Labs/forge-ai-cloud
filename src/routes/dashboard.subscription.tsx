@@ -68,7 +68,6 @@ const TIERS = [
   },
 ];
 
-
 function SubscriptionPage() {
   const { profile } = useAuth();
   const current = profile?.subscription_tier ?? "free";

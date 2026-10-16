@@ -26,7 +26,20 @@ export function AetherisTerminal() {
       theme: (() => {
         const css = getComputedStyle(containerRef.current);
         const color = (name: string) => css.getPropertyValue(`--terminal-${name}`).trim();
-        return { background: color("background"), foreground: color("foreground"), cursor: color("foreground"), black: color("background"), brightBlack: color("muted"), red: color("red"), green: color("green"), yellow: color("yellow"), blue: color("blue"), magenta: color("magenta"), cyan: color("cyan"), white: color("foreground") };
+        return {
+          background: color("background"),
+          foreground: color("foreground"),
+          cursor: color("foreground"),
+          black: color("background"),
+          brightBlack: color("muted"),
+          red: color("red"),
+          green: color("green"),
+          yellow: color("yellow"),
+          blue: color("blue"),
+          magenta: color("magenta"),
+          cyan: color("cyan"),
+          white: color("foreground"),
+        };
       })(),
     });
     const fit = new FitAddon();
@@ -175,7 +188,9 @@ export function AetherisTerminal() {
         writeln("\x1b[38;5;214m⚠ Copie automatique impossible — copie le code ci-dessus.\x1b[0m");
       }
       window.open("https://colab.research.google.com/#create=true", "_blank", "noopener");
-      writeln("\x1b[38;5;82m🚀 Colab ouvert : colle le code (Ctrl+V) dans une cellule puis Shift+Entrée.\x1b[0m");
+      writeln(
+        "\x1b[38;5;82m🚀 Colab ouvert : colle le code (Ctrl+V) dans une cellule puis Shift+Entrée.\x1b[0m",
+      );
     }
 
     async function execute(cmdLine: string) {
@@ -325,10 +340,5 @@ export function AetherisTerminal() {
     };
   }, []);
 
-  return (
-    <div
-      ref={containerRef}
-      className="h-[560px] w-full bg-terminal-background p-3"
-    />
-  );
+  return <div ref={containerRef} className="h-[560px] w-full bg-terminal-background p-3" />;
 }

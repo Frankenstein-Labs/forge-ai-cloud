@@ -32,10 +32,16 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Aetheris Cloud" },
-      { name: "description", content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud." },
+      {
+        name: "description",
+        content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud.",
+      },
       { name: "author", content: "Aetheris" },
       { property: "og:title", content: "Aetheris Cloud" },
-      { property: "og:description", content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud." },
+      {
+        property: "og:description",
+        content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
