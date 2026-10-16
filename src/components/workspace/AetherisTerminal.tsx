@@ -23,20 +23,11 @@ export function AetherisTerminal() {
       convertEol: true,
       fontFamily: '"JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, monospace',
       fontSize: 13,
-      theme: {
-        background: "#0a0e1a",
-        foreground: "#e6f1ff",
-        cursor: "#22d3ee",
-        black: "#0a0e1a",
-        brightBlack: "#475569",
-        red: "#f43f5e",
-        green: "#22d3ee",
-        yellow: "#facc15",
-        blue: "#60a5fa",
-        magenta: "#c084fc",
-        cyan: "#22d3ee",
-        white: "#e6f1ff",
-      },
+      theme: (() => {
+        const css = getComputedStyle(containerRef.current);
+        const color = (name: string) => css.getPropertyValue(`--terminal-${name}`).trim();
+        return { background: color("background"), foreground: color("foreground"), cursor: color("foreground"), black: color("background"), brightBlack: color("muted"), red: color("red"), green: color("green"), yellow: color("yellow"), blue: color("blue"), magenta: color("magenta"), cyan: color("cyan"), white: color("foreground") };
+      })(),
     });
     const fit = new FitAddon();
     term.loadAddon(fit);
@@ -337,7 +328,7 @@ export function AetherisTerminal() {
   return (
     <div
       ref={containerRef}
-      className="h-[560px] w-full rounded-2xl border border-border bg-[#0a0e1a] p-3 shadow-glow-cyan"
+      className="h-[560px] w-full bg-terminal-background p-3"
     />
   );
 }
