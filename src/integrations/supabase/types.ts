@@ -139,6 +139,33 @@ export type Database = {
           },
         ];
       };
+      dokploy_connections: {
+        Row: {
+          account_label: string;
+          encrypted_api_key: string;
+          endpoint: string;
+          updated_at: string;
+          user_id: string;
+          verified_at: string;
+        };
+        Insert: {
+          account_label?: string;
+          encrypted_api_key: string;
+          endpoint: string;
+          updated_at?: string;
+          user_id: string;
+          verified_at?: string;
+        };
+        Update: {
+          account_label?: string;
+          encrypted_api_key?: string;
+          endpoint?: string;
+          updated_at?: string;
+          user_id?: string;
+          verified_at?: string;
+        };
+        Relationships: [];
+      };
       engine_events: {
         Row: {
           action: string;
