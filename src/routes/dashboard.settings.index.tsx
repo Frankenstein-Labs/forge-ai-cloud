@@ -76,7 +76,7 @@ function SettingsPage() {
 
       <DokployConnection />
       {/* Profil */}
-      <form onSubmit={saveProfile} className="glass rounded-lg p-6 lg:p-8 space-y-5">
+      <form onSubmit={saveProfile} className="border-b pb-6 space-y-5">
         <h2 className="font-display text-xl font-medium">Profil</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -127,10 +127,10 @@ function SettingsPage() {
       </form>
 
       {/* Clé Hugging Face */}
-      <HfKeyCard className="glass rounded-lg border-0" />
+      <HfKeyCard className="rounded-none border-x-0 border-t-0 shadow-none" />
 
       {/* Sécurité */}
-      <form onSubmit={changePassword} className="glass rounded-lg p-6 lg:p-8 space-y-5">
+      <form onSubmit={changePassword} className="border-b pb-6 space-y-5">
         <h2 className="font-display text-xl font-medium">Sécurité</h2>
         <div>
           <label className="text-xs font-medium uppercase  text-muted-foreground">

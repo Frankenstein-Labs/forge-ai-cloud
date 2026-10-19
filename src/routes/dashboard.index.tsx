@@ -89,7 +89,7 @@ function DashboardHome() {
     <div className="space-y-6">
       <div className="px-2">
         <h1 className="font-display text-4xl font-light ">
-          Bienvenue<span className="text-primary">.</span>
+          Accueil
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">
           Vue d'ensemble de votre infrastructure IA en temps réel.
@@ -124,7 +124,7 @@ function DashboardHome() {
       </div>
 
       {/* Usage chart */}
-      <div className="glass rounded-lg p-6 lg:p-8">
+      <div className="border-t py-6">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="font-display text-xl font-medium">Consommation quotidienne</h2>
@@ -140,7 +140,7 @@ function DashboardHome() {
 
         <div className="flex items-end gap-1 h-48">
           {usage.map((d, i) => (
-            <div key={d.day} className="flex-1 flex flex-col items-center group relative">
+            <div key={d.day} className="flex-1 h-full flex flex-col justify-end items-center group relative">
               <div
                 className="w-full rounded-t-md bg-primary transition-all hover:opacity-100 opacity-80"
                 style={{ height: `${(d.tokens / max) * 100}%`, minHeight: "2px" }}
@@ -159,7 +159,7 @@ function DashboardHome() {
       </div>
 
       {/* Recent activities */}
-      <div className="glass rounded-lg p-6 lg:p-8">
+      <div className="border-t py-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display text-xl font-medium">Inférences récentes</h2>
         </div>
@@ -218,34 +218,11 @@ function StatCard({
   const glowClass = accent === "cyan" ? "" : "";
 
   return (
-    <div className="glass rounded-lg p-6 relative overflow-hidden group">
-      <div
-        className={`absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-10 blur-2xl ${
-          accent === "cyan" ? "bg-primary" : "bg-secondary"
-        }`}
-      />
-      <div className="relative">
-        <div className="flex items-start justify-between">
-          <p className="text-xs text-muted-foreground uppercase  font-semibold">
-            {label}
-          </p>
-          <div
-            className={`size-8 rounded-md bg-muted flex items-center justify-center ${glowClass}`}
-          >
-            <Icon className={`h-4 w-4 ${accentClass}`} />
-          </div>
-        </div>
-        <p className="font-display text-3xl font-light mt-4 tabular-nums">{value}</p>
-        <p className="text-xs text-muted-foreground mt-1">{unit}</p>
-        {cta && (
-          <Link
-            to={cta.to}
-            className="mt-4 inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-semibold uppercase "
-          >
-            {cta.label} <ArrowUpRight className="h-3 w-3" />
-          </Link>
-        )}
-      </div>
+    <div className="rounded-lg border bg-card p-5">
+      <div className="flex items-center justify-between"><p className="text-sm text-muted-foreground">{label}</p><Icon className="size-4 text-muted-foreground" /></div>
+      <p className="mt-3 text-3xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{unit}</p>
+      {cta && <Link to={cta.to} className="mt-4 inline-flex items-center gap-1 text-sm font-medium">{cta.label}<ArrowUpRight className="size-3" /></Link>}
     </div>
   );
 }
