@@ -37,7 +37,10 @@ export function Models() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {models.map((m) => (
-            <div key={m.id} className="relative border-gradient rounded-2xl p-6 bg-gradient-card">
+            <div
+              key={m.id}
+              className="relative border-gradient rounded-2xl p-6 bg-gradient-card"
+            >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground px-2 py-1 rounded-md bg-background/40">
                   {m.type}

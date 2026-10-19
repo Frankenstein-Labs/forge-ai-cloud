@@ -70,7 +70,7 @@ export function HfKeyCard({ className }: { className?: string }) {
             </CardDescription>
           </div>
           {isLoading ? null : data?.configured ? (
-            <Badge className="gap-1 bg-emerald-500/15 text-emerald-500">
+            <Badge className="gap-1 bg-success/15 text-success">
               <CheckCircle2 className="size-3" /> Active
             </Badge>
           ) : (

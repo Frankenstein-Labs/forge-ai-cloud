@@ -55,6 +55,7 @@ const STATUS_META: Record<
   string,
   { label: string; dot: string; variant: "default" | "secondary" | "destructive" }
 > = {
+  disconnected: { label: "Non connecté", dot: "bg-muted-foreground", variant: "secondary" },
   running: { label: "En cours", dot: "bg-primary", variant: "default" },
   stopped: { label: "Arrêté", dot: "bg-destructive", variant: "destructive" },
   restarting: { label: "Redémarrage…", dot: "bg-secondary", variant: "secondary" },
@@ -63,7 +64,7 @@ const STATUS_META: Record<
 function WorkspacePage() {
   const { engines, events, loading, error, busy, runAction } = useEngines(4000);
   const engine = engines[0];
-  const status = engine?.status ?? "stopped";
+  const status = engine?.status ?? "disconnected";
   const meta = STATUS_META[status] ?? STATUS_META.stopped;
   const metrics = engine?.metrics ?? { cpu: 0, ram: 0, disk: 0, uptime_seconds: 0 };
   const ramGb = engine?.ram_gb ?? 8;
@@ -93,14 +94,14 @@ function WorkspacePage() {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">Espace de travail</h1>
+          <h1 className="font-display text-2xl font-semibold ">Espace de travail</h1>
           <p className="text-muted-foreground text-sm">
-            Terminal cloud connecté à votre moteur de dev (Docker / Coder).
+            Terminal Aetheris · API, Hugging Face et stockage.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {status === "stopped" ? (
-            <Button size="sm" onClick={() => act("start")} disabled={!!busy || loading}>
+            <Button size="sm" onClick={() => act("start")} disabled={!engine || !!busy || loading}>
               {busy?.startsWith("start") ? (
                 <Loader2 className="me-2 size-4 animate-spin" />
               ) : (
@@ -113,7 +114,7 @@ function WorkspacePage() {
               size="sm"
               variant="outline"
               onClick={() => act("restart")}
-              disabled={!!busy || loading}
+              disabled={!engine || !!busy || loading}
             >
               {busy?.startsWith("restart") ? (
                 <Loader2 className="me-2 size-4 animate-spin" />
@@ -127,7 +128,7 @@ function WorkspacePage() {
             size="sm"
             variant="outline"
             onClick={() => act("stop")}
-            disabled={!!busy || loading || status === "stopped"}
+            disabled={!engine || !!busy || loading || status === "stopped"}
           >
             <Square className="me-2 size-4" /> Stop
           </Button>
@@ -135,11 +136,11 @@ function WorkspacePage() {
             size="sm"
             variant="outline"
             onClick={() => act("vscode")}
-            disabled={!!busy || loading}
+            disabled={!engine || !!busy || loading}
           >
             <Code2 className="me-2 size-4" /> Ouvrir VS Code
           </Button>
-          <Button size="sm" onClick={() => setPullOpen(true)} disabled={loading}>
+          <Button size="sm" onClick={() => setPullOpen(true)} disabled={!engine || loading}>
             <Download className="me-2 size-4" /> Télécharger le modèle IA
           </Button>
           <TrainInColab />
@@ -182,17 +183,17 @@ function WorkspacePage() {
               <CardDescription>{engine?.name ?? "Aucun moteur"}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <Metric icon={Cpu} label="CPU" value={`${metrics.cpu} %`} pct={metrics.cpu} />
+              <Metric icon={Cpu} label="CPU" value={engine ? `${metrics.cpu} %` : "—"} pct={metrics.cpu} />
               <Metric
                 icon={MemoryStick}
                 label="RAM"
-                value={`${((metrics.ram / 100) * ramGb).toFixed(1)} / ${ramGb} Go`}
+                value={engine ? `${((metrics.ram / 100) * ramGb).toFixed(1)} / ${ramGb} Go` : "—"}
                 pct={metrics.ram}
               />
               <Metric
                 icon={HardDrive}
                 label="Disque"
-                value={`${((metrics.disk / 100) * diskGb).toFixed(0)} / ${diskGb} Go`}
+                value={engine ? `${((metrics.disk / 100) * diskGb).toFixed(0)} / ${diskGb} Go` : "—"}
                 pct={metrics.disk}
               />
             </CardContent>
@@ -204,7 +205,7 @@ function WorkspacePage() {
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <Row label="Statut" value={meta.label} />
-              <Row label="Uptime" value={formatUptime(metrics.uptime_seconds)} mono />
+              <Row label="Uptime" value={engine ? formatUptime(metrics.uptime_seconds) : "—"} mono />
               <Row label="Image" value={engine?.image ?? "—"} mono />
               <Row label="Région" value={engine?.region ?? "—"} />
               <Row

@@ -68,6 +68,7 @@ const TIERS = [
   },
 ];
 
+
 function SubscriptionPage() {
   const { profile } = useAuth();
   const current = profile?.subscription_tier ?? "free";
@@ -77,7 +78,7 @@ function SubscriptionPage() {
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="space-y-1">
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-2xl font-semibold ">
           Abonnement & Facturation
         </h1>
         <p className="text-muted-foreground text-sm">
@@ -135,8 +136,8 @@ function SubscriptionPage() {
                 <Button
                   className="w-full"
                   variant={active ? "outline" : tier.highlighted ? "default" : "secondary"}
-                  disabled={active}
-                  onClick={() => toast.info("Le paiement sera activé prochainement.")}
+                  disabled
+                  title="Paiements non activés"
                 >
                   {active ? "Forfait actuel" : `Passer à ${tier.name}`}
                 </Button>

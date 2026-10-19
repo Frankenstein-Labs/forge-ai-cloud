@@ -126,6 +126,7 @@ async function handleCommand(command: string, authed: AuthedKey | null): Promise
       return lines.join("\n");
     }
 
+
     case "models": {
       if (!authed) return "❌ Non authentifié.";
       const mcfg = await getMongoConfigForUser(authed.user_id);

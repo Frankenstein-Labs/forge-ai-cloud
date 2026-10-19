@@ -1,5 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Loader2, Play, RotateCw, Server, Square, Terminal as TerminalIcon } from "lucide-react";
+import {
+  Loader2,
+  Play,
+  RotateCw,
+  Server,
+  Square,
+  Terminal as TerminalIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,13 +61,13 @@ function EnginesPage() {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">Mes Moteurs Cloud</h1>
+          <h1 className="font-display text-2xl font-semibold ">Mes Moteurs Cloud</h1>
           <p className="text-muted-foreground text-sm">
-            Conteneurs Docker / Coder loués sur l'infrastructure Aetheris.
+            Moteurs de développement connectés à Aetheris.
           </p>
         </div>
-        <Button onClick={() => toast.info("Sélection d'un gabarit de moteur à venir.")}>
-          <Server className="me-2 size-4" /> Louer un moteur
+        <Button asChild variant="outline">
+          <Link to="/dashboard/settings"><Server className="me-2 size-4" /> Connecter Dokploy</Link>
         </Button>
       </div>
 
@@ -75,7 +82,7 @@ function EnginesPage() {
         <Stat title="Moteurs loués" value={`${engines.length}`} desc="Toutes régions" />
         <Stat
           title="Coût estimé"
-          value={`${monthlyCost.toFixed(2).replace(".", ",")} €`}
+          value={engines.length ? `${monthlyCost.toFixed(2).replace(".", ",")} €` : "—"}
           desc="Projection mensuelle (moteurs actifs)"
         />
       </div>
@@ -111,8 +118,7 @@ function EnginesPage() {
               ) : engines.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-muted-foreground py-8 text-center">
-                    Aucun moteur. Effectuez une première action depuis le Workspace pour en
-                    provisionner un.
+                    Aucun fournisseur de conteneurs réel connecté. Aucun moteur simulé n’est affiché.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -138,7 +144,10 @@ function EnginesPage() {
                         {e.cpu_cores} vCPU · {e.ram_gb} Go · {e.disk_gb} Go
                       </TableCell>
                       <TableCell>
-                        <Badge variant={isRunning ? "default" : "secondary"} className="gap-1.5">
+                        <Badge
+                          variant={isRunning ? "default" : "secondary"}
+                          className="gap-1.5"
+                        >
                           <span
                             className={`size-1.5 rounded-full ${isRunning ? "bg-primary" : "bg-muted-foreground"}`}
                           />
@@ -158,7 +167,9 @@ function EnginesPage() {
                             size="icon"
                             variant="ghost"
                             disabled={isBusy}
-                            onClick={() => act(isRunning ? "stop" : "start", e.id, e.name)}
+                            onClick={() =>
+                              act(isRunning ? "stop" : "start", e.id, e.name)
+                            }
                             aria-label={isRunning ? "Arrêter" : "Démarrer"}
                           >
                             {isBusy ? (

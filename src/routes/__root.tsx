@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Toaster } from "@/components/ui/sonner";
@@ -32,16 +34,10 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Aetheris Cloud" },
-      {
-        name: "description",
-        content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud.",
-      },
+      { name: "description", content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud." },
       { name: "author", content: "Aetheris" },
       { property: "og:title", content: "Aetheris Cloud" },
-      {
-        property: "og:description",
-        content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud.",
-      },
+      { property: "og:description", content: "Espace développeur Aetheris : modèles IA, stockage et projets cloud." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -78,10 +74,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const [queryClient] = useState(() => new QueryClient());
   return (
+    <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <Outlet />
       <Toaster />
     </AuthProvider>
+    </QueryClientProvider>
   );
 }

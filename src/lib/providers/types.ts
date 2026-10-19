@@ -21,7 +21,11 @@ export type ChatCompletionResult = {
 };
 
 export type ProviderFailureCode =
-  "NOT_CONFIGURED" | "MODEL_NOT_FOUND" | "RATE_LIMITED" | "UPSTREAM_ERROR" | "NETWORK_ERROR";
+  | "NOT_CONFIGURED"
+  | "MODEL_NOT_FOUND"
+  | "RATE_LIMITED"
+  | "UPSTREAM_ERROR"
+  | "NETWORK_ERROR";
 
 export class ProviderError extends Error {
   constructor(

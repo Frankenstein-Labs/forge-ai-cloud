@@ -9,7 +9,6 @@ import { Partners } from "@/components/site/Partners";
 import { Pricing } from "@/components/site/Pricing";
 import { CTA } from "@/components/site/CTA";
 import { Footer } from "@/components/site/Footer";
-import heroImage from "@/assets/hero-cloud.jpg";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -35,9 +34,7 @@ export const Route = createFileRoute("/")({
           "Déployez, orchestrez et facturez vos modèles IA open source et propriétaires depuis un seul cloud souverain.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: heroImage },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: heroImage },
     ],
   }),
   component: Index,
