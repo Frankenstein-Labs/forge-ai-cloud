@@ -136,8 +136,8 @@ function SubscriptionPage() {
                 <Button
                   className="w-full"
                   variant={active ? "outline" : tier.highlighted ? "default" : "secondary"}
-                  disabled={active}
-                  onClick={() => toast.info("Le paiement sera activé prochainement.")}
+                  disabled
+                  title="Paiements non activés"
                 >
                   {active ? "Forfait actuel" : `Passer à ${tier.name}`}
                 </Button>

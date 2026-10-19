@@ -185,19 +185,11 @@ function StoragePage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Hero header */}
-      <section className="relative overflow-hidden rounded-lg glass p-8 lg:p-10">
-        <div
-          aria-hidden
-          className="absolute -top-32 -right-32 h-80 w-80 rounded-full opacity-40 blur-3xl"
-          style={{
-            background:
-              "conic-gradient(from 180deg, oklch(0.78 0.18 220 / 0.6), oklch(0.65 0.24 295 / 0.5), transparent)",
-          }}
-        />
+      <section className="relative overflow-hidden border-b pb-6">
         <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
           <div>
             <p className="text-[10px] tracking-[0.3em] uppercase text-primary/80 font-mono">
-              Infrastructure · 2026
+              Stockage
             </p>
             <h1 className="mt-3 font-display text-4xl lg:text-5xl font-semibold ">
               Stockage <span className="italic text-primary">&</span> Intégrations
@@ -236,10 +228,12 @@ function StoragePage() {
           <div className="flex gap-2">
             <input
               type="password"
-              placeholder="aether_..."
+              placeholder="sk-aeth-…"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
               className="flex-1 bg-background/50 border border-border rounded-md px-4 py-2 font-mono text-sm"
               onKeyDown={(e) => {
-                if (e.key === "Enter") fetchStatus((e.target as HTMLInputElement).value);
+                if (e.key === "Enter") fetchStatus(apiKey);
               }}
             />
           </div>
@@ -256,7 +250,7 @@ function StoragePage() {
           icon={<HardDrive className="h-5 w-5" />}
           title="Stockage modèles"
           subtitle="Seaweed VPS · GGUF, safetensors, datasets"
-          used={status?.storage.bytes ?? 0}
+          used={status?.storage.bytes ?? -1}
           quota={status?.storage.quota_bytes ?? 50e9}
           pct={usagePct}
           accent="primary"
@@ -266,7 +260,7 @@ function StoragePage() {
           icon={<Database className="h-5 w-5" />}
           title="DB Index"
           subtitle="Index sémantique · 1 Go offert à chaque user"
-          used={status?.db_index.bytes ?? 0}
+          used={status?.db_index.bytes ?? -1}
           quota={status?.db_index.quota_bytes ?? 1e9}
           pct={indexPct}
           accent="cyan"
@@ -464,16 +458,6 @@ function QuotaCard({
 }) {
   return (
     <div className="relative overflow-hidden glass rounded-lg p-6 group">
-      <div
-        aria-hidden
-        className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition"
-        style={{
-          background:
-            accent === "primary"
-              ? "radial-gradient(circle, oklch(0.65 0.24 295 / 0.7), transparent)"
-              : "radial-gradient(circle, oklch(0.78 0.18 220 / 0.7), transparent)",
-        }}
-      />
       <div className="relative flex flex-col gap-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -495,7 +479,7 @@ function QuotaCard({
         <div>
           <div className="flex items-baseline gap-2">
             <span className="font-display text-3xl font-semibold ">
-              {fmtBytes(used)}
+              {used < 0 ? "—" : fmtBytes(used)}
             </span>
             <span className="text-sm text-muted-foreground">/ {fmtBytes(quota)}</span>
           </div>

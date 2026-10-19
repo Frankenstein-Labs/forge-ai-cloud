@@ -16,12 +16,22 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardWorkspaceRouteImport } from './routes/dashboard.workspace'
+import { Route as DashboardTraefikRouteImport } from './routes/dashboard.traefik'
+import { Route as DashboardSwarmRouteImport } from './routes/dashboard.swarm'
 import { Route as DashboardSubscriptionRouteImport } from './routes/dashboard.subscription'
 import { Route as DashboardStorageRouteImport } from './routes/dashboard.storage'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardSchedulesRouteImport } from './routes/dashboard.schedules'
+import { Route as DashboardRequestsRouteImport } from './routes/dashboard.requests'
+import { Route as DashboardProjectsRouteImport } from './routes/dashboard.projects'
+import { Route as DashboardOverviewRouteImport } from './routes/dashboard.overview'
+import { Route as DashboardNetworksRouteImport } from './routes/dashboard.networks'
+import { Route as DashboardMonitoringRouteImport } from './routes/dashboard.monitoring'
 import { Route as DashboardModelsRouteImport } from './routes/dashboard.models'
 import { Route as DashboardMarketplaceRouteImport } from './routes/dashboard.marketplace'
 import { Route as DashboardEnginesRouteImport } from './routes/dashboard.engines'
+import { Route as DashboardDockerRouteImport } from './routes/dashboard.docker'
+import { Route as DashboardDeploymentsRouteImport } from './routes/dashboard.deployments'
 import { Route as DashboardBillingRouteImport } from './routes/dashboard.billing'
 import { Route as DashboardApiKeysRouteImport } from './routes/dashboard.api-keys'
 import { Route as ApiTerminalRouteImport } from './routes/api.terminal'
@@ -32,6 +42,29 @@ import { Route as ApiMarketplaceRouteImport } from './routes/api.marketplace'
 import { Route as ApiHfModelsRouteImport } from './routes/api.hf-models'
 import { Route as ApiHfConfigRouteImport } from './routes/api.hf-config'
 import { Route as ApiEnginesRouteImport } from './routes/api.engines'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard.settings.index'
+import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard.projects.index'
+import { Route as DashboardSettingsWhitelabelingRouteImport } from './routes/dashboard.settings.whitelabeling'
+import { Route as DashboardSettingsUsersRouteImport } from './routes/dashboard.settings.users'
+import { Route as DashboardSettingsTagsRouteImport } from './routes/dashboard.settings.tags'
+import { Route as DashboardSettingsSsoRouteImport } from './routes/dashboard.settings.sso'
+import { Route as DashboardSettingsSshKeysRouteImport } from './routes/dashboard.settings.ssh-keys'
+import { Route as DashboardSettingsSessionsRouteImport } from './routes/dashboard.settings.sessions'
+import { Route as DashboardSettingsServersRouteImport } from './routes/dashboard.settings.servers'
+import { Route as DashboardSettingsServerRouteImport } from './routes/dashboard.settings.server'
+import { Route as DashboardSettingsSecretsRouteImport } from './routes/dashboard.settings.secrets'
+import { Route as DashboardSettingsRegistryRouteImport } from './routes/dashboard.settings.registry'
+import { Route as DashboardSettingsNotificationsRouteImport } from './routes/dashboard.settings.notifications'
+import { Route as DashboardSettingsLogsAndMetricsRouteImport } from './routes/dashboard.settings.logs-and-metrics'
+import { Route as DashboardSettingsLicenseRouteImport } from './routes/dashboard.settings.license'
+import { Route as DashboardSettingsGitProvidersRouteImport } from './routes/dashboard.settings.git-providers'
+import { Route as DashboardSettingsDnsRouteImport } from './routes/dashboard.settings.dns'
+import { Route as DashboardSettingsDestinationsRouteImport } from './routes/dashboard.settings.destinations'
+import { Route as DashboardSettingsDeploymentsRouteImport } from './routes/dashboard.settings.deployments'
+import { Route as DashboardSettingsCertificatesRouteImport } from './routes/dashboard.settings.certificates'
+import { Route as DashboardSettingsAuditLogsRouteImport } from './routes/dashboard.settings.audit-logs'
+import { Route as DashboardSettingsAiRouteImport } from './routes/dashboard.settings.ai'
+import { Route as DashboardProjectsProjectIdRouteImport } from './routes/dashboard.projects.$projectId'
 import { Route as ApiMarketplaceDownloadRouteImport } from './routes/api.marketplace.download'
 import { Route as ApiAiValidateRouteImport } from './routes/api.ai.validate'
 import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api.v1.chat.completions'
@@ -72,6 +105,16 @@ const DashboardWorkspaceRoute = DashboardWorkspaceRouteImport.update({
   path: '/workspace',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardTraefikRoute = DashboardTraefikRouteImport.update({
+  id: '/traefik',
+  path: '/traefik',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSwarmRoute = DashboardSwarmRouteImport.update({
+  id: '/swarm',
+  path: '/swarm',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardSubscriptionRoute = DashboardSubscriptionRouteImport.update({
   id: '/subscription',
   path: '/subscription',
@@ -87,6 +130,36 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSchedulesRoute = DashboardSchedulesRouteImport.update({
+  id: '/schedules',
+  path: '/schedules',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardRequestsRoute = DashboardRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardProjectsRoute = DashboardProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOverviewRoute = DashboardOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNetworksRoute = DashboardNetworksRouteImport.update({
+  id: '/networks',
+  path: '/networks',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMonitoringRoute = DashboardMonitoringRouteImport.update({
+  id: '/monitoring',
+  path: '/monitoring',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardModelsRoute = DashboardModelsRouteImport.update({
   id: '/models',
   path: '/models',
@@ -100,6 +173,16 @@ const DashboardMarketplaceRoute = DashboardMarketplaceRouteImport.update({
 const DashboardEnginesRoute = DashboardEnginesRouteImport.update({
   id: '/engines',
   path: '/engines',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDockerRoute = DashboardDockerRouteImport.update({
+  id: '/docker',
+  path: '/docker',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDeploymentsRoute = DashboardDeploymentsRouteImport.update({
+  id: '/deployments',
+  path: '/deployments',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardBillingRoute = DashboardBillingRouteImport.update({
@@ -152,6 +235,136 @@ const ApiEnginesRoute = ApiEnginesRouteImport.update({
   path: '/api/engines',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardProjectsIndexRoute = DashboardProjectsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardProjectsRoute,
+} as any)
+const DashboardSettingsWhitelabelingRoute =
+  DashboardSettingsWhitelabelingRouteImport.update({
+    id: '/whitelabeling',
+    path: '/whitelabeling',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsUsersRoute = DashboardSettingsUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsTagsRoute = DashboardSettingsTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsSsoRoute = DashboardSettingsSsoRouteImport.update({
+  id: '/sso',
+  path: '/sso',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsSshKeysRoute =
+  DashboardSettingsSshKeysRouteImport.update({
+    id: '/ssh-keys',
+    path: '/ssh-keys',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsSessionsRoute =
+  DashboardSettingsSessionsRouteImport.update({
+    id: '/sessions',
+    path: '/sessions',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsServersRoute =
+  DashboardSettingsServersRouteImport.update({
+    id: '/servers',
+    path: '/servers',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsServerRoute = DashboardSettingsServerRouteImport.update({
+  id: '/server',
+  path: '/server',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsSecretsRoute =
+  DashboardSettingsSecretsRouteImport.update({
+    id: '/secrets',
+    path: '/secrets',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsRegistryRoute =
+  DashboardSettingsRegistryRouteImport.update({
+    id: '/registry',
+    path: '/registry',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsNotificationsRoute =
+  DashboardSettingsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsLogsAndMetricsRoute =
+  DashboardSettingsLogsAndMetricsRouteImport.update({
+    id: '/logs-and-metrics',
+    path: '/logs-and-metrics',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsLicenseRoute =
+  DashboardSettingsLicenseRouteImport.update({
+    id: '/license',
+    path: '/license',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsGitProvidersRoute =
+  DashboardSettingsGitProvidersRouteImport.update({
+    id: '/git-providers',
+    path: '/git-providers',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsDnsRoute = DashboardSettingsDnsRouteImport.update({
+  id: '/dns',
+  path: '/dns',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardSettingsDestinationsRoute =
+  DashboardSettingsDestinationsRouteImport.update({
+    id: '/destinations',
+    path: '/destinations',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsDeploymentsRoute =
+  DashboardSettingsDeploymentsRouteImport.update({
+    id: '/deployments',
+    path: '/deployments',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsCertificatesRoute =
+  DashboardSettingsCertificatesRouteImport.update({
+    id: '/certificates',
+    path: '/certificates',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsAuditLogsRoute =
+  DashboardSettingsAuditLogsRouteImport.update({
+    id: '/audit-logs',
+    path: '/audit-logs',
+    getParentRoute: () => DashboardSettingsRoute,
+  } as any)
+const DashboardSettingsAiRoute = DashboardSettingsAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+const DashboardProjectsProjectIdRoute =
+  DashboardProjectsProjectIdRouteImport.update({
+    id: '/$projectId',
+    path: '/$projectId',
+    getParentRoute: () => DashboardProjectsRoute,
+  } as any)
 const ApiMarketplaceDownloadRoute = ApiMarketplaceDownloadRouteImport.update({
   id: '/download',
   path: '/download',
@@ -189,16 +402,49 @@ export interface FileRoutesByFullPath {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/deployments': typeof DashboardDeploymentsRoute
+  '/dashboard/docker': typeof DashboardDockerRoute
   '/dashboard/engines': typeof DashboardEnginesRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
-  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/monitoring': typeof DashboardMonitoringRoute
+  '/dashboard/networks': typeof DashboardNetworksRoute
+  '/dashboard/overview': typeof DashboardOverviewRoute
+  '/dashboard/projects': typeof DashboardProjectsRouteWithChildren
+  '/dashboard/requests': typeof DashboardRequestsRoute
+  '/dashboard/schedules': typeof DashboardSchedulesRoute
+  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/subscription': typeof DashboardSubscriptionRoute
+  '/dashboard/swarm': typeof DashboardSwarmRoute
+  '/dashboard/traefik': typeof DashboardTraefikRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
   '/api/marketplace/download': typeof ApiMarketplaceDownloadRoute
+  '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
+  '/dashboard/settings/ai': typeof DashboardSettingsAiRoute
+  '/dashboard/settings/audit-logs': typeof DashboardSettingsAuditLogsRoute
+  '/dashboard/settings/certificates': typeof DashboardSettingsCertificatesRoute
+  '/dashboard/settings/deployments': typeof DashboardSettingsDeploymentsRoute
+  '/dashboard/settings/destinations': typeof DashboardSettingsDestinationsRoute
+  '/dashboard/settings/dns': typeof DashboardSettingsDnsRoute
+  '/dashboard/settings/git-providers': typeof DashboardSettingsGitProvidersRoute
+  '/dashboard/settings/license': typeof DashboardSettingsLicenseRoute
+  '/dashboard/settings/logs-and-metrics': typeof DashboardSettingsLogsAndMetricsRoute
+  '/dashboard/settings/notifications': typeof DashboardSettingsNotificationsRoute
+  '/dashboard/settings/registry': typeof DashboardSettingsRegistryRoute
+  '/dashboard/settings/secrets': typeof DashboardSettingsSecretsRoute
+  '/dashboard/settings/server': typeof DashboardSettingsServerRoute
+  '/dashboard/settings/servers': typeof DashboardSettingsServersRoute
+  '/dashboard/settings/sessions': typeof DashboardSettingsSessionsRoute
+  '/dashboard/settings/ssh-keys': typeof DashboardSettingsSshKeysRoute
+  '/dashboard/settings/sso': typeof DashboardSettingsSsoRoute
+  '/dashboard/settings/tags': typeof DashboardSettingsTagsRoute
+  '/dashboard/settings/users': typeof DashboardSettingsUsersRoute
+  '/dashboard/settings/whitelabeling': typeof DashboardSettingsWhitelabelingRoute
+  '/dashboard/projects/': typeof DashboardProjectsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
@@ -217,16 +463,47 @@ export interface FileRoutesByTo {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/deployments': typeof DashboardDeploymentsRoute
+  '/dashboard/docker': typeof DashboardDockerRoute
   '/dashboard/engines': typeof DashboardEnginesRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
-  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/monitoring': typeof DashboardMonitoringRoute
+  '/dashboard/networks': typeof DashboardNetworksRoute
+  '/dashboard/overview': typeof DashboardOverviewRoute
+  '/dashboard/requests': typeof DashboardRequestsRoute
+  '/dashboard/schedules': typeof DashboardSchedulesRoute
   '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/subscription': typeof DashboardSubscriptionRoute
+  '/dashboard/swarm': typeof DashboardSwarmRoute
+  '/dashboard/traefik': typeof DashboardTraefikRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
   '/api/marketplace/download': typeof ApiMarketplaceDownloadRoute
+  '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
+  '/dashboard/settings/ai': typeof DashboardSettingsAiRoute
+  '/dashboard/settings/audit-logs': typeof DashboardSettingsAuditLogsRoute
+  '/dashboard/settings/certificates': typeof DashboardSettingsCertificatesRoute
+  '/dashboard/settings/deployments': typeof DashboardSettingsDeploymentsRoute
+  '/dashboard/settings/destinations': typeof DashboardSettingsDestinationsRoute
+  '/dashboard/settings/dns': typeof DashboardSettingsDnsRoute
+  '/dashboard/settings/git-providers': typeof DashboardSettingsGitProvidersRoute
+  '/dashboard/settings/license': typeof DashboardSettingsLicenseRoute
+  '/dashboard/settings/logs-and-metrics': typeof DashboardSettingsLogsAndMetricsRoute
+  '/dashboard/settings/notifications': typeof DashboardSettingsNotificationsRoute
+  '/dashboard/settings/registry': typeof DashboardSettingsRegistryRoute
+  '/dashboard/settings/secrets': typeof DashboardSettingsSecretsRoute
+  '/dashboard/settings/server': typeof DashboardSettingsServerRoute
+  '/dashboard/settings/servers': typeof DashboardSettingsServersRoute
+  '/dashboard/settings/sessions': typeof DashboardSettingsSessionsRoute
+  '/dashboard/settings/ssh-keys': typeof DashboardSettingsSshKeysRoute
+  '/dashboard/settings/sso': typeof DashboardSettingsSsoRoute
+  '/dashboard/settings/tags': typeof DashboardSettingsTagsRoute
+  '/dashboard/settings/users': typeof DashboardSettingsUsersRoute
+  '/dashboard/settings/whitelabeling': typeof DashboardSettingsWhitelabelingRoute
+  '/dashboard/projects': typeof DashboardProjectsIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
@@ -247,16 +524,49 @@ export interface FileRoutesById {
   '/api/terminal': typeof ApiTerminalRoute
   '/dashboard/api-keys': typeof DashboardApiKeysRoute
   '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/deployments': typeof DashboardDeploymentsRoute
+  '/dashboard/docker': typeof DashboardDockerRoute
   '/dashboard/engines': typeof DashboardEnginesRoute
   '/dashboard/marketplace': typeof DashboardMarketplaceRoute
   '/dashboard/models': typeof DashboardModelsRoute
-  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/monitoring': typeof DashboardMonitoringRoute
+  '/dashboard/networks': typeof DashboardNetworksRoute
+  '/dashboard/overview': typeof DashboardOverviewRoute
+  '/dashboard/projects': typeof DashboardProjectsRouteWithChildren
+  '/dashboard/requests': typeof DashboardRequestsRoute
+  '/dashboard/schedules': typeof DashboardSchedulesRoute
+  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/dashboard/storage': typeof DashboardStorageRoute
   '/dashboard/subscription': typeof DashboardSubscriptionRoute
+  '/dashboard/swarm': typeof DashboardSwarmRoute
+  '/dashboard/traefik': typeof DashboardTraefikRoute
   '/dashboard/workspace': typeof DashboardWorkspaceRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/ai/validate': typeof ApiAiValidateRoute
   '/api/marketplace/download': typeof ApiMarketplaceDownloadRoute
+  '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
+  '/dashboard/settings/ai': typeof DashboardSettingsAiRoute
+  '/dashboard/settings/audit-logs': typeof DashboardSettingsAuditLogsRoute
+  '/dashboard/settings/certificates': typeof DashboardSettingsCertificatesRoute
+  '/dashboard/settings/deployments': typeof DashboardSettingsDeploymentsRoute
+  '/dashboard/settings/destinations': typeof DashboardSettingsDestinationsRoute
+  '/dashboard/settings/dns': typeof DashboardSettingsDnsRoute
+  '/dashboard/settings/git-providers': typeof DashboardSettingsGitProvidersRoute
+  '/dashboard/settings/license': typeof DashboardSettingsLicenseRoute
+  '/dashboard/settings/logs-and-metrics': typeof DashboardSettingsLogsAndMetricsRoute
+  '/dashboard/settings/notifications': typeof DashboardSettingsNotificationsRoute
+  '/dashboard/settings/registry': typeof DashboardSettingsRegistryRoute
+  '/dashboard/settings/secrets': typeof DashboardSettingsSecretsRoute
+  '/dashboard/settings/server': typeof DashboardSettingsServerRoute
+  '/dashboard/settings/servers': typeof DashboardSettingsServersRoute
+  '/dashboard/settings/sessions': typeof DashboardSettingsSessionsRoute
+  '/dashboard/settings/ssh-keys': typeof DashboardSettingsSshKeysRoute
+  '/dashboard/settings/sso': typeof DashboardSettingsSsoRoute
+  '/dashboard/settings/tags': typeof DashboardSettingsTagsRoute
+  '/dashboard/settings/users': typeof DashboardSettingsUsersRoute
+  '/dashboard/settings/whitelabeling': typeof DashboardSettingsWhitelabelingRoute
+  '/dashboard/projects/': typeof DashboardProjectsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/v1/models/$name/download': typeof ApiV1ModelsNameDownloadRoute
 }
@@ -278,16 +588,49 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/deployments'
+    | '/dashboard/docker'
     | '/dashboard/engines'
     | '/dashboard/marketplace'
     | '/dashboard/models'
+    | '/dashboard/monitoring'
+    | '/dashboard/networks'
+    | '/dashboard/overview'
+    | '/dashboard/projects'
+    | '/dashboard/requests'
+    | '/dashboard/schedules'
     | '/dashboard/settings'
     | '/dashboard/storage'
     | '/dashboard/subscription'
+    | '/dashboard/swarm'
+    | '/dashboard/traefik'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
     | '/api/marketplace/download'
+    | '/dashboard/projects/$projectId'
+    | '/dashboard/settings/ai'
+    | '/dashboard/settings/audit-logs'
+    | '/dashboard/settings/certificates'
+    | '/dashboard/settings/deployments'
+    | '/dashboard/settings/destinations'
+    | '/dashboard/settings/dns'
+    | '/dashboard/settings/git-providers'
+    | '/dashboard/settings/license'
+    | '/dashboard/settings/logs-and-metrics'
+    | '/dashboard/settings/notifications'
+    | '/dashboard/settings/registry'
+    | '/dashboard/settings/secrets'
+    | '/dashboard/settings/server'
+    | '/dashboard/settings/servers'
+    | '/dashboard/settings/sessions'
+    | '/dashboard/settings/ssh-keys'
+    | '/dashboard/settings/sso'
+    | '/dashboard/settings/tags'
+    | '/dashboard/settings/users'
+    | '/dashboard/settings/whitelabeling'
+    | '/dashboard/projects/'
+    | '/dashboard/settings/'
     | '/api/v1/chat/completions'
     | '/api/v1/models/$name/download'
   fileRoutesByTo: FileRoutesByTo
@@ -306,16 +649,47 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/deployments'
+    | '/dashboard/docker'
     | '/dashboard/engines'
     | '/dashboard/marketplace'
     | '/dashboard/models'
-    | '/dashboard/settings'
+    | '/dashboard/monitoring'
+    | '/dashboard/networks'
+    | '/dashboard/overview'
+    | '/dashboard/requests'
+    | '/dashboard/schedules'
     | '/dashboard/storage'
     | '/dashboard/subscription'
+    | '/dashboard/swarm'
+    | '/dashboard/traefik'
     | '/dashboard/workspace'
     | '/dashboard'
     | '/api/ai/validate'
     | '/api/marketplace/download'
+    | '/dashboard/projects/$projectId'
+    | '/dashboard/settings/ai'
+    | '/dashboard/settings/audit-logs'
+    | '/dashboard/settings/certificates'
+    | '/dashboard/settings/deployments'
+    | '/dashboard/settings/destinations'
+    | '/dashboard/settings/dns'
+    | '/dashboard/settings/git-providers'
+    | '/dashboard/settings/license'
+    | '/dashboard/settings/logs-and-metrics'
+    | '/dashboard/settings/notifications'
+    | '/dashboard/settings/registry'
+    | '/dashboard/settings/secrets'
+    | '/dashboard/settings/server'
+    | '/dashboard/settings/servers'
+    | '/dashboard/settings/sessions'
+    | '/dashboard/settings/ssh-keys'
+    | '/dashboard/settings/sso'
+    | '/dashboard/settings/tags'
+    | '/dashboard/settings/users'
+    | '/dashboard/settings/whitelabeling'
+    | '/dashboard/projects'
+    | '/dashboard/settings'
     | '/api/v1/chat/completions'
     | '/api/v1/models/$name/download'
   id:
@@ -335,16 +709,49 @@ export interface FileRouteTypes {
     | '/api/terminal'
     | '/dashboard/api-keys'
     | '/dashboard/billing'
+    | '/dashboard/deployments'
+    | '/dashboard/docker'
     | '/dashboard/engines'
     | '/dashboard/marketplace'
     | '/dashboard/models'
+    | '/dashboard/monitoring'
+    | '/dashboard/networks'
+    | '/dashboard/overview'
+    | '/dashboard/projects'
+    | '/dashboard/requests'
+    | '/dashboard/schedules'
     | '/dashboard/settings'
     | '/dashboard/storage'
     | '/dashboard/subscription'
+    | '/dashboard/swarm'
+    | '/dashboard/traefik'
     | '/dashboard/workspace'
     | '/dashboard/'
     | '/api/ai/validate'
     | '/api/marketplace/download'
+    | '/dashboard/projects/$projectId'
+    | '/dashboard/settings/ai'
+    | '/dashboard/settings/audit-logs'
+    | '/dashboard/settings/certificates'
+    | '/dashboard/settings/deployments'
+    | '/dashboard/settings/destinations'
+    | '/dashboard/settings/dns'
+    | '/dashboard/settings/git-providers'
+    | '/dashboard/settings/license'
+    | '/dashboard/settings/logs-and-metrics'
+    | '/dashboard/settings/notifications'
+    | '/dashboard/settings/registry'
+    | '/dashboard/settings/secrets'
+    | '/dashboard/settings/server'
+    | '/dashboard/settings/servers'
+    | '/dashboard/settings/sessions'
+    | '/dashboard/settings/ssh-keys'
+    | '/dashboard/settings/sso'
+    | '/dashboard/settings/tags'
+    | '/dashboard/settings/users'
+    | '/dashboard/settings/whitelabeling'
+    | '/dashboard/projects/'
+    | '/dashboard/settings/'
     | '/api/v1/chat/completions'
     | '/api/v1/models/$name/download'
   fileRoutesById: FileRoutesById
@@ -419,6 +826,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardWorkspaceRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/traefik': {
+      id: '/dashboard/traefik'
+      path: '/traefik'
+      fullPath: '/dashboard/traefik'
+      preLoaderRoute: typeof DashboardTraefikRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/swarm': {
+      id: '/dashboard/swarm'
+      path: '/swarm'
+      fullPath: '/dashboard/swarm'
+      preLoaderRoute: typeof DashboardSwarmRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/subscription': {
       id: '/dashboard/subscription'
       path: '/subscription'
@@ -440,6 +861,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/schedules': {
+      id: '/dashboard/schedules'
+      path: '/schedules'
+      fullPath: '/dashboard/schedules'
+      preLoaderRoute: typeof DashboardSchedulesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/requests': {
+      id: '/dashboard/requests'
+      path: '/requests'
+      fullPath: '/dashboard/requests'
+      preLoaderRoute: typeof DashboardRequestsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/projects': {
+      id: '/dashboard/projects'
+      path: '/projects'
+      fullPath: '/dashboard/projects'
+      preLoaderRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/overview': {
+      id: '/dashboard/overview'
+      path: '/overview'
+      fullPath: '/dashboard/overview'
+      preLoaderRoute: typeof DashboardOverviewRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/networks': {
+      id: '/dashboard/networks'
+      path: '/networks'
+      fullPath: '/dashboard/networks'
+      preLoaderRoute: typeof DashboardNetworksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/monitoring': {
+      id: '/dashboard/monitoring'
+      path: '/monitoring'
+      fullPath: '/dashboard/monitoring'
+      preLoaderRoute: typeof DashboardMonitoringRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/models': {
       id: '/dashboard/models'
       path: '/models'
@@ -459,6 +922,20 @@ declare module '@tanstack/react-router' {
       path: '/engines'
       fullPath: '/dashboard/engines'
       preLoaderRoute: typeof DashboardEnginesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/docker': {
+      id: '/dashboard/docker'
+      path: '/docker'
+      fullPath: '/dashboard/docker'
+      preLoaderRoute: typeof DashboardDockerRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/deployments': {
+      id: '/dashboard/deployments'
+      path: '/deployments'
+      fullPath: '/dashboard/deployments'
+      preLoaderRoute: typeof DashboardDeploymentsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/billing': {
@@ -531,6 +1008,167 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiEnginesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/projects/': {
+      id: '/dashboard/projects/'
+      path: '/'
+      fullPath: '/dashboard/projects/'
+      preLoaderRoute: typeof DashboardProjectsIndexRouteImport
+      parentRoute: typeof DashboardProjectsRoute
+    }
+    '/dashboard/settings/whitelabeling': {
+      id: '/dashboard/settings/whitelabeling'
+      path: '/whitelabeling'
+      fullPath: '/dashboard/settings/whitelabeling'
+      preLoaderRoute: typeof DashboardSettingsWhitelabelingRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/users': {
+      id: '/dashboard/settings/users'
+      path: '/users'
+      fullPath: '/dashboard/settings/users'
+      preLoaderRoute: typeof DashboardSettingsUsersRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/tags': {
+      id: '/dashboard/settings/tags'
+      path: '/tags'
+      fullPath: '/dashboard/settings/tags'
+      preLoaderRoute: typeof DashboardSettingsTagsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/sso': {
+      id: '/dashboard/settings/sso'
+      path: '/sso'
+      fullPath: '/dashboard/settings/sso'
+      preLoaderRoute: typeof DashboardSettingsSsoRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/ssh-keys': {
+      id: '/dashboard/settings/ssh-keys'
+      path: '/ssh-keys'
+      fullPath: '/dashboard/settings/ssh-keys'
+      preLoaderRoute: typeof DashboardSettingsSshKeysRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/sessions': {
+      id: '/dashboard/settings/sessions'
+      path: '/sessions'
+      fullPath: '/dashboard/settings/sessions'
+      preLoaderRoute: typeof DashboardSettingsSessionsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/servers': {
+      id: '/dashboard/settings/servers'
+      path: '/servers'
+      fullPath: '/dashboard/settings/servers'
+      preLoaderRoute: typeof DashboardSettingsServersRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/server': {
+      id: '/dashboard/settings/server'
+      path: '/server'
+      fullPath: '/dashboard/settings/server'
+      preLoaderRoute: typeof DashboardSettingsServerRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/secrets': {
+      id: '/dashboard/settings/secrets'
+      path: '/secrets'
+      fullPath: '/dashboard/settings/secrets'
+      preLoaderRoute: typeof DashboardSettingsSecretsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/registry': {
+      id: '/dashboard/settings/registry'
+      path: '/registry'
+      fullPath: '/dashboard/settings/registry'
+      preLoaderRoute: typeof DashboardSettingsRegistryRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/notifications': {
+      id: '/dashboard/settings/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/settings/notifications'
+      preLoaderRoute: typeof DashboardSettingsNotificationsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/logs-and-metrics': {
+      id: '/dashboard/settings/logs-and-metrics'
+      path: '/logs-and-metrics'
+      fullPath: '/dashboard/settings/logs-and-metrics'
+      preLoaderRoute: typeof DashboardSettingsLogsAndMetricsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/license': {
+      id: '/dashboard/settings/license'
+      path: '/license'
+      fullPath: '/dashboard/settings/license'
+      preLoaderRoute: typeof DashboardSettingsLicenseRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/git-providers': {
+      id: '/dashboard/settings/git-providers'
+      path: '/git-providers'
+      fullPath: '/dashboard/settings/git-providers'
+      preLoaderRoute: typeof DashboardSettingsGitProvidersRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/dns': {
+      id: '/dashboard/settings/dns'
+      path: '/dns'
+      fullPath: '/dashboard/settings/dns'
+      preLoaderRoute: typeof DashboardSettingsDnsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/destinations': {
+      id: '/dashboard/settings/destinations'
+      path: '/destinations'
+      fullPath: '/dashboard/settings/destinations'
+      preLoaderRoute: typeof DashboardSettingsDestinationsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/deployments': {
+      id: '/dashboard/settings/deployments'
+      path: '/deployments'
+      fullPath: '/dashboard/settings/deployments'
+      preLoaderRoute: typeof DashboardSettingsDeploymentsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/certificates': {
+      id: '/dashboard/settings/certificates'
+      path: '/certificates'
+      fullPath: '/dashboard/settings/certificates'
+      preLoaderRoute: typeof DashboardSettingsCertificatesRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/audit-logs': {
+      id: '/dashboard/settings/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/dashboard/settings/audit-logs'
+      preLoaderRoute: typeof DashboardSettingsAuditLogsRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/settings/ai': {
+      id: '/dashboard/settings/ai'
+      path: '/ai'
+      fullPath: '/dashboard/settings/ai'
+      preLoaderRoute: typeof DashboardSettingsAiRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
+    '/dashboard/projects/$projectId': {
+      id: '/dashboard/projects/$projectId'
+      path: '/$projectId'
+      fullPath: '/dashboard/projects/$projectId'
+      preLoaderRoute: typeof DashboardProjectsProjectIdRouteImport
+      parentRoute: typeof DashboardProjectsRoute
+    }
     '/api/marketplace/download': {
       id: '/api/marketplace/download'
       path: '/download'
@@ -562,15 +1200,89 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardProjectsRouteChildren {
+  DashboardProjectsProjectIdRoute: typeof DashboardProjectsProjectIdRoute
+  DashboardProjectsIndexRoute: typeof DashboardProjectsIndexRoute
+}
+
+const DashboardProjectsRouteChildren: DashboardProjectsRouteChildren = {
+  DashboardProjectsProjectIdRoute: DashboardProjectsProjectIdRoute,
+  DashboardProjectsIndexRoute: DashboardProjectsIndexRoute,
+}
+
+const DashboardProjectsRouteWithChildren =
+  DashboardProjectsRoute._addFileChildren(DashboardProjectsRouteChildren)
+
+interface DashboardSettingsRouteChildren {
+  DashboardSettingsAiRoute: typeof DashboardSettingsAiRoute
+  DashboardSettingsAuditLogsRoute: typeof DashboardSettingsAuditLogsRoute
+  DashboardSettingsCertificatesRoute: typeof DashboardSettingsCertificatesRoute
+  DashboardSettingsDeploymentsRoute: typeof DashboardSettingsDeploymentsRoute
+  DashboardSettingsDestinationsRoute: typeof DashboardSettingsDestinationsRoute
+  DashboardSettingsDnsRoute: typeof DashboardSettingsDnsRoute
+  DashboardSettingsGitProvidersRoute: typeof DashboardSettingsGitProvidersRoute
+  DashboardSettingsLicenseRoute: typeof DashboardSettingsLicenseRoute
+  DashboardSettingsLogsAndMetricsRoute: typeof DashboardSettingsLogsAndMetricsRoute
+  DashboardSettingsNotificationsRoute: typeof DashboardSettingsNotificationsRoute
+  DashboardSettingsRegistryRoute: typeof DashboardSettingsRegistryRoute
+  DashboardSettingsSecretsRoute: typeof DashboardSettingsSecretsRoute
+  DashboardSettingsServerRoute: typeof DashboardSettingsServerRoute
+  DashboardSettingsServersRoute: typeof DashboardSettingsServersRoute
+  DashboardSettingsSessionsRoute: typeof DashboardSettingsSessionsRoute
+  DashboardSettingsSshKeysRoute: typeof DashboardSettingsSshKeysRoute
+  DashboardSettingsSsoRoute: typeof DashboardSettingsSsoRoute
+  DashboardSettingsTagsRoute: typeof DashboardSettingsTagsRoute
+  DashboardSettingsUsersRoute: typeof DashboardSettingsUsersRoute
+  DashboardSettingsWhitelabelingRoute: typeof DashboardSettingsWhitelabelingRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
+  DashboardSettingsAiRoute: DashboardSettingsAiRoute,
+  DashboardSettingsAuditLogsRoute: DashboardSettingsAuditLogsRoute,
+  DashboardSettingsCertificatesRoute: DashboardSettingsCertificatesRoute,
+  DashboardSettingsDeploymentsRoute: DashboardSettingsDeploymentsRoute,
+  DashboardSettingsDestinationsRoute: DashboardSettingsDestinationsRoute,
+  DashboardSettingsDnsRoute: DashboardSettingsDnsRoute,
+  DashboardSettingsGitProvidersRoute: DashboardSettingsGitProvidersRoute,
+  DashboardSettingsLicenseRoute: DashboardSettingsLicenseRoute,
+  DashboardSettingsLogsAndMetricsRoute: DashboardSettingsLogsAndMetricsRoute,
+  DashboardSettingsNotificationsRoute: DashboardSettingsNotificationsRoute,
+  DashboardSettingsRegistryRoute: DashboardSettingsRegistryRoute,
+  DashboardSettingsSecretsRoute: DashboardSettingsSecretsRoute,
+  DashboardSettingsServerRoute: DashboardSettingsServerRoute,
+  DashboardSettingsServersRoute: DashboardSettingsServersRoute,
+  DashboardSettingsSessionsRoute: DashboardSettingsSessionsRoute,
+  DashboardSettingsSshKeysRoute: DashboardSettingsSshKeysRoute,
+  DashboardSettingsSsoRoute: DashboardSettingsSsoRoute,
+  DashboardSettingsTagsRoute: DashboardSettingsTagsRoute,
+  DashboardSettingsUsersRoute: DashboardSettingsUsersRoute,
+  DashboardSettingsWhitelabelingRoute: DashboardSettingsWhitelabelingRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardSettingsRouteWithChildren =
+  DashboardSettingsRoute._addFileChildren(DashboardSettingsRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardApiKeysRoute: typeof DashboardApiKeysRoute
   DashboardBillingRoute: typeof DashboardBillingRoute
+  DashboardDeploymentsRoute: typeof DashboardDeploymentsRoute
+  DashboardDockerRoute: typeof DashboardDockerRoute
   DashboardEnginesRoute: typeof DashboardEnginesRoute
   DashboardMarketplaceRoute: typeof DashboardMarketplaceRoute
   DashboardModelsRoute: typeof DashboardModelsRoute
-  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardMonitoringRoute: typeof DashboardMonitoringRoute
+  DashboardNetworksRoute: typeof DashboardNetworksRoute
+  DashboardOverviewRoute: typeof DashboardOverviewRoute
+  DashboardProjectsRoute: typeof DashboardProjectsRouteWithChildren
+  DashboardRequestsRoute: typeof DashboardRequestsRoute
+  DashboardSchedulesRoute: typeof DashboardSchedulesRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRouteWithChildren
   DashboardStorageRoute: typeof DashboardStorageRoute
   DashboardSubscriptionRoute: typeof DashboardSubscriptionRoute
+  DashboardSwarmRoute: typeof DashboardSwarmRoute
+  DashboardTraefikRoute: typeof DashboardTraefikRoute
   DashboardWorkspaceRoute: typeof DashboardWorkspaceRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -578,12 +1290,22 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardApiKeysRoute: DashboardApiKeysRoute,
   DashboardBillingRoute: DashboardBillingRoute,
+  DashboardDeploymentsRoute: DashboardDeploymentsRoute,
+  DashboardDockerRoute: DashboardDockerRoute,
   DashboardEnginesRoute: DashboardEnginesRoute,
   DashboardMarketplaceRoute: DashboardMarketplaceRoute,
   DashboardModelsRoute: DashboardModelsRoute,
-  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardMonitoringRoute: DashboardMonitoringRoute,
+  DashboardNetworksRoute: DashboardNetworksRoute,
+  DashboardOverviewRoute: DashboardOverviewRoute,
+  DashboardProjectsRoute: DashboardProjectsRouteWithChildren,
+  DashboardRequestsRoute: DashboardRequestsRoute,
+  DashboardSchedulesRoute: DashboardSchedulesRoute,
+  DashboardSettingsRoute: DashboardSettingsRouteWithChildren,
   DashboardStorageRoute: DashboardStorageRoute,
   DashboardSubscriptionRoute: DashboardSubscriptionRoute,
+  DashboardSwarmRoute: DashboardSwarmRoute,
+  DashboardTraefikRoute: DashboardTraefikRoute,
   DashboardWorkspaceRoute: DashboardWorkspaceRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }

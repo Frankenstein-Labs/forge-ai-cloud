@@ -178,28 +178,8 @@ function Catalog() {
     (m) => search === "" || m.name.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const deploy = async (model: HfRepoItem) => {
-    const short = model.name.split("/").pop() ?? model.name;
-    const name = prompt(`Nom du déploiement pour ${model.name} ?`, `${short}-prod`);
-    if (!name) return;
-    setDeploying(model.name);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Non authentifié");
-      setDeploying(null);
-      return;
-    }
-    const { error: dbError } = await supabase.from("deployments").insert({
-      user_id: user.id,
-      catalog_model_id: `hf/${model.name}`,
-      deployment_name: name.trim(),
-      status: "deploying",
-    });
-    setDeploying(null);
-    if (dbError) toast.error(dbError.message);
-    else toast.success(`Déploiement de ${model.name} lancé`);
+  const deploy = async (_model: HfRepoItem) => {
+    toast.error("Aucun fournisseur d’hébergement de modèles n’est connecté. Aucun déploiement n’a été lancé.");
   };
 
   return (
@@ -265,11 +245,11 @@ function Catalog() {
               </a>
               <Button
                 onClick={() => deploy(m)}
-                disabled={deploying === m.name}
+                disabled title="Un fournisseur d’hébergement réel doit être connecté"
                 className="bg-foreground text-background flex items-center gap-2 rounded-md px-4 py-2 text-xs font-semibold transition hover:opacity-90 disabled:opacity-60"
               >
                 {deploying === m.name && <Loader2 className="h-3 w-3 animate-spin" />}
-                Déployer
+                Hébergement non connecté
               </Button>
             </div>
           </div>
@@ -297,7 +277,7 @@ function ImportPanel() {
     });
     if (error) toast.error(error.message);
     else {
-      toast.success("Import lancé. Le modèle sera disponible une fois validé.");
+      toast.success("Référence Hugging Face enregistrée. Aucun fichier téléchargé.");
       setHfUrl("");
     }
   };
@@ -316,7 +296,7 @@ function ImportPanel() {
     });
     if (error) toast.error(error.message);
     else {
-      toast.success("Import lancé.");
+      toast.success("Référence enregistrée. Aucun fichier téléchargé.");
       setPublicUrl("");
     }
   };
@@ -326,7 +306,7 @@ function ImportPanel() {
       <div className="glass rounded-lg p-6 lg:p-8">
         <h2 className="font-display text-xl font-medium">Importer un modèle</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Téléversez vos modèles fine‑tunés ou fusionnés, nous les hébergeons pour vous.
+          Références de modèles · stockage externe requis pour les fichiers.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -361,7 +341,7 @@ function ImportPanel() {
             </div>
             <h3 className="font-medium">Téléverser un fichier</h3>
             <p className="text-xs text-muted-foreground mt-1">
-              .gguf, .safetensors, .bin (jusqu'à 50 GB)
+              .gguf, .safetensors, .bin · stockage non connecté
             </p>
             <div className="mt-3 border-2 border-dashed border-border rounded-md p-4 text-center text-xs text-muted-foreground">
               Glisser-déposer

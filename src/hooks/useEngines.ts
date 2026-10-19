@@ -67,7 +67,7 @@ export function useEngines(intervalMs = 4000) {
 
   useEffect(() => {
     void refresh();
-    const id = setInterval(() => void refresh(), intervalMs);
+    const id = setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, intervalMs);
     const onVisible = () => {
       if (document.visibilityState === "visible") void refresh();
     };

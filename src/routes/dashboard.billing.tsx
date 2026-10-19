@@ -62,7 +62,7 @@ function BillingPage() {
             <span className="text-muted-foreground text-2xl ms-2">tokens</span>
           </p>
           <Button
-            onClick={() => toast.info("Paiements Stripe — disponible à l'itération 2")}
+            disabled title="Paiements non activés"
             className="mt-6 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium text-sm  inline-flex items-center gap-2"
           >
             <CreditCard className="h-4 w-4" />
@@ -124,8 +124,7 @@ function BillingPage() {
                   ))}
                 </ul>
                 <Button
-                  disabled={isCurrent}
-                  onClick={() => toast.info("Paiements Stripe — disponible à l'itération 2")}
+                  disabled title="Paiements non activés"
                   className={`mt-6 w-full rounded-md px-4 py-3 text-sm font-medium transition ${
                     isCurrent
                       ? "bg-muted text-muted-foreground cursor-not-allowed"
