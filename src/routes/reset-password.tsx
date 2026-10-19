@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "Réinitialiser le mot de passe — Aetheris Cloud" }],
+    meta: [{ title: "Réinitialiser le mot de passe — Aetheris Cloud" }, { name: "description", content: "Réinitialiser le mot de passe de votre compte Aetheris Cloud." }, { property: "og:title", content: "Réinitialiser le mot de passe — Aetheris Cloud" }, { property: "og:description", content: "Réinitialiser le mot de passe de votre compte Aetheris Cloud." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }],
   }),
   component: ResetPasswordPage,
 });

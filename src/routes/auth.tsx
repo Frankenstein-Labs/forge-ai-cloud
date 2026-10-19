@@ -16,6 +16,10 @@ export const Route = createFileRoute("/auth")({
     meta: [
       { title: "Connexion — Aetheris Cloud" },
       { name: "description", content: "Connectez-vous à votre console Aetheris Cloud." },
+      { property: "og:title", content: "Connexion — Aetheris Cloud" },
+      { property: "og:description", content: "Connectez-vous à votre espace Aetheris Cloud." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,

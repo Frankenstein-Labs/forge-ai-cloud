@@ -93,7 +93,7 @@ function WorkspacePage() {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">Espace de travail</h1>
+          <h1 className="font-display text-2xl font-semibold ">Espace de travail</h1>
           <p className="text-muted-foreground text-sm">
             Terminal cloud connecté à votre moteur de dev (Docker / Coder).
           </p>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +9,7 @@ import { authJson } from "@/lib/api-client";
 
 export const Route = createFileRoute("/dashboard/models")({
   head: () => ({
-    meta: [{ title: "Modèles — Aetheris" }],
+    meta: [{ title: "Modèles — Aetheris" }, { name: "description", content: "Modèles de votre compte Aetheris Cloud." }, { property: "og:title", content: "Modèles — Aetheris" }, { property: "og:description", content: "Modèles de votre compte Aetheris Cloud." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }],
   }),
   component: ModelsPage,
 });
@@ -43,7 +44,7 @@ function ModelsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 px-2">
         <div>
-          <h1 className="font-display text-4xl font-light tracking-tight">Modèles</h1>
+          <h1 className="font-display text-4xl font-light ">Modèles</h1>
           <p className="text-muted-foreground mt-2 text-sm">
             Catalogue, déploiements et import depuis Hugging Face.
           </p>
@@ -51,23 +52,23 @@ function ModelsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="glass rounded-2xl p-1.5 inline-flex w-full sm:w-auto">
+      <div className="glass rounded-lg p-1.5 inline-flex w-full sm:w-auto">
         {[
           { id: "deployments", label: "Mes déploiements" },
           { id: "catalog", label: "Mes modèles HF" },
           { id: "import", label: "Importer" },
         ].map((t) => (
-          <button
+          <Button
             key={t.id}
             onClick={() => setTab(t.id as typeof tab)}
-            className={`flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 sm:flex-none px-5 py-2.5 rounded-md text-sm font-medium transition-all ${
               tab === t.id
-                ? "bg-white/10 text-foreground shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]"
+                ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -96,7 +97,7 @@ function DeploymentsList() {
 
   if (loading) {
     return (
-      <div className="glass rounded-3xl p-12 flex items-center justify-center text-muted-foreground">
+      <div className="glass rounded-lg p-12 flex items-center justify-center text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin me-2" /> Chargement...
       </div>
     );
@@ -104,7 +105,7 @@ function DeploymentsList() {
 
   if (deps.length === 0) {
     return (
-      <div className="glass rounded-3xl p-16 text-center">
+      <div className="glass rounded-lg p-16 text-center">
         <h3 className="font-display text-xl font-medium">Aucun déploiement</h3>
         <p className="text-sm text-muted-foreground mt-2">
           Choisissez un modèle dans le catalogue pour commencer.
@@ -114,31 +115,31 @@ function DeploymentsList() {
   }
 
   return (
-    <div className="glass rounded-3xl overflow-hidden">
+    <div className="glass rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-white/5">
-              <th className="px-6 py-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+            <tr className="border-b border-border">
+              <th className="px-6 py-4 text-[11px] font-semibold text-muted-foreground uppercase ">
                 Nom
               </th>
-              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase ">
                 Modèle
               </th>
-              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase ">
                 Statut
               </th>
-              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase ">
                 Endpoint
               </th>
-              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest text-right">
+              <th className="px-4 py-4 text-[11px] font-semibold text-muted-foreground uppercase  text-right">
                 Tokens
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border">
             {deps.map((d) => (
-              <tr key={d.id} className="hover:bg-white/[0.02] transition-colors">
+              <tr key={d.id} className="hover:bg-muted/50 transition-colors">
                 <td className="px-6 py-5 font-medium">{d.deployment_name}</td>
                 <td className="px-4 py-5 font-mono text-xs text-muted-foreground">
                   {d.catalog_model_id}
@@ -210,7 +211,7 @@ function Catalog() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher parmi vos modèles Hugging Face..."
-          className="bg-surface-elevated/50 border-border focus:ring-primary/50 w-full rounded-2xl border px-4 py-3 ps-11 text-sm focus:ring-2 focus:outline-none"
+          className="bg-surface-elevated/50 border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-3 ps-11 text-sm focus:ring-2 focus:outline-none"
         />
       </div>
 
@@ -221,7 +222,7 @@ function Catalog() {
       )}
 
       {error && (
-        <div className="glass rounded-3xl p-6 text-sm">
+        <div className="glass rounded-lg p-6 text-sm">
           <p className="text-destructive">{(error as Error).message}</p>
           <p className="text-muted-foreground mt-2">
             Enregistrez votre clé Hugging Face dans Paramètres pour afficher vos vrais modèles.
@@ -237,9 +238,9 @@ function Catalog() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {items.map((m) => (
-          <div key={m.name} className="glass flex flex-col rounded-3xl p-6">
+          <div key={m.name} className="glass flex flex-col rounded-lg p-6">
             <div className="mb-3 flex items-start justify-between gap-2">
-              <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-[10px] font-bold tracking-widest uppercase">
+              <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-[10px] font-bold  uppercase">
                 {m.private ? "Privé" : "Public"}
               </span>
               <span className="text-muted-foreground font-mono text-xs">
@@ -262,14 +263,14 @@ function Catalog() {
               >
                 huggingface.co
               </a>
-              <button
+              <Button
                 onClick={() => deploy(m)}
                 disabled={deploying === m.name}
-                className="bg-foreground text-background flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition hover:opacity-90 disabled:opacity-60"
+                className="bg-foreground text-background flex items-center gap-2 rounded-md px-4 py-2 text-xs font-semibold transition hover:opacity-90 disabled:opacity-60"
               >
                 {deploying === m.name && <Loader2 className="h-3 w-3 animate-spin" />}
                 Déployer
-              </button>
+              </Button>
             </div>
           </div>
         ))}
@@ -322,7 +323,7 @@ function ImportPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="glass rounded-3xl p-6 lg:p-8">
+      <div className="glass rounded-lg p-6 lg:p-8">
         <h2 className="font-display text-xl font-medium">Importer un modèle</h2>
         <p className="text-sm text-muted-foreground mt-1">
           Téléversez vos modèles fine‑tunés ou fusionnés, nous les hébergeons pour vous.
@@ -330,8 +331,8 @@ function ImportPanel() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           {/* Hugging Face */}
-          <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-            <div className="size-10 rounded-xl bg-yellow-500/10 flex items-center justify-center mb-3">
+          <div className="bg-muted rounded-lg p-5 border border-border">
+            <div className="size-10 rounded-md bg-muted flex items-center justify-center mb-3">
               🤗
             </div>
             <h3 className="font-medium">Hugging Face</h3>
@@ -343,41 +344,41 @@ function ImportPanel() {
               value={hfUrl}
               onChange={(e) => setHfUrl(e.target.value)}
               placeholder="meta-llama/Llama-3.1-70B"
-              className="mt-3 w-full rounded-xl bg-background/50 border border-border px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="mt-3 w-full rounded-md bg-background/50 border border-border px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
-            <button
+            <Button
               onClick={importHF}
-              className="mt-3 w-full rounded-xl bg-gradient-primary text-primary-foreground font-medium px-4 py-2 text-xs"
+              className="mt-3 w-full rounded-md bg-primary text-primary-foreground font-medium px-4 py-2 text-xs"
             >
               Importer depuis HF
-            </button>
+            </Button>
           </div>
 
           {/* Upload */}
-          <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-            <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+          <div className="bg-muted rounded-lg p-5 border border-border">
+            <div className="size-10 rounded-md bg-primary/10 flex items-center justify-center mb-3">
               <Upload className="h-5 w-5 text-primary" />
             </div>
             <h3 className="font-medium">Téléverser un fichier</h3>
             <p className="text-xs text-muted-foreground mt-1">
               .gguf, .safetensors, .bin (jusqu'à 50 GB)
             </p>
-            <div className="mt-3 border-2 border-dashed border-white/10 rounded-xl p-4 text-center text-xs text-muted-foreground">
+            <div className="mt-3 border-2 border-dashed border-border rounded-md p-4 text-center text-xs text-muted-foreground">
               Glisser-déposer
               <br />
               <span className="text-[10px]">(disponible bientôt)</span>
             </div>
-            <button
+            <Button
               disabled
-              className="mt-3 w-full rounded-xl bg-white/5 text-muted-foreground font-medium px-4 py-2 text-xs cursor-not-allowed"
+              className="mt-3 w-full rounded-md bg-muted text-muted-foreground font-medium px-4 py-2 text-xs cursor-not-allowed"
             >
               Bientôt
-            </button>
+            </Button>
           </div>
 
           {/* Public URL */}
-          <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-            <div className="size-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-3">
+          <div className="bg-muted rounded-lg p-5 border border-border">
+            <div className="size-10 rounded-md bg-secondary/10 flex items-center justify-center mb-3">
               <LinkIcon className="h-5 w-5 text-secondary" />
             </div>
             <h3 className="font-medium">Lien public</h3>
@@ -387,14 +388,14 @@ function ImportPanel() {
               value={publicUrl}
               onChange={(e) => setPublicUrl(e.target.value)}
               placeholder="https://..."
-              className="mt-3 w-full rounded-xl bg-background/50 border border-border px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="mt-3 w-full rounded-md bg-background/50 border border-border px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
-            <button
+            <Button
               onClick={importURL}
-              className="mt-3 w-full rounded-xl bg-gradient-primary text-primary-foreground font-medium px-4 py-2 text-xs"
+              className="mt-3 w-full rounded-md bg-primary text-primary-foreground font-medium px-4 py-2 text-xs"
             >
               Importer depuis l'URL
-            </button>
+            </Button>
           </div>
         </div>
       </div>

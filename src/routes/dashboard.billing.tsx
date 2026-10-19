@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { CreditCard, Sparkles, Zap, Crown, Check, AlertCircle } from "lucide-react";
@@ -5,7 +6,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard/billing")({
   head: () => ({
-    meta: [{ title: "Facturation — Aetheris" }],
+    meta: [{ title: "Facturation — Aetheris" }, { name: "description", content: "Facturation de votre compte Aetheris Cloud." }, { property: "og:title", content: "Facturation — Aetheris" }, { property: "og:description", content: "Facturation de votre compte Aetheris Cloud." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }],
   }),
   component: BillingPage,
 });
@@ -44,7 +45,7 @@ function BillingPage() {
   return (
     <div className="space-y-6">
       <div className="px-2">
-        <h1 className="font-display text-4xl font-light tracking-tight">Facturation et crédits</h1>
+        <h1 className="font-display text-4xl font-light ">Facturation et crédits</h1>
         <p className="text-muted-foreground mt-2 text-sm">
           Gérez votre forfait et votre solde de tokens.
         </p>
@@ -52,25 +53,25 @@ function BillingPage() {
 
       {/* Solde */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="glass rounded-3xl p-6 lg:col-span-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
+        <div className="glass rounded-lg p-6 lg:col-span-2">
+          <p className="text-xs text-muted-foreground uppercase  font-semibold">
             Solde actuel
           </p>
           <p className="font-display text-5xl font-light mt-3 tabular-nums">
             {Number(profile?.credits_balance ?? 0).toLocaleString("fr-FR")}
             <span className="text-muted-foreground text-2xl ms-2">tokens</span>
           </p>
-          <button
+          <Button
             onClick={() => toast.info("Paiements Stripe — disponible à l'itération 2")}
-            className="mt-6 px-5 py-3 rounded-xl bg-gradient-primary text-primary-foreground font-medium text-sm shadow-glow-cyan inline-flex items-center gap-2"
+            className="mt-6 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium text-sm  inline-flex items-center gap-2"
           >
             <CreditCard className="h-4 w-4" />
             Ajouter du crédit
-          </button>
+          </Button>
         </div>
 
-        <div className="glass rounded-3xl p-6">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
+        <div className="glass rounded-lg p-6">
+          <p className="text-xs text-muted-foreground uppercase  font-semibold">
             Forfait actuel
           </p>
           <p className="font-display text-2xl font-medium mt-3 capitalize">
@@ -85,7 +86,7 @@ function BillingPage() {
       </div>
 
       {/* Tiers */}
-      <div className="glass rounded-3xl p-6 lg:p-8">
+      <div className="glass rounded-lg p-6 lg:p-8">
         <h2 className="font-display text-xl font-medium">Forfaits disponibles</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           {TIERS.map((t) => {
@@ -94,16 +95,16 @@ function BillingPage() {
             return (
               <div
                 key={t.id}
-                className={`rounded-2xl p-6 border ${
+                className={`rounded-lg p-6 border ${
                   t.highlighted
-                    ? "bg-primary/5 border-primary/30 shadow-glow-cyan"
-                    : "bg-white/5 border-white/5"
+                    ? "bg-primary/5 border-primary/30 "
+                    : "bg-muted border-border"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`size-10 rounded-xl flex items-center justify-center ${
-                      t.highlighted ? "bg-primary/20" : "bg-white/5"
+                    className={`size-10 rounded-md flex items-center justify-center ${
+                      t.highlighted ? "bg-primary/20" : "bg-muted"
                     }`}
                   >
                     <Icon className={`h-5 w-5 ${t.highlighted ? "text-primary" : ""}`} />
@@ -122,27 +123,27 @@ function BillingPage() {
                     </li>
                   ))}
                 </ul>
-                <button
+                <Button
                   disabled={isCurrent}
                   onClick={() => toast.info("Paiements Stripe — disponible à l'itération 2")}
-                  className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-medium transition ${
+                  className={`mt-6 w-full rounded-md px-4 py-3 text-sm font-medium transition ${
                     isCurrent
-                      ? "bg-white/5 text-muted-foreground cursor-not-allowed"
+                      ? "bg-muted text-muted-foreground cursor-not-allowed"
                       : t.highlighted
-                        ? "bg-gradient-primary text-primary-foreground shadow-glow-cyan"
-                        : "border border-border hover:bg-white/5"
+                        ? "bg-primary text-primary-foreground "
+                        : "border border-border hover:bg-muted"
                   }`}
                 >
                   {isCurrent ? "Forfait actuel" : "Choisir"}
-                </button>
+                </Button>
               </div>
             );
           })}
         </div>
       </div>
 
-      <div className="glass rounded-3xl p-6 flex items-start gap-4 border border-secondary/10">
-        <div className="size-10 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
+      <div className="glass rounded-lg p-6 flex items-start gap-4 border border-secondary/10">
+        <div className="size-10 rounded-md bg-secondary/10 flex items-center justify-center shrink-0">
           <AlertCircle className="h-5 w-5 text-secondary" />
         </div>
         <div className="text-sm">

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -184,7 +185,7 @@ function StoragePage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Hero header */}
-      <section className="relative overflow-hidden rounded-3xl glass p-8 lg:p-10">
+      <section className="relative overflow-hidden rounded-lg glass p-8 lg:p-10">
         <div
           aria-hidden
           className="absolute -top-32 -right-32 h-80 w-80 rounded-full opacity-40 blur-3xl"
@@ -198,7 +199,7 @@ function StoragePage() {
             <p className="text-[10px] tracking-[0.3em] uppercase text-primary/80 font-mono">
               Infrastructure · 2026
             </p>
-            <h1 className="mt-3 font-display text-4xl lg:text-5xl font-semibold tracking-tight">
+            <h1 className="mt-3 font-display text-4xl lg:text-5xl font-semibold ">
               Stockage <span className="italic text-primary">&</span> Intégrations
             </h1>
             <p className="mt-3 text-muted-foreground max-w-xl">
@@ -207,20 +208,20 @@ function StoragePage() {
               sémantique.
             </p>
           </div>
-          <button
+          <Button
             onClick={() => fetchStatus(apiKey)}
             disabled={!apiKey || loading}
-            className="self-start lg:self-auto inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-medium transition disabled:opacity-50"
+            className="self-start lg:self-auto inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border bg-muted hover:bg-muted text-sm font-medium transition disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Rafraîchir
-          </button>
+          </Button>
         </div>
       </section>
 
       {/* Clé API input */}
       {!apiKey && (
-        <section className="glass rounded-3xl p-6 flex flex-col gap-3">
+        <section className="glass rounded-lg p-6 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-sm font-medium">
             <KeyRound className="h-4 w-4 text-primary" />
             Clé API requise
@@ -236,7 +237,7 @@ function StoragePage() {
             <input
               type="password"
               placeholder="aether_..."
-              className="flex-1 bg-background/50 border border-white/10 rounded-xl px-4 py-2 font-mono text-sm"
+              className="flex-1 bg-background/50 border border-border rounded-md px-4 py-2 font-mono text-sm"
               onKeyDown={(e) => {
                 if (e.key === "Enter") fetchStatus((e.target as HTMLInputElement).value);
               }}
@@ -245,9 +246,9 @@ function StoragePage() {
         </section>
       )}
 
-      {error && <div className="glass rounded-2xl p-4 text-sm text-destructive">❌ {error}</div>}
+      {error && <div className="glass rounded-lg p-4 text-sm text-destructive">❌ {error}</div>}
 
-      <HfKeyCard className="glass rounded-3xl border-0" />
+      <HfKeyCard className="glass rounded-lg border-0" />
 
       {/* Quotas */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -275,10 +276,10 @@ function StoragePage() {
       </section>
 
       {/* Configuration MongoDB Proxy */}
-      <section className="glass rounded-3xl p-6 lg:p-8 flex flex-col gap-5">
+      <section className="glass rounded-lg p-6 lg:p-8 flex flex-col gap-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+            <div className="h-11 w-11 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
               <PlugZap className="h-5 w-5" />
             </div>
             <div>
@@ -290,10 +291,10 @@ function StoragePage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               onClick={testMongo}
               disabled={mongoTesting || !mongoUrl || !mongoToken}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-sm font-medium transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border bg-muted hover:bg-muted text-sm font-medium transition disabled:opacity-50"
             >
               {mongoTesting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -301,11 +302,11 @@ function StoragePage() {
                 <PlugZap className="h-4 w-4" />
               )}
               Tester
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={saveMongo}
               disabled={mongoSaving || !mongoUrl || !mongoToken || !apiKey}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
             >
               {mongoSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -313,13 +314,13 @@ function StoragePage() {
                 <CheckCircle2 className="h-4 w-4" />
               )}
               Enregistrer
-            </button>
+            </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+            <span className="text-[11px] uppercase  text-muted-foreground font-mono">
               MONGO_PROXY_URL
             </span>
             <input
@@ -327,11 +328,11 @@ function StoragePage() {
               value={mongoUrl}
               onChange={(e) => setMongoUrl(e.target.value)}
               placeholder="https://mongo.tondomaine.com"
-              className="bg-background/50 border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm focus:outline-none focus:border-primary/50"
+              className="bg-background/50 border border-border rounded-md px-4 py-2.5 font-mono text-sm focus:outline-none focus:border-primary/50"
             />
           </label>
           <label className="flex flex-col gap-1.5">
-            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">
+            <span className="text-[11px] uppercase  text-muted-foreground font-mono">
               MONGO_PROXY_TOKEN
             </span>
             <input
@@ -339,7 +340,7 @@ function StoragePage() {
               value={mongoToken}
               onChange={(e) => setMongoToken(e.target.value)}
               placeholder="64 caractères hex"
-              className="bg-background/50 border border-white/10 rounded-xl px-4 py-2.5 font-mono text-sm focus:outline-none focus:border-primary/50"
+              className="bg-background/50 border border-border rounded-md px-4 py-2.5 font-mono text-sm focus:outline-none focus:border-primary/50"
             />
           </label>
         </div>
@@ -353,7 +354,7 @@ function StoragePage() {
         </p>
 
         {mongoSaved && (
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm px-4 py-2.5 flex items-center gap-2">
+          <div className="rounded-md border border-success/30 bg-success/10 text-success text-sm px-4 py-2.5 flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" /> {mongoSaved}
           </div>
         )}
@@ -363,7 +364,7 @@ function StoragePage() {
 
       <section>
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="font-display text-2xl font-semibold tracking-tight">
+          <h2 className="font-display text-2xl font-semibold ">
             Intégrations actives
           </h2>
           <span className="text-xs text-muted-foreground font-mono">
@@ -415,10 +416,10 @@ function StoragePage() {
       </section>
 
       {/* Snippet */}
-      <section className="glass rounded-3xl p-6">
+      <section className="glass rounded-lg p-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-display text-lg font-semibold">Push un modèle vers ton stockage</h3>
-          <button
+          <Button
             onClick={() => {
               navigator.clipboard.writeText(
                 `curl -X PUT "$(aetheris push mistral.gguf)" --data-binary @mistral.gguf`,
@@ -427,9 +428,9 @@ function StoragePage() {
             className="text-xs flex items-center gap-1 text-muted-foreground hover:text-foreground"
           >
             <Copy className="h-3 w-3" /> Copier
-          </button>
+          </Button>
         </div>
-        <pre className="font-mono text-xs bg-background/50 border border-white/5 rounded-xl p-4 overflow-x-auto text-muted-foreground">
+        <pre className="font-mono text-xs bg-background/50 border border-border rounded-md p-4 overflow-x-auto text-muted-foreground">
           {`# Dans le terminal Aetheris :
 push mistral-7b.gguf
 # → renvoie une URL pré-signée. Puis en local :
@@ -462,7 +463,7 @@ function QuotaCard({
   badge?: string;
 }) {
   return (
-    <div className="relative overflow-hidden glass rounded-3xl p-6 group">
+    <div className="relative overflow-hidden glass rounded-lg p-6 group">
       <div
         aria-hidden
         className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition"
@@ -476,7 +477,7 @@ function QuotaCard({
       <div className="relative flex flex-col gap-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-primary">
+            <div className="h-10 w-10 rounded-md bg-muted border border-border flex items-center justify-center text-primary">
               {icon}
             </div>
             <div>
@@ -485,7 +486,7 @@ function QuotaCard({
             </div>
           </div>
           {badge && (
-            <span className="text-[10px] tracking-widest font-mono bg-primary/15 text-primary px-2 py-1 rounded-full border border-primary/30">
+            <span className="text-[10px]  font-mono bg-primary/15 text-primary px-2 py-1 rounded-full border border-primary/30">
               {badge}
             </span>
           )}
@@ -493,14 +494,14 @@ function QuotaCard({
 
         <div>
           <div className="flex items-baseline gap-2">
-            <span className="font-display text-3xl font-semibold tracking-tight">
+            <span className="font-display text-3xl font-semibold ">
               {fmtBytes(used)}
             </span>
             <span className="text-sm text-muted-foreground">/ {fmtBytes(quota)}</span>
           </div>
-          <div className="mt-3 h-2 w-full bg-white/5 rounded-full overflow-hidden">
+          <div className="mt-3 h-2 w-full bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-primary shadow-glow-cyan transition-all"
+              className="h-full bg-primary  transition-all"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -537,10 +538,10 @@ function IntegrationCard({
   extra?: string;
 }) {
   return (
-    <div className="glass rounded-2xl p-5 flex flex-col gap-3 hover:border-white/20 transition">
+    <div className="glass rounded-lg p-5 flex flex-col gap-3 hover:border-border transition">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-md bg-muted border border-border flex items-center justify-center">
             {icon}
           </div>
           <div>
@@ -552,7 +553,7 @@ function IntegrationCard({
           className={`flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-full border ${
             connected
               ? "bg-primary/10 text-primary border-primary/30"
-              : "bg-white/5 text-muted-foreground border-white/10"
+              : "bg-muted text-muted-foreground border-border"
           }`}
         >
           {connected ? (
@@ -566,10 +567,10 @@ function IntegrationCard({
           )}
         </span>
       </div>
-      <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground border-t border-white/5 pt-3">
+      <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground border-t border-border pt-3">
         <span>{envKey}</span>
         {tag && (
-          <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+          <span className="px-2 py-0.5 rounded-full bg-muted text-foreground border border-border">
             {tag}
           </span>
         )}
@@ -584,7 +585,7 @@ function IntegrationCard({
 function MongoResultPanel({ r }: { r: MongoTestResult }) {
   const tone = r.ok ? "border-primary/40 bg-primary/5" : "border-destructive/40 bg-destructive/5";
   return (
-    <div className={`rounded-2xl border p-4 flex flex-col gap-2 ${tone}`}>
+    <div className={`rounded-lg border p-4 flex flex-col gap-2 ${tone}`}>
       <div className="flex items-center gap-2 text-sm font-medium">
         {r.ok ? (
           <CheckCircle2 className="h-4 w-4 text-primary" />
@@ -605,12 +606,12 @@ function MongoResultPanel({ r }: { r: MongoTestResult }) {
         <p className="text-[11px] font-mono text-muted-foreground break-all">→ {r.target}</p>
       )}
       {r.body && (
-        <pre className="text-[11px] font-mono bg-background/50 border border-white/5 rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
+        <pre className="text-[11px] font-mono bg-background/50 border border-border rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
           {r.body}
         </pre>
       )}
       {r.ok && r.response !== undefined && (
-        <pre className="text-[11px] font-mono bg-background/50 border border-white/5 rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
+        <pre className="text-[11px] font-mono bg-background/50 border border-border rounded-lg p-2 overflow-x-auto max-h-32 text-muted-foreground">
           {JSON.stringify(r.response, null, 2)}
         </pre>
       )}

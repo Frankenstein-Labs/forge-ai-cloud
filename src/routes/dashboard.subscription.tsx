@@ -78,7 +78,7 @@ function SubscriptionPage() {
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="space-y-1">
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-2xl font-semibold ">
           Abonnement & Facturation
         </h1>
         <p className="text-muted-foreground text-sm">

@@ -11,6 +11,19 @@ import {
   Bot,
   Rocket,
   ChevronsUpDown,
+  Home,
+  Server,
+  GitBranch,
+  Globe,
+  Bell,
+  Shield,
+  CalendarClock,
+  Container,
+  Network,
+  FileCode2,
+  Layers,
+  Activity,
+  FolderKanban,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,30 +56,55 @@ type NavItem = {
 };
 
 export const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
-  {
-    label: "Général",
-    items: [
-      { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-      { to: "/dashboard/workspace", label: "Workspace", icon: Terminal },
-    ],
-  },
-  {
-    label: "Plateforme",
-    items: [
-      { to: "/dashboard/marketplace", label: "Marketplace IA", icon: Bot },
-      { to: "/dashboard/engines", label: "Mes Moteurs Cloud", icon: Rocket },
-      { to: "/dashboard/models", label: "Mes modèles", icon: Boxes },
-      { to: "/dashboard/storage", label: "Stockage", icon: HardDrive },
-    ],
-  },
-  {
-    label: "Compte",
-    items: [
-      { to: "/dashboard/subscription", label: "Abonnement & Facturation", icon: CreditCard },
-      { to: "/dashboard/api-keys", label: "Clés API", icon: KeyRound },
-      { to: "/dashboard/settings", label: "Paramètres", icon: Settings },
-    ],
-  },
+  { label: "Accueil", items: [
+    { to: "/dashboard", label: "Accueil", icon: Home, exact: true },
+    { to: "/dashboard/projects", label: "Projets", icon: FolderKanban },
+    { to: "/dashboard/overview", label: "Vue d’ensemble", icon: Layers },
+    { to: "/dashboard/monitoring", label: "Monitoring", icon: Activity },
+    { to: "/dashboard/deployments", label: "Déploiements", icon: Rocket },
+    { to: "/dashboard/schedules", label: "Tâches planifiées", icon: CalendarClock },
+    { to: "/dashboard/traefik", label: "Fichiers Traefik", icon: FileCode2 },
+    { to: "/dashboard/docker", label: "Docker", icon: Container },
+    { to: "/dashboard/swarm", label: "Swarm", icon: Server },
+    { to: "/dashboard/networks", label: "Réseaux", icon: Network },
+    { to: "/dashboard/requests", label: "Requêtes", icon: Globe },
+  ] },
+  { label: "Intelligence artificielle", items: [
+    { to: "/dashboard/workspace", label: "Workspace", icon: Terminal },
+    { to: "/dashboard/marketplace", label: "Marketplace IA", icon: Bot },
+    { to: "/dashboard/models", label: "Mes modèles", icon: Boxes },
+    { to: "/dashboard/engines", label: "Mes Moteurs Cloud", icon: Rocket },
+    { to: "/dashboard/storage", label: "Stockage", icon: HardDrive },
+  ] },
+  { label: "Paramètres", items: [
+    { to: "/dashboard/settings", label: "Profil & connexions", icon: Settings, exact: true },
+    { to: "/dashboard/settings/servers", label: "Serveurs distants", icon: Server },
+    { to: "/dashboard/settings/server", label: "Serveur web", icon: Server },
+    { to: "/dashboard/settings/git-providers", label: "Fournisseurs Git", icon: GitBranch },
+    { to: "/dashboard/settings/registry", label: "Registres Docker", icon: Container },
+    { to: "/dashboard/settings/ssh-keys", label: "Clés SSH", icon: KeyRound },
+    { to: "/dashboard/settings/secrets", label: "Secrets", icon: Shield },
+    { to: "/dashboard/settings/destinations", label: "Destinations S3", icon: HardDrive },
+    { to: "/dashboard/settings/dns", label: "Fournisseurs DNS", icon: Globe },
+    { to: "/dashboard/settings/certificates", label: "Certificats", icon: Shield },
+    { to: "/dashboard/settings/notifications", label: "Notifications", icon: Bell },
+    { to: "/dashboard/settings/users", label: "Utilisateurs", icon: Home },
+    { to: "/dashboard/settings/sessions", label: "Sessions Dokploy", icon: Shield },
+    { to: "/dashboard/settings/deployments", label: "Réglages déploiement", icon: Rocket },
+    { to: "/dashboard/settings/logs-and-metrics", label: "Journaux & mesures", icon: Activity },
+    { to: "/dashboard/settings/ai", label: "IA Dokploy", icon: Bot },
+    { to: "/dashboard/settings/tags", label: "Étiquettes", icon: Boxes },
+  ] },
+  { label: "Compte", items: [
+    { to: "/dashboard/api-keys", label: "Clés API Aetheris", icon: KeyRound },
+    { to: "/dashboard/subscription", label: "Abonnement & Facturation", icon: CreditCard },
+  ] },
+  { label: "Enterprise", items: [
+    { to: "/dashboard/settings/audit-logs", label: "Journal d’audit", icon: Shield },
+    { to: "/dashboard/settings/sso", label: "SSO", icon: Shield },
+    { to: "/dashboard/settings/whitelabeling", label: "Marque blanche", icon: Settings },
+    { to: "/dashboard/settings/license", label: "Licence", icon: KeyRound },
+  ] },
 ];
 
 export function useActiveNavLabel() {
@@ -104,17 +142,17 @@ export function AppSidebar() {
   ];
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg">
               <Link to="/dashboard" className="gap-3">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-primary font-display text-lg font-bold text-primary-foreground">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-primary font-display text-lg font-bold text-primary-foreground">
                   Æ
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
-                  <span className="font-display truncate text-base font-semibold italic">
+                  <span className="truncate text-base font-semibold">
                     Aetheris
                   </span>
                   <span className="text-muted-foreground truncate text-xs">
@@ -159,7 +197,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton size="lg">
-                  <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg text-xs font-semibold">
+                  <div className="bg-sidebar-accent text-sidebar-accent-foreground flex aspect-square size-8 items-center justify-center overflow-hidden rounded-md text-xs font-semibold">
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="" className="size-full object-cover" />
                     ) : (

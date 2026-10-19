@@ -135,7 +135,7 @@ function MarketplacePage() {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">Marketplace IA</h1>
+          <h1 className="font-display text-2xl font-semibold ">Marketplace IA</h1>
           <p className="text-muted-foreground text-sm">
             Parcourez, publiez et téléchargez des modèles et outils d'IA.
           </p>
@@ -184,7 +184,7 @@ function MarketplacePage() {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {isLoading &&
               Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-56 rounded-xl" />
+                <Skeleton key={i} className="h-56 rounded-md" />
               ))}
 
             {!isLoading &&
@@ -293,7 +293,7 @@ function HfRepoGrid() {
     return (
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-48 rounded-xl" />
+          <Skeleton key={i} className="h-48 rounded-md" />
         ))}
       </div>
     );
@@ -301,7 +301,7 @@ function HfRepoGrid() {
 
   if (error) {
     return (
-      <div className="rounded-xl border p-6 text-sm">
+      <div className="rounded-md border p-6 text-sm">
         <p className="text-destructive">{(error as Error).message}</p>
         <p className="text-muted-foreground mt-2">
           Ajoutez votre clé Hugging Face dans Paramètres pour afficher vos dépôts réels.

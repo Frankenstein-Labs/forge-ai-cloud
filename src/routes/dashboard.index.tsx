@@ -6,7 +6,7 @@ import { TrendingUp, Activity, Boxes, ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
-    meta: [{ title: "Tableau de bord — Aetheris" }],
+    meta: [{ title: "Tableau de bord — Aetheris" }, { name: "description", content: "Tableau de bord de votre compte Aetheris Cloud." }, { property: "og:title", content: "Tableau de bord — Aetheris" }, { property: "og:description", content: "Tableau de bord de votre compte Aetheris Cloud." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }],
   }),
   component: DashboardHome,
 });
@@ -88,7 +88,7 @@ function DashboardHome() {
   return (
     <div className="space-y-6">
       <div className="px-2">
-        <h1 className="font-display text-4xl font-light tracking-tight">
+        <h1 className="font-display text-4xl font-light ">
           Bienvenue<span className="text-primary">.</span>
         </h1>
         <p className="text-muted-foreground mt-2 text-sm">
@@ -124,7 +124,7 @@ function DashboardHome() {
       </div>
 
       {/* Usage chart */}
-      <div className="glass rounded-3xl p-6 lg:p-8">
+      <div className="glass rounded-lg p-6 lg:p-8">
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="font-display text-xl font-medium">Consommation quotidienne</h2>
@@ -142,7 +142,7 @@ function DashboardHome() {
           {usage.map((d, i) => (
             <div key={d.day} className="flex-1 flex flex-col items-center group relative">
               <div
-                className="w-full rounded-t-md bg-gradient-primary transition-all hover:opacity-100 opacity-80"
+                className="w-full rounded-t-md bg-primary transition-all hover:opacity-100 opacity-80"
                 style={{ height: `${(d.tokens / max) * 100}%`, minHeight: "2px" }}
               />
               <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity bg-surface-elevated border border-border rounded-md px-2 py-1 text-[10px] font-mono whitespace-nowrap pointer-events-none z-10">
@@ -159,7 +159,7 @@ function DashboardHome() {
       </div>
 
       {/* Recent activities */}
-      <div className="glass rounded-3xl p-6 lg:p-8">
+      <div className="glass rounded-lg p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display text-xl font-medium">Inférences récentes</h2>
         </div>
@@ -173,7 +173,7 @@ function DashboardHome() {
             {recent.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/[0.02] transition-colors"
+                className="flex items-center justify-between py-3 px-4 rounded-md hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-4 min-w-0">
                   <span className="size-2 rounded-full bg-primary shrink-0" />
@@ -215,10 +215,10 @@ function StatCard({
   cta?: { to: string; label: string };
 }) {
   const accentClass = accent === "cyan" ? "text-primary" : "text-secondary";
-  const glowClass = accent === "cyan" ? "shadow-glow-cyan" : "shadow-glow-plasma";
+  const glowClass = accent === "cyan" ? "" : "";
 
   return (
-    <div className="glass rounded-3xl p-6 relative overflow-hidden group">
+    <div className="glass rounded-lg p-6 relative overflow-hidden group">
       <div
         className={`absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-10 blur-2xl ${
           accent === "cyan" ? "bg-primary" : "bg-secondary"
@@ -226,11 +226,11 @@ function StatCard({
       />
       <div className="relative">
         <div className="flex items-start justify-between">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">
+          <p className="text-xs text-muted-foreground uppercase  font-semibold">
             {label}
           </p>
           <div
-            className={`size-8 rounded-xl bg-white/5 flex items-center justify-center ${glowClass}`}
+            className={`size-8 rounded-md bg-muted flex items-center justify-center ${glowClass}`}
           >
             <Icon className={`h-4 w-4 ${accentClass}`} />
           </div>
@@ -240,7 +240,7 @@ function StatCard({
         {cta && (
           <Link
             to={cta.to}
-            className="mt-4 inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-semibold uppercase tracking-widest"
+            className="mt-4 inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-semibold uppercase "
           >
             {cta.label} <ArrowUpRight className="h-3 w-3" />
           </Link>
