@@ -212,11 +212,11 @@ function StoragePage() {
       </section>
 
       {/* Clé API input */}
-      {!apiKey && (
+      {(
         <section className="glass rounded-lg p-6 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-sm font-medium">
             <KeyRound className="h-4 w-4 text-primary" />
-            Clé API requise
+            Clé API Aetheris
           </div>
           <p className="text-sm text-muted-foreground">
             Colle une clé pour afficher l'état. Crées-en une dans{" "}
