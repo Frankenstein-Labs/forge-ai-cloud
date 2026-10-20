@@ -24,6 +24,10 @@ export const Route = createFileRoute("/dashboard/storage")({
   head: () => ({
     meta: [
       { title: "Stockage & Intégrations — Aetheris" },
+      { property: "og:title", content: "Stockage & Intégrations — Aetheris" },
+      { property: "og:description", content: "Connecteurs de stockage et clés Hugging Face de votre compte Aetheris." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
