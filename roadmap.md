@@ -1,6 +1,6 @@
 # Dokploy adoption
 
-- [ ] Fix Google OAuth dashboard access and verify public callback/session restoration.
+- [x] Fix Google OAuth dashboard access: public callback with sanitized destination; verified signed-out gate, restored-session workspace access and refresh. Google account-selection itself requires the user's retry.
 
 - [x] Pin official source and record full screen coverage and license boundaries in DOKPLOY-COVERAGE.md.
 - [x] Replace dashboard design and adopt light, dark and system themes.
