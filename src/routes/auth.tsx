@@ -6,11 +6,12 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { googleCallbackUrl, safeAuthRedirect } from "@/lib/auth-redirect";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search) => ({
     mode: (search.mode as "signin" | "signup" | undefined) ?? "signin",
-    redirect: (search.redirect as string | undefined) ?? "/dashboard",
+    redirect: safeAuthRedirect(search.redirect),
   }),
   head: () => ({
     meta: [
@@ -43,7 +44,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      navigate({ to: redirect });
+      navigate({ to: redirect, replace: true });
     }
   }, [user, authLoading, navigate, redirect]);
 
@@ -101,9 +102,12 @@ function AuthPage() {
     setSubmitting(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/dashboard`,
+        redirect_uri: googleCallbackUrl(window.location.origin, redirect),
       });
       if (result.error) throw result.error;
+      if (result.redirected) return;
+      // The broker has restored the session; AuthProvider's listener owns navigation.
+      setSubmitting(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur Google");
       setSubmitting(false);

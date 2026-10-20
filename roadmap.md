@@ -1,5 +1,7 @@
 # Dokploy adoption
 
+- [ ] Fix Google OAuth dashboard access and verify public callback/session restoration.
+
 - [x] Pin official source and record full screen coverage and license boundaries in DOKPLOY-COVERAGE.md.
 - [x] Replace dashboard design and adopt light, dark and system themes.
 - [x] Adapt existing IA, storage, API-key and account presentation; signed-in page rendering verified.
