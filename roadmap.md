@@ -7,6 +7,7 @@
 - [x] Adapt existing IA, storage, API-key and account presentation; signed-in page rendering verified.
 - [x] Remove simulated engine operations and measurements; refusal policy tests pass.
 - [x] Add Dokploy navigation and configuration/service screens with truthful disconnected states.
-- [ ] Connect and verify projects, services, infrastructure and complete settings — blocked by missing accessible Dokploy instance and user-scoped credentials; generic screens currently link externally, not full integrations.
+- [ ] Import the legally reusable official Dokploy UI sources with provenance and no upstream credentials; adapt API-token presentation and identify payment-source availability.
+- [ ] Replace remaining Dokploy-dependent infrastructure screens with independent integrations — requires a separately provisioned compute provider; existing external connection is transitional, not the target architecture.
 - [x] Verify signed-in desktop/mobile page navigation, dark theme persistence and terminal help/Colab dialog controls; actual GPU training is outside verified scope.
 - [x] Apply required dependency security update; latest harness build green after minimal error-prop typing fix.
